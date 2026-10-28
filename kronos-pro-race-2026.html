@@ -1211,13 +1211,6 @@
                     </button>
                 </div>
             </div>
-            <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-white/10">
-                <span class="text-[10px] font-extrabold text-[#ffd60a] shrink-0"><i class="fa-solid fa-link mr-1"></i>URL PÚBLICA O IP WIFI PARA EL QR:</span>
-                <input type="text" id="custom-qr-host-url" placeholder="Pega aquí la dirección web donde subas este HTML (ej: https://miclub.com/krono.html o http://192.168.1.50:8080)" onchange="updateCustomQrHostUrl(this.value)" class="flex-1 min-w-[240px] bg-black/75 border border-white/20 rounded-xl px-3 py-1.5 text-xs font-mono-num text-white focus:outline-none focus:border-[#5ac8fa]" />
-                <button onclick="regenerateAllQrCards()" class="px-3.5 py-1.5 rounded-xl mac-silver-active text-[10px] font-black cursor-pointer shrink-0">
-                    GENERAR QR LIMPIO
-                </button>
-            </div>
         </div>
 
         <!-- Barra Lectora de Pistola Láser / Teclado / Cámara en Vivo -->
@@ -2145,28 +2138,24 @@
 
         function startMobileAutoRadarLoop() {
             if (mobileAutoRadarInterval) clearInterval(mobileAutoRadarInterval);
-            // Supervisa en segundo plano cambios de vuelta, posición o rivales y los canta automáticamente sin tocar nada
+            // Supervisa únicamente cuando TU propio piloto completa una nueva vuelta, sin pisarse con otros coches
             mobileAutoRadarInterval = setInterval(() => {
                 if (!activeMobileDriverId || !mobileSpotterVoiceEnabled) return;
-                const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
-                if (!ctx) return;
-                const ass = ctx.assignment;
-                const currentHash = ass
-                    ? `${ctx.heatNumber}_${ass.laps}_${ass.lastLap}_${ctx.position}_${ctx.ahead ? ctx.ahead.driverId : 'none'}_${ctx.behind ? ctx.behind.driverId : 'none'}`
-                    : `MARSHAL_${ctx.heatNumber}_${ctx.totalCareerLaps}`;
+                if ('speechSynthesis' in window && window.speechSynthesis.speaking) return;
 
-                const now = Date.now();
-                // Si el piloto ha completado nueva vuelta o ha cambiado el rival de delante/detrás, canta inmediatamente
-                if (currentHash !== lastSpokenMobileStateHash && ass && ass.laps > 0) {
+                const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
+                if (!ctx || !ctx.assignment) return;
+                const ass = ctx.assignment;
+
+                // El hash solo cambia cuando TU coche suma una vuelta nueva
+                const currentHash = `${ctx.heatNumber}_${ass.laps}`;
+
+                if (ass.laps > 0 && currentHash !== lastSpokenMobileStateHash) {
                     lastSpokenMobileStateHash = currentHash;
-                    lastMobileSpeechTimestamp = now;
-                    speakMobileDriverStatusNow(true);
-                } else if (state.raceStatus === 'RACING' && (now - lastMobileSpeechTimestamp > 14000)) {
-                    // Recordatorio automático periódico durante la carrera aunque no haya cambiado el hash
-                    lastMobileSpeechTimestamp = now;
+                    lastMobileSpeechTimestamp = Date.now();
                     speakMobileDriverStatusNow(false);
                 }
-            }, 900);
+            }, 600);
         }
 
         function primeMobileSpeechEngine() {
@@ -2298,18 +2287,13 @@
 
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                // Canta automáticamente al instante cada vuelta del piloto o si un rival directo le adelanta / se acerca
-                if (mobileSpotterVoiceEnabled) {
+                // SOLO canta cuando el paquete de meta es de TU propio coche (ignora los demás coches para no solapar)
+                if (mobileSpotterVoiceEnabled && packet.triggerDriverId === activeMobileDriverId) {
                     const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
-                    const isRelatedDriver = packet.triggerDriverId === activeMobileDriverId ||
-                        (ctx && ctx.ahead && packet.triggerDriverId === ctx.ahead.driverId) ||
-                        (ctx && ctx.behind && packet.triggerDriverId === ctx.behind.driverId);
-
-                    if (packet.triggerDriverId === activeMobileDriverId) {
-                        speakMobileDriverStatusNow(true);
-                    } else if (isRelatedDriver && (!('speechSynthesis' in window) || !window.speechSynthesis.speaking)) {
-                        speakMobileDriverStatusNow(false);
+                    if (ctx && ctx.assignment) {
+                        lastSpokenMobileStateHash = `${ctx.heatNumber}_${ctx.assignment.laps}`;
                     }
+                    speakMobileDriverStatusNow(false);
                 }
             }
         }
@@ -3325,16 +3309,7 @@
                 return `KRONO PRO: ${ctx.driver.name} (${barcodeCode}) | M${ctx.heatNumber} ${laneStr} ${posStr} | Vueltas:${ctx.totalCareerLaps} | Record:${bestStr}`;
             }
 
-            const defaultBase = window.location.href.split('?')[0].split('#')[0];
-            const baseUrl = (customQrBaseUrl && customQrBaseUrl.trim()) ? customQrBaseUrl.trim() : defaultBase;
-
-            if (isUnreachablePreviewUrl(baseUrl) && (!customQrBaseUrl || isUnreachablePreviewUrl(customQrBaseUrl))) {
-                const warnEl = document.getElementById('qr-url-warning-banner');
-                if (warnEl) {
-                    warnEl.innerHTML = `<span class="text-[#ffd60a] font-black">⚠ Estás en modo Previsualización Privada:</span> Para abrir la web en otro móvil, sube el archivo HTML a tu web/servidor WiFi y pega su dirección abajo, o usa el lector integrado con el código <b>${barcodeCode}</b>.`;
-                }
-            }
-
+            const baseUrl = window.location.href.split('?')[0].split('#')[0];
             return `${baseUrl}?p=${shortPilotIndex}&r=${encodeURIComponent(roomCodeId)}`;
         }
 
@@ -3599,13 +3574,6 @@
             if (state.drivers.length === 0) loadPdfExampleDrivers();
             if (state.heats.length === 0) rebuildHeats();
 
-            const urlInp = document.getElementById('custom-qr-host-url');
-            if (urlInp && !urlInp.value) {
-                const savedUrl = localStorage.getItem('krono_custom_qr_url') || '';
-                const defaultUrl = window.location.href.split('?')[0].split('#')[0];
-                urlInp.value = savedUrl || (isUnreachablePreviewUrl(defaultUrl) ? '' : defaultUrl);
-                customQrBaseUrl = urlInp.value;
-            }
             const pill = document.getElementById('live-room-code-pill');
             if (pill) pill.textContent = `SALA EN VIVO: ${roomCodeId}`;
 
@@ -3828,70 +3796,37 @@
             }
         }
 
-        function speakMobileDriverStatusNow(forceInterrupt = true) {
+        function speakMobileDriverStatusNow(forceInterrupt = false) {
             if (!activeMobileDriverId || !mobileSpotterVoiceEnabled) return;
+            // Si ya está hablando y no es un clic manual del botón "Repetir", no se pisa a sí mismo
+            if (!forceInterrupt && ('speechSynthesis' in window) && window.speechSynthesis.speaking) {
+                return;
+            }
+
             const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
             if (!ctx) return;
             const ass = ctx.assignment;
 
             let msg = '';
             if (state.lang === 'ca') {
-                msg = `${ctx.driver.name}. `;
                 if (!ass) {
-                    msg += `A la màniga ${ctx.heatNumber} estàs de comissari. Portes ${ctx.totalCareerLaps} voltes acumulades.`;
+                    msg = `${ctx.driver.name}, comissari. ${ctx.totalCareerLaps} voltes.`;
                 } else {
-                    if (ass.lastLap > 0) {
-                        msg += `Volta ${ass.laps}, temps ${fmtSec(ass.lastLap)} segons. Posició ${ctx.position} pel carril ${ass.lane}. `;
-                    } else {
-                        msg += `Preparat al carril ${ass.lane}, posició ${ctx.position}. `;
-                    }
-                    if (ctx.ahead) {
-                        const diffLapsAhead = ctx.ahead.laps - ass.laps;
-                        const gapAheadSpeak = diffLapsAhead > 0
-                            ? `a ${diffLapsAhead} ${diffLapsAhead === 1 ? 'volta' : 'voltes'}`
-                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `fent ${fmtSec(ctx.ahead.lastLap)}` : '');
-                        msg += `Davant: ${ctx.ahead.driverName} pel carril ${ctx.ahead.lane} ${gapAheadSpeak}. `;
-                    } else {
-                        msg += `Vas primer, liderant la màniga. `;
-                    }
-                    if (ctx.behind) {
-                        const diffLapsBehind = ass.laps - ctx.behind.laps;
-                        const gapBehindSpeak = diffLapsBehind > 0
-                            ? `a ${diffLapsBehind} ${diffLapsBehind === 1 ? 'volta' : 'voltes'}`
-                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `fent ${fmtSec(ctx.behind.lastLap)}` : '');
-                        msg += `Darrere: ${ctx.behind.driverName} pel carril ${ctx.behind.lane} ${gapBehindSpeak}.`;
-                    } else {
-                        msg += `Ningú darrere.`;
-                    }
+                    const timePart = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Carril ${ass.lane}. `;
+                    const posPart = `P${ctx.position}. `;
+                    const aheadPart = ctx.ahead ? `Davant ${ctx.ahead.driverName}. ` : `Líder. `;
+                    const behindPart = ctx.behind ? `Darrere ${ctx.behind.driverName}.` : ``;
+                    msg = `${timePart}${posPart}${aheadPart}${behindPart}`.trim();
                 }
             } else {
-                msg = `${ctx.driver.name}. `;
                 if (!ass) {
-                    msg += `En la manga ${ctx.heatNumber} estás de comisario. Llevas ${ctx.totalCareerLaps} vueltas acumuladas.`;
+                    msg = `${ctx.driver.name}, comisario. ${ctx.totalCareerLaps} vueltas.`;
                 } else {
-                    if (ass.lastLap > 0) {
-                        msg += `Vuelta ${ass.laps}, tiempo ${fmtSec(ass.lastLap)} segundos. Posición ${ctx.position} por el carril ${ass.lane}. `;
-                    } else {
-                        msg += `Preparado en el carril ${ass.lane}, posición ${ctx.position}. `;
-                    }
-                    if (ctx.ahead) {
-                        const diffLapsAhead = ctx.ahead.laps - ass.laps;
-                        const gapAheadSpeak = diffLapsAhead > 0
-                            ? `a ${diffLapsAhead} ${diffLapsAhead === 1 ? 'vuelta' : 'vueltas'}`
-                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `rodando en ${fmtSec(ctx.ahead.lastLap)}` : '');
-                        msg += `Delante: ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, ${gapAheadSpeak}. `;
-                    } else {
-                        msg += `Vas primero, liderando la manga. `;
-                    }
-                    if (ctx.behind) {
-                        const diffLapsBehind = ass.laps - ctx.behind.laps;
-                        const gapBehindSpeak = diffLapsBehind > 0
-                            ? `a ${diffLapsBehind} ${diffLapsBehind === 1 ? 'vuelta' : 'vueltas'}`
-                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `rodando en ${fmtSec(ctx.behind.lastLap)}` : '');
-                        msg += `Detrás: ${ctx.behind.driverName} por el carril ${ctx.behind.lane}, ${gapBehindSpeak}.`;
-                    } else {
-                        msg += `Nadie detrás.`;
-                    }
+                    const timePart = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Carril ${ass.lane}. `;
+                    const posPart = `Posición ${ctx.position}. `;
+                    const aheadPart = ctx.ahead ? `Delante ${ctx.ahead.driverName}. ` : `Líder. `;
+                    const behindPart = ctx.behind ? `Detrás ${ctx.behind.driverName}.` : ``;
+                    msg = `${timePart}${posPart}${aheadPart}${behindPart}`.trim();
                 }
             }
 
@@ -5520,19 +5455,10 @@
             if (state.mainTab === 'qr') renderDriversQRView();
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                if (mobileSpotterVoiceEnabled) {
-                    if (a.driverId === activeMobileDriverId) {
-                        // Siempre que el piloto del móvil cruza meta, le canta inmediatamente su tiempo y quién va delante y detrás
-                        speakMobileDriverStatusNow(true);
-                    } else {
-                        // Si cruza meta el rival justo de delante o de detrás y el spotter está libre, le actualiza las posiciones automáticamente
-                        const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
-                        const isDirectRival = (ctx && ctx.ahead && ctx.ahead.driverId === a.driverId) ||
-                                              (ctx && ctx.behind && ctx.behind.driverId === a.driverId);
-                        if (isDirectRival && (!('speechSynthesis' in window) || !window.speechSynthesis.speaking)) {
-                            speakMobileDriverStatusNow(false);
-                        }
-                    }
+                // SOLO canta cuando pasa por meta el coche del propio piloto del móvil (nunca cuando pasan los rivales)
+                if (mobileSpotterVoiceEnabled && a.driverId === activeMobileDriverId) {
+                    lastSpokenMobileStateHash = `${heat.heatNumber}_${a.laps}`;
+                    speakMobileDriverStatusNow(false);
                 }
             }
 
