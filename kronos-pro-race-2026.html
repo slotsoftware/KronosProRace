@@ -272,26 +272,11 @@
             line-height: 1.15;
         }
 
-        /* ==================== VENTANA PREVIA MINIMALISTA DE BLOQUEO EN HORIZONTAL ==================== */
-        #forceLandscapeOverlay {
-            background-color: #000000;
-            display: flex;
-        }
-        #forceLandscapeOverlay.force-dismissed {
-            display: none !important;
-        }
+        /* Indicador visual automático si el móvil/tablet está en vertical */
         @media screen and (orientation: portrait) {
-            #forceLandscapeOverlay {
-                display: flex !important;
+            #portrait-warning-pill {
+                display: inline-flex !important;
             }
-        }
-        @keyframes rotatePhoneAnim {
-            0%, 15% { transform: rotate(0deg); }
-            50%, 85% { transform: rotate(-90deg); }
-            100% { transform: rotate(0deg); }
-        }
-        .animate-rotate-phone {
-            animation: rotatePhoneAnim 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -301,39 +286,41 @@
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col p-2 md:px-3.5 md:py-2.5 gap-2">
 
-    <!-- ==================== VENTANA PREVIA MINIMALISTA EN FONDO NEGRO (FORZAR HORIZONTAL) ==================== -->
-    <div id="forceLandscapeOverlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6 text-center select-none">
-        <div class="flex flex-col items-center max-w-sm space-y-7">
-            <!-- Icono Minimalista Animado de Giro a Horizontal -->
-            <div class="w-24 h-24 rounded-full border border-white/15 flex items-center justify-center bg-white/[0.03] shadow-[0_0_50px_rgba(255,255,255,0.06)]">
-                <i class="fa-solid fa-mobile-screen-button text-4xl text-white animate-rotate-phone"></i>
+    <!-- ==================== PÁGINA PREVIA ULTRA MINIMALISTA (FONDO NEGRO PURO · MODO HORIZONTAL) ==================== -->
+    <div id="preAppLandscapeGate" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6 select-none overflow-hidden">
+        <div class="max-w-sm w-full flex flex-col items-center text-center gap-7">
+            <!-- Icono minimalista de rotación horizontal -->
+            <div class="w-14 h-14 rounded-2xl border border-white/15 bg-white/[0.03] flex items-center justify-center text-white/90">
+                <i class="fa-solid fa-mobile-screen-button rotate-90 text-xl"></i>
             </div>
 
-            <!-- Texto Minimalista -->
-            <div class="space-y-2.5">
-                <div class="text-[10px] font-mono-num font-bold tracking-[0.3em] text-white/45 uppercase">
-                    KRONO PRO RACE · BY ALBERT CLOSA
-                </div>
-                <h2 id="landscape-GateTitle" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase">
-                    MODO HORIZONTAL REQUERIDO
-                </h2>
-                <p id="landscape-GateDesc" class="text-xs text-white/50 font-medium leading-relaxed max-w-xs mx-auto">
-                    Gira el dispositivo en posición horizontal y pulsa el botón inferior para fijar la pantalla panorámica.
+            <!-- Identidad tipográfica limpia -->
+            <div class="space-y-1.5">
+                <p class="text-[10px] font-semibold tracking-[0.28em] text-neutral-500 uppercase">by Albert Closa</p>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                    KRONO <span class="font-light text-neutral-400">PRO RACE</span>
+                </h1>
+                <p class="text-xs text-neutral-500 pt-1">
+                    Formato panorámico horizontal
                 </p>
             </div>
 
-            <!-- Indicador de estado de orientación en vivo -->
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03]">
-                <span id="landscape-StatusDot" class="w-2 h-2 rounded-full bg-[#30d158]"></span>
-                <span id="landscape-StatusText" class="text-[10px] font-mono-num font-bold tracking-widest text-white/70 uppercase">
-                    ORIENTACIÓN HORIZONTAL DETECTADA
-                </span>
+            <!-- Aviso discreto solo si el dispositivo está en vertical -->
+            <div id="portrait-warning-pill" class="hidden items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.04] text-neutral-300 text-[11px] font-medium">
+                <i class="fa-solid fa-rotate text-xs text-white/70"></i>
+                <span>Gira el dispositivo en horizontal</span>
             </div>
 
-            <!-- Botón Minimalista para Forzar Giro Horizontal + Entrar -->
-            <button type="button" onclick="forceLockHorizontalMode()" class="w-full py-3.5 px-8 rounded-full bg-white text-black font-black text-xs tracking-widest uppercase hover:bg-white/90 active:scale-95 transition cursor-pointer shadow-[0_0_35px_rgba(255,255,255,0.25)]">
-                ENTRAR EN MODO HORIZONTAL
-            </button>
+            <!-- Acción principal minimalista estilo Apple -->
+            <div class="w-full flex flex-col items-center gap-3 pt-1">
+                <button type="button" onclick="enterApplicationInLandscape(true)" class="w-full py-3.5 px-6 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs tracking-widest transition cursor-pointer">
+                    ENTRAR
+                </button>
+
+                <button type="button" onclick="enterApplicationInLandscape(false)" class="text-[11px] font-medium text-neutral-600 hover:text-neutral-300 transition cursor-pointer">
+                    Continuar en ventana
+                </button>
+            </div>
         </div>
     </div>
 
@@ -899,6 +886,9 @@
                         <button onclick="rebuildHeats(); renderWizardStep3();" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
                             <i class="fa-solid fa-rotate mr-1.5"></i><span data-i18n="btn_recalc">Recalcular / Sortear</span>
                         </button>
+                        <button onclick="openClearHeatsConfirmModal()" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold text-[#ff6961] hover:bg-[#ff453a]/20 border border-[#ff453a]/40 cursor-pointer">
+                            <i class="fa-solid fa-trash-can mr-1.5"></i><span>BORRAR MANGAS</span>
+                        </button>
                         <button onclick="promptPreRaceCheckModal(1)" class="mac-silver-active px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-flag-checkered"></i>
                             <span data-i18n="btn_go_track">IR A PARRILLA Y PISTA EN VIVO</span>
@@ -1012,7 +1002,7 @@
 
             <!-- Selector Global de los 4 Tipos de Cuadro (CLÁSICO, BÁSICO, MEDIO, EXPERTO) + Paleta de Colores -->
             <div class="flex items-center gap-1.5">
-                <div class="apple-segmented bg-black/60 p-1" title="4 niveles de cuadro incluyendo el modo monitor clásico vertical TicTac Slot">
+                <div class="apple-segmented bg-black/60 p-1" title="4 niveles de cuadro: Clásico, Básico y Medio en columnas; Experto en cuadrícula Bento">
                     <button onclick="setGlobalCardLayout(0)" id="global-layout-0" data-i18n="layout_0_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">0. CLÁSICO</button>
                     <button onclick="setGlobalCardLayout(1)" id="global-layout-1" data-i18n="layout_1_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
                     <button onclick="setGlobalCardLayout(2)" id="global-layout-2" data-i18n="layout_2_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
@@ -1024,26 +1014,7 @@
                 </button>
             </div>
 
-            <!-- Semáforo FIA Compacto + Crono Maestro -->
-            <div class="mac-silver-well px-3.5 py-1 flex items-center gap-3.5">
-                <div class="flex flex-col items-center gap-0.5">
-                    <span id="live-heat-title" class="group-label text-slate-300">MANGA 1</span>
-                    <div class="flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
-                        <div class="f1-light" id="f1L1"></div>
-                        <div class="f1-light" id="f1L2"></div>
-                        <div class="f1-light" id="f1L3"></div>
-                        <div class="f1-light" id="f1L4"></div>
-                        <div class="f1-light" id="f1L5"></div>
-                    </div>
-                </div>
-                <div class="h-7 w-[1px] bg-white/10"></div>
-                <div class="text-right">
-                    <div id="live-target-badge" data-i18n="heat_clock_lbl" class="group-label text-slate-300">CRONO MANGA</div>
-                    <div id="masterClock" class="text-2xl md:text-3xl font-mono-num font-black text-white tracking-tight leading-none">03:00.0</div>
-                </div>
-            </div>
-
-            <!-- Botonera Unificada: Llamar Pilotos, Salida F1, Modo Auto-Mangas, Auto-Sim, Track Call, Sig Manga, Poner a Cero -->
+            <!-- Botonera Unificada Limpia: Llamar Pilotos, Salida F1, Cambios Mangas, Track Call, Sig Manga, Poner a Cero -->
             <div class="flex flex-wrap items-center gap-1.5 uppercase">
                 <button onclick="announceDrivers(false)" class="px-3 py-2 mac-silver-btn font-extrabold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-bullhorn"></i>
@@ -1052,14 +1023,6 @@
                 <button onclick="startF1Sequence()" id="btn-start-heat" class="px-3.5 py-2 btn-neon-green font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-traffic-light"></i>
                     <span data-i18n="f1_start">SALIDA F1</span>
-                </button>
-                <button onclick="toggleAutoMode()" id="btn-auto-mode" class="px-3 py-2 mac-silver-btn font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
-                    <i class="fa-solid fa-robot text-[#d982ff]"></i>
-                    <span id="btn-auto-text" data-i18n="btn_auto_off">AUTO-MANGAS: OFF</span>
-                </button>
-                <button onclick="toggleAutoSim()" id="btnAutoDemo" class="px-3 py-2 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
-                    <i class="fa-solid fa-car-burst text-[#5ac8fa]"></i>
-                    <span id="btnAutoSimText" data-i18n="sim_off">SIMULADOR: OFF</span>
                 </button>
                 <button onclick="openLivePreHeatModificationModal()" class="px-3 py-2 bg-[#0a84ff]/25 hover:bg-[#0a84ff]/45 text-[#5ac8fa] border border-[#5ac8fa]/50 font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase" title="Modificar pilotos de mangas pendientes o añadir piloto que llega tarde">
                     <i class="fa-solid fa-user-pen"></i>
@@ -1104,159 +1067,43 @@
     <!-- ======================================================================================== -->
     <!-- MÓDULO 3: CLASIFICACIÓN GENERAL MULTICRITERIO Y DESGLOSE DE MANGAS                       -->
     <!-- ======================================================================================== -->
-    <section id="view-standings" class="hidden flex-1 max-w-7xl w-full mx-auto space-y-4 py-2 overflow-y-auto pr-1">
-        <div class="mac-window p-4 flex flex-wrap items-center justify-between gap-4">
+    <section id="view-standings" class="hidden flex-1 max-w-7xl w-full mx-auto space-y-5 py-2 overflow-y-auto">
+        <div class="mac-window p-5 flex flex-wrap items-center justify-between gap-4">
             <div>
                 <span class="text-xs font-extrabold uppercase tracking-widest text-[#ff9f0a]">KRONO PRO RACE · by Albert Closa</span>
-                <h2 data-i18n="standings_title" class="text-xl md:text-2xl font-black text-white">Clasificación General y Consultas de Base de Datos</h2>
-                <p data-i18n="standings_desc" class="text-xs text-[#94a3b8]">Cambia en vivo el criterio del reglamento o realiza consultas avanzadas en la base de datos local.</p>
+                <h2 data-i18n="standings_title" class="text-2xl font-black text-white">Clasificación General de la Carrera</h2>
+                <p data-i18n="standings_desc" class="text-xs text-[#94a3b8]">Cambia en vivo el criterio del reglamento para comprobar el ganador.</p>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <div class="apple-segmented">
-                    <button onclick="setScoringMethod('laps')" id="standings-btn-laps" data-i18n="score_laps_short" class="px-3.5 py-2 rounded-lg text-xs font-bold transition cursor-pointer">
-                        A. Por Vueltas
-                    </button>
-                    <button onclick="setScoringMethod('time')" id="standings-btn-time" data-i18n="score_time_short" class="px-3.5 py-2 rounded-lg text-xs font-bold transition cursor-pointer">
-                        B. Mejor Crono
-                    </button>
-                    <button onclick="setScoringMethod('points')" id="standings-btn-points" data-i18n="score_points_short" class="px-3.5 py-2 rounded-lg text-xs font-bold transition cursor-pointer">
-                        C. Por Puntos (10, 8, 6...)
-                    </button>
-                </div>
-
-                <button onclick="saveCurrentRaceToArchiveDB()" class="px-3.5 py-2 rounded-xl btn-neon-green text-xs font-black flex items-center gap-1.5 cursor-pointer" title="Guardar esta carrera en el archivo histórico de la base de datos">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    <span>GUARDAR EN HISTÓRICO DB</span>
+            <div class="apple-segmented">
+                <button onclick="setScoringMethod('laps')" id="standings-btn-laps" data-i18n="score_laps_short" class="px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer">
+                    A. Por Vueltas
+                </button>
+                <button onclick="setScoringMethod('time')" id="standings-btn-time" data-i18n="score_time_short" class="px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer">
+                    B. Mejor Crono
+                </button>
+                <button onclick="setScoringMethod('points')" id="standings-btn-points" data-i18n="score_points_short" class="px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer">
+                    C. Por Puntos (10, 8, 6...)
                 </button>
             </div>
         </div>
 
-        <!-- TABLA PRINCIPAL DE CLASIFICACIÓN GENERAL -->
         <div class="mac-window overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-white/10 text-xs uppercase text-[#94a3b8] bg-black/40">
-                            <th class="py-3 px-4">Pos</th>
-                            <th data-i18n="th_driver" class="py-3 px-4">Piloto</th>
-                            <th class="py-3 px-4 text-center">Pole</th>
-                            <th data-i18n="th_heats_breakdown" class="py-3 px-4 text-center">Mangas</th>
-                            <th data-i18n="th_laps" class="py-3 px-4 text-right">Vueltas</th>
-                            <th data-i18n="th_best_lap" class="py-3 px-4 text-right">Récord</th>
-                            <th data-i18n="th_points" class="py-3 px-4 text-right">Puntos</th>
+                            <th class="py-3.5 px-4">Pos</th>
+                            <th data-i18n="th_driver" class="py-3.5 px-4">Piloto</th>
+                            <th class="py-3.5 px-4 text-center">Pole</th>
+                            <th data-i18n="th_heats_breakdown" class="py-3.5 px-4 text-center">Mangas</th>
+                            <th data-i18n="th_laps" class="py-3.5 px-4 text-right">Vueltas</th>
+                            <th data-i18n="th_best_lap" class="py-3.5 px-4 text-right">Récord</th>
+                            <th data-i18n="th_points" class="py-3.5 px-4 text-right">Puntos</th>
                         </tr>
                     </thead>
                     <tbody id="standings-tbody" class="divide-y divide-white/10 text-sm"></tbody>
                 </table>
-            </div>
-        </div>
-
-        <!-- ==================== MOTOR DE CONSULTAS DE LA BASE DE DATOS LOCAL (INDEXEDDB) ==================== -->
-        <div class="mac-studio-silver p-4 space-y-3.5 border border-[#5ac8fa]/40">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 pb-3">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-9 h-9 rounded-xl btn-neon-blue flex items-center justify-center text-sm font-black shadow">
-                        <i class="fa-solid fa-database"></i>
-                    </span>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-sm md:text-base font-black text-white uppercase tracking-tight">EXPLORADOR Y CONSULTAS DE BASE DE DATOS (INDEXEDDB)</h3>
-                            <span id="db-query-badge-count" class="px-2 py-0.5 rounded-full text-[10px] font-mono-num font-black bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">0 REGISTROS</span>
-                        </div>
-                        <p class="text-[11px] text-slate-300">Filtra por piloto, categoría, manga, carril o vueltas, o ejecuta consultas predefinidas sobre la carrera activa y el histórico guardado.</p>
-                    </div>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-1.5">
-                    <button onclick="exportCurrentDbQueryCSV()" class="px-3 py-1.5 rounded-xl mac-silver-btn text-[11px] font-black flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-file-csv text-[#30d158]"></i>
-                        <span>EXPORTAR CONSULTA CSV</span>
-                    </button>
-                    <button onclick="resetDbQueryFilters()" class="px-3 py-1.5 rounded-xl mac-silver-btn text-[11px] font-bold flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-filter-circle-xmark text-[#ff9f0a]"></i>
-                        <span>LIMPIAR FILTROS</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Botones de Consultas SQL / Predefinidas de 1 Clic -->
-            <div class="flex flex-wrap items-center gap-1.5">
-                <span class="text-[10px] font-extrabold text-[#5ac8fa] uppercase mr-1"><i class="fa-solid fa-bolt mr-1"></i>CONSULTAS RÁPIDAS:</span>
-                <button onclick="setDbPresetQuery('GENERAL_DRIVERS')" id="db-preset-GENERAL_DRIVERS" class="px-3 py-1.5 rounded-xl text-[11px] font-black mac-silver-active cursor-pointer">
-                    1. RESUMEN PILOTOS
-                </button>
-                <button onclick="setDbPresetQuery('HEATS_BY_LANE')" id="db-preset-HEATS_BY_LANE" class="px-3 py-1.5 rounded-xl text-[11px] font-bold mac-silver-btn cursor-pointer">
-                    2. DESGLOSE MANGAS Y CARRILES
-                </button>
-                <button onclick="setDbPresetQuery('LANE_RECORDS')" id="db-preset-LANE_RECORDS" class="px-3 py-1.5 rounded-xl text-[11px] font-bold mac-silver-btn cursor-pointer">
-                    3. RÉCORDS POR CARRIL (C1..C10)
-                </button>
-                <button onclick="setDbPresetQuery('ALL_LAPS_LOG')" id="db-preset-ALL_LAPS_LOG" class="px-3 py-1.5 rounded-xl text-[11px] font-bold mac-silver-btn cursor-pointer">
-                    4. AUDITORÍA VUELTA A VUELTA
-                </button>
-                <button onclick="setDbPresetQuery('CATEGORY_STATS')" id="db-preset-CATEGORY_STATS" class="px-3 py-1.5 rounded-xl text-[11px] font-bold mac-silver-btn cursor-pointer">
-                    5. RENDIMIENTO POR CATEGORÍA
-                </button>
-                <button onclick="setDbPresetQuery('ARCHIVED_RACES')" id="db-preset-ARCHIVED_RACES" class="px-3 py-1.5 rounded-xl text-[11px] font-bold mac-silver-btn cursor-pointer">
-                    6. HISTÓRICO CARRERAS GUARDADAS (<span id="db-archive-count-inline">0</span>)
-                </button>
-            </div>
-
-            <!-- Barra de Filtros Interactivos de la Consulta -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2.5 mac-silver-well p-3">
-                <div>
-                    <label class="block text-[9px] font-extrabold text-slate-300 uppercase mb-1">BUSCAR PILOTO / COCHE / EVENTO:</label>
-                    <input type="text" id="db-filter-search" placeholder="Ej: ALBERT, Porsche, GT..." oninput="runDatabaseQuery()" class="w-full bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#5ac8fa]"/>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-extrabold text-slate-300 uppercase mb-1">CATEGORÍA DEL CLUB:</label>
-                    <select id="db-filter-category" onchange="runDatabaseQuery()" class="w-full bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#5ac8fa]">
-                        <option value="ALL">TODAS LAS CATEGORÍAS</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-extrabold text-slate-300 uppercase mb-1">FILTRAR MANGA:</label>
-                    <select id="db-filter-heat" onchange="runDatabaseQuery()" class="w-full bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#5ac8fa]">
-                        <option value="ALL">TODAS LAS MANGAS</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-extrabold text-slate-300 uppercase mb-1">FILTRAR CARRIL:</label>
-                    <select id="db-filter-lane" onchange="runDatabaseQuery()" class="w-full bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#5ac8fa]">
-                        <option value="ALL">TODOS LOS CARRILES</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-extrabold text-slate-300 uppercase mb-1">MÍNIMO VUELTAS / CRONO MÁX (S):</label>
-                    <div class="grid grid-cols-2 gap-1">
-                        <input type="number" id="db-filter-min-laps" min="0" placeholder="Mín V" oninput="runDatabaseQuery()" class="w-full bg-black/75 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono-num font-bold text-white focus:outline-none focus:border-[#30d158]" title="Mínimo de vueltas"/>
-                        <input type="number" id="db-filter-max-laptime" min="0" step="0.1" placeholder="Máx seg" oninput="runDatabaseQuery()" class="w-full bg-black/75 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono-num font-bold text-white focus:outline-none focus:border-[#d982ff]" title="Tiempo máximo en segundos"/>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-extrabold text-slate-300 uppercase mb-1">ORDENAR RESULTADOS POR:</label>
-                    <select id="db-filter-sort" onchange="runDatabaseQuery()" class="w-full bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-bold text-[#ffd60a] focus:outline-none focus:border-[#ffd60a]">
-                        <option value="BEST_ASC">MEJOR CRONO (MÁS RÁPIDO)</option>
-                        <option value="LAPS_DESC">MÁS VUELTAS ACUMULADAS</option>
-                        <option value="MEAN_ASC">MEJOR MEDIA DE VUELTA</option>
-                        <option value="SPEED_DESC">MAYOR VELOCIDAD (KM/H)</option>
-                        <option value="NAME_ASC">NOMBRE DE PILOTO (A-Z)</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Tarjetas KPI Resumen de la Consulta Ejecutada -->
-            <div id="db-query-kpi-summary" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
-
-            <!-- Tabla Dinámica de Resultados de la Consulta a la Base de Datos -->
-            <div class="mac-silver-well overflow-hidden border border-white/15">
-                <div class="overflow-x-auto max-h-80">
-                    <table class="w-full text-left border-collapse">
-                        <thead id="db-query-thead" class="border-b border-white/15 text-[10px] uppercase text-slate-300 bg-black/65 sticky top-0 z-10"></thead>
-                        <tbody id="db-query-tbody" class="divide-y divide-white/10 text-xs font-mono-num"></tbody>
-                    </table>
-                </div>
             </div>
         </div>
     </section>
@@ -1339,13 +1186,6 @@
                         MODO FICHA MÓVIL OFFLINE
                     </button>
                 </div>
-            </div>
-            <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-white/10">
-                <span class="text-[10px] font-extrabold text-[#ffd60a] shrink-0"><i class="fa-solid fa-link mr-1"></i>URL PÚBLICA O IP WIFI PARA EL QR:</span>
-                <input type="text" id="custom-qr-host-url" placeholder="Pega aquí la dirección web donde subas este HTML (ej: https://miclub.com/krono.html o http://192.168.1.50:8080)" onchange="updateCustomQrHostUrl(this.value)" class="flex-1 min-w-[240px] bg-black/75 border border-white/20 rounded-xl px-3 py-1.5 text-xs font-mono-num text-white focus:outline-none focus:border-[#5ac8fa]" />
-                <button onclick="regenerateAllQrCards()" class="px-3.5 py-1.5 rounded-xl mac-silver-active text-[10px] font-black cursor-pointer shrink-0">
-                    GENERAR QR LIMPIO
-                </button>
             </div>
         </div>
 
@@ -1600,6 +1440,29 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL DE CONFIRMACIÓN PARA BORRAR TODAS LAS MANGAS ==================== -->
+    <div id="confirmClearHeatsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden items-center justify-center p-4">
+        <div class="mac-studio-silver w-full max-w-md border border-white/20 p-6 space-y-5 text-center shadow-2xl">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-[#ff453a]/20 border border-[#ff453a]/40 flex items-center justify-center text-[#ff453a] text-xl">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <div class="space-y-1.5">
+                <h3 class="text-base font-black text-white uppercase">¿ESTÁS SEGURO DE BORRAR TODAS LAS MANGAS?</h3>
+                <p class="text-xs text-slate-300">
+                    Se eliminarán todas las mangas generadas en el cuadro actual. Podrás volver a generarlas cuando quieras.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <button type="button" onclick="closeClearHeatsConfirmModal()" class="py-2.5 px-4 rounded-xl mac-silver-btn font-bold text-xs cursor-pointer">
+                    NO, CANCELAR
+                </button>
+                <button type="button" onclick="confirmAndClearAllHeats()" class="py-2.5 px-4 rounded-xl btn-neon-red font-black text-xs cursor-pointer">
+                    SÍ, BORRAR MANGAS
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== MOTOR UNIFICADO JAVASCRIPT ==================== -->
     <script>
         // Banderas SVG para los 7 idiomas oficiales
@@ -1742,25 +1605,29 @@
                 layout_0_btn: "0. KLASIKOA", layout_0_short: "KLASIK.",
                 layout_1_btn: "1. OINARRIZKOA", layout_2_btn: "2. ERTAINA", layout_3_btn: "3. ADITUA",
                 layout_1_short: "OINARR.", layout_2_short: "ERTAINA", layout_3_short: "ADITUA",
-                theme_silver: "ZILARRA MAC", heat_clock_lbl: "TXANDA KRONOA"
+                theme_silver: "ZILARRA MAC", heat_clock_lbl: "TXANDA KRONOA",
+<!-- ... existing code --> -->
             },
             en: {
                 layout_0_btn: "0. CLASSIC", layout_0_short: "CLASSIC",
                 layout_1_btn: "1. BASIC", layout_2_btn: "2. MEDIUM", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIC", layout_2_short: "MEDIUM", layout_3_short: "EXPERT",
-                theme_silver: "MAC SILVER", heat_clock_lbl: "HEAT TIMER"
+                theme_silver: "MAC SILVER", heat_clock_lbl: "HEAT TIMER",
+<!-- ... existing code --> -->
             },
             fr: {
                 layout_0_btn: "0. CLASSIQUE", layout_0_short: "CLASSIQ.",
                 layout_1_btn: "1. BASIQUE", layout_2_btn: "2. MOYEN", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIQUE", layout_2_short: "MOYEN", layout_3_short: "EXPERT",
-                theme_silver: "ARGENT MAC", heat_clock_lbl: "CHRONO MANCHE"
+                theme_silver: "ARGENT MAC", heat_clock_lbl: "CHRONO MANCHE",
+<!-- ... existing code --> -->
             },
             it: {
                 layout_0_btn: "0. CLASSICO", layout_0_short: "CLASSICO",
                 layout_1_btn: "1. BASE", layout_2_btn: "2. MEDIO", layout_3_btn: "3. ESPERTO",
                 layout_1_short: "BASE", layout_2_short: "MEDIO", layout_3_short: "ESPERTO",
-                theme_silver: "ARGENTO MAC", heat_clock_lbl: "CRONO MANCHE"
+                theme_silver: "ARGENTO MAC", heat_clock_lbl: "CRONO MANCHE",
+<!-- ... existing code --> -->
             },
             de: {
                 layout_0_btn: "0. KLASSISCH", layout_0_short: "KLASSIK",
@@ -2269,12 +2136,25 @@
         }
 
         function startMobileAutoRadarLoop() {
-            if (mobileAutoRadarInterval) {
-                clearInterval(mobileAutoRadarInterval);
-                mobileAutoRadarInterval = null;
-            }
-            // Desactivado el bucle automático de radar: la voz del móvil solo se dispara en el instante exacto
-            // en que el propio piloto del código de barras/QR cruza la meta en su carril.
+            if (mobileAutoRadarInterval) clearInterval(mobileAutoRadarInterval);
+            // Supervisa únicamente cuando TU propio piloto completa una nueva vuelta, sin pisarse con otros coches
+            mobileAutoRadarInterval = setInterval(() => {
+                if (!activeMobileDriverId || !mobileSpotterVoiceEnabled) return;
+                if ('speechSynthesis' in window && window.speechSynthesis.speaking) return;
+
+                const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
+                if (!ctx || !ctx.assignment) return;
+                const ass = ctx.assignment;
+
+                // El hash solo cambia cuando TU coche suma una vuelta nueva
+                const currentHash = `${ctx.heatNumber}_${ass.laps}`;
+
+                if (ass.laps > 0 && currentHash !== lastSpokenMobileStateHash) {
+                    lastSpokenMobileStateHash = currentHash;
+                    lastMobileSpeechTimestamp = Date.now();
+                    speakMobileDriverStatusNow(false);
+                }
+            }, 600);
         }
 
         function primeMobileSpeechEngine() {
@@ -2382,12 +2262,6 @@
 
         function applyIncomingLiveTelemetryPacket(packet) {
             if (!packet) return;
-            const prevLapsForActivePilot = (() => {
-                if (!activeMobileDriverId) return 0;
-                const oldCtx = getDriverLiveTelemetryContext(activeMobileDriverId);
-                return (oldCtx && oldCtx.assignment) ? oldCtx.assignment.laps : 0;
-            })();
-
             if (packet.eventName) state.eventName = packet.eventName;
             if (packet.eventDate) state.eventDate = packet.eventDate;
             if (packet.activeClubCategory) state.activeClubCategory = packet.activeClubCategory;
@@ -2412,18 +2286,13 @@
 
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                // ESTRICTO: Solo habla si el paquete recibido corresponde exactamente al piloto de este código de barras/QR
-                // y además ha incrementado su propio contador de vueltas en esta manga.
-                if (mobileSpotterVoiceEnabled && String(packet.triggerDriverId) === String(activeMobileDriverId)) {
+                // SOLO canta cuando el paquete de meta es de TU propio coche (ignora los demás coches para no solapar)
+                if (mobileSpotterVoiceEnabled && packet.triggerDriverId === activeMobileDriverId) {
                     const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
-                    if (ctx && ctx.assignment && ctx.assignment.laps > prevLapsForActivePilot) {
-                        const newHash = `${ctx.heatNumber}_${ctx.assignment.laps}`;
-                        if (newHash !== lastSpokenMobileStateHash) {
-                            lastSpokenMobileStateHash = newHash;
-                            lastMobileSpeechTimestamp = Date.now();
-                            speakMobileDriverStatusNow(true);
-                        }
+                    if (ctx && ctx.assignment) {
+                        lastSpokenMobileStateHash = `${ctx.heatNumber}_${ctx.assignment.laps}`;
                     }
+                    speakMobileDriverStatusNow(false);
                 }
             }
         }
@@ -2871,16 +2740,27 @@
         }
 
         function startSimulatedRaceFromHome() {
-            if (!state.drivers || state.drivers.length === 0) {
-                loadPdfExampleDrivers();
-            }
+            stopAllTimers();
+            state.lanesCount = 6;
+            state.sessionType = 'CLUB';
+            state.heatMode = 3; // 3 Mangas exactas
+            state.durationSeconds = 120; // 2 Minutos por manga
+            state.durationLabel = '2 Min';
+            state.durationCategory = 'SPRINT';
+            state.targetLaps = 'infinity';
+            state.timeRemaining = 120;
+
+            loadPdfExampleDrivers(); // Carga los 6 jugadores oficiales
             zeroOutCurrentRaceCounters();
-            switchMainTab('race');
+
             state.autoSimActive = true;
-            const btn = document.getElementById('btnAutoDemo');
-            const txt = document.getElementById('btnAutoSimText');
-            if (btn) btn.className = "px-3.5 py-2.5 btn-neon-blue font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5";
-            if (txt) txt.textContent = t('sim_on');
+            state.autoAdvance = true; // Avanza automáticamente las 3 mangas y al final abre Clasificación General
+            updateAutoButtonUI();
+
+            switchMainTab('race');
+            renderWizardStep1();
+            updateHeaderSummary();
+            renderLiveRaceView();
             startF1Sequence();
         }
 
@@ -3439,16 +3319,7 @@
                 return `KRONO PRO: ${ctx.driver.name} (${barcodeCode}) | M${ctx.heatNumber} ${laneStr} ${posStr} | Vueltas:${ctx.totalCareerLaps} | Record:${bestStr}`;
             }
 
-            const defaultBase = window.location.href.split('?')[0].split('#')[0];
-            const baseUrl = (customQrBaseUrl && customQrBaseUrl.trim()) ? customQrBaseUrl.trim() : defaultBase;
-
-            if (isUnreachablePreviewUrl(baseUrl) && (!customQrBaseUrl || isUnreachablePreviewUrl(customQrBaseUrl))) {
-                const warnEl = document.getElementById('qr-url-warning-banner');
-                if (warnEl) {
-                    warnEl.innerHTML = `<span class="text-[#ffd60a] font-black">⚠ Estás en modo Previsualización Privada:</span> Para abrir la web en otro móvil, sube el archivo HTML a tu web/servidor WiFi y pega su dirección abajo, o usa el lector integrado con el código <b>${barcodeCode}</b>.`;
-                }
-            }
-
+            const baseUrl = window.location.href.split('?')[0].split('#')[0];
             return `${baseUrl}?p=${shortPilotIndex}&r=${encodeURIComponent(roomCodeId)}`;
         }
 
@@ -3713,13 +3584,6 @@
             if (state.drivers.length === 0) loadPdfExampleDrivers();
             if (state.heats.length === 0) rebuildHeats();
 
-            const urlInp = document.getElementById('custom-qr-host-url');
-            if (urlInp && !urlInp.value) {
-                const savedUrl = localStorage.getItem('krono_custom_qr_url') || '';
-                const defaultUrl = window.location.href.split('?')[0].split('#')[0];
-                urlInp.value = savedUrl || (isUnreachablePreviewUrl(defaultUrl) ? '' : defaultUrl);
-                customQrBaseUrl = urlInp.value;
-            }
             const pill = document.getElementById('live-room-code-pill');
             if (pill) pill.textContent = `SALA EN VIVO: ${roomCodeId}`;
 
@@ -3835,12 +3699,7 @@
             activeMobileDriverId = driverId;
             mobileSpotterVoiceEnabled = true;
             mobileAudioUnlocked = true;
-
-            // Inicializa el hash con las vueltas actuales para no cantar vueltas antiguas ni de otros pilotos
-            const initCtx = getDriverLiveTelemetryContext(driverId);
-            lastSpokenMobileStateHash = (initCtx && initCtx.assignment)
-                ? `${initCtx.heatNumber}_${initCtx.assignment.laps}`
-                : '';
+            lastSpokenMobileStateHash = '';
 
             const modal = document.getElementById('mobileDriverModal');
             if (modal) {
@@ -3852,6 +3711,14 @@
             updateMobileCompanionModalUI();
             requestMobileWakeLock();
             startMobileSpeechKeepAlive();
+            startMobileAutoRadarLoop();
+
+            // Canta automáticamente el estado inicial nada más abrirse el QR sin tocar ningún botón
+            setTimeout(() => {
+                if (activeMobileDriverId && mobileSpotterVoiceEnabled) {
+                    speakMobileDriverStatusNow(true);
+                }
+            }, 180);
         }
 
         function closeMobileCompanion() {
@@ -3939,68 +3806,37 @@
             }
         }
 
-        function speakMobileDriverStatusNow(forceInterrupt = true) {
+        function speakMobileDriverStatusNow(forceInterrupt = false) {
             if (!activeMobileDriverId || !mobileSpotterVoiceEnabled) return;
+            // Si ya está hablando y no es un clic manual del botón "Repetir", no se pisa a sí mismo
+            if (!forceInterrupt && ('speechSynthesis' in window) && window.speechSynthesis.speaking) {
+                return;
+            }
+
             const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
             if (!ctx) return;
             const ass = ctx.assignment;
 
-            // Solo se dispara cuando el propio piloto del código de barras cruza meta,
-            // cantando su tiempo y además quién lleva delante y detrás en ese instante.
             let msg = '';
             if (state.lang === 'ca') {
                 if (!ass) {
-                    msg = `${ctx.driver.name}, estàs de comissari a la màniga ${ctx.heatNumber}.`;
+                    msg = `${ctx.driver.name}, comissari. ${ctx.totalCareerLaps} voltes.`;
                 } else {
-                    if (ass.lastLap > 0) {
-                        const isBest = ass.bestLap < Infinity && Math.abs(ass.lastLap - ass.bestLap) < 0.0005;
-                        msg = `${ctx.driver.name}, carril ${ass.lane}. Volta ${ass.laps}: ${fmtSec(ass.lastLap)} segons.${isBest ? ' Millor volta personal.' : ''} Posició ${ctx.position}. `;
-                    } else {
-                        msg = `${ctx.driver.name}, preparat al carril ${ass.lane}, posició ${ctx.position}. `;
-                    }
-
-                    if (ctx.ahead) {
-                        const diffAhead = ctx.ahead.laps - ass.laps;
-                        const gapAheadTxt = diffAhead > 0 ? `a ${diffAhead} ${diffAhead === 1 ? 'volta' : 'voltes'}` : 'en la mateixa volta';
-                        msg += `Davant: ${ctx.ahead.driverName} pel carril ${ctx.ahead.lane}, ${gapAheadTxt}. `;
-                    } else {
-                        msg += `Vas primer, liderant la màniga. `;
-                    }
-
-                    if (ctx.behind) {
-                        const diffBehind = ass.laps - ctx.behind.laps;
-                        const gapBehindTxt = diffBehind > 0 ? `a ${diffBehind} ${diffBehind === 1 ? 'volta' : 'voltes'}` : 'en la mateixa volta';
-                        msg += `Darrere: ${ctx.behind.driverName} pel carril ${ctx.behind.lane}, ${gapBehindTxt}.`;
-                    } else {
-                        msg += `Ningú darrere.`;
-                    }
+                    const timePart = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Carril ${ass.lane}. `;
+                    const posPart = `P${ctx.position}. `;
+                    const aheadPart = ctx.ahead ? `Davant ${ctx.ahead.driverName}. ` : `Líder. `;
+                    const behindPart = ctx.behind ? `Darrere ${ctx.behind.driverName}.` : ``;
+                    msg = `${timePart}${posPart}${aheadPart}${behindPart}`.trim();
                 }
             } else {
                 if (!ass) {
-                    msg = `${ctx.driver.name}, estás de comisario en la manga ${ctx.heatNumber}.`;
+                    msg = `${ctx.driver.name}, comisario. ${ctx.totalCareerLaps} vueltas.`;
                 } else {
-                    if (ass.lastLap > 0) {
-                        const isBest = ass.bestLap < Infinity && Math.abs(ass.lastLap - ass.bestLap) < 0.0005;
-                        msg = `${ctx.driver.name}, carril ${ass.lane}. Vuelta ${ass.laps}: ${fmtSec(ass.lastLap)} segundos.${isBest ? ' Mejor vuelta personal.' : ''} Posición ${ctx.position}. `;
-                    } else {
-                        msg = `${ctx.driver.name}, preparado en el carril ${ass.lane}, posición ${ctx.position}. `;
-                    }
-
-                    if (ctx.ahead) {
-                        const diffAhead = ctx.ahead.laps - ass.laps;
-                        const gapAheadTxt = diffAhead > 0 ? `a ${diffAhead} ${diffAhead === 1 ? 'vuelta' : 'vueltas'}` : 'en la misma vuelta';
-                        msg += `Delante: ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, ${gapAheadTxt}. `;
-                    } else {
-                        msg += `Vas primero, liderando la manga. `;
-                    }
-
-                    if (ctx.behind) {
-                        const diffBehind = ass.laps - ctx.behind.laps;
-                        const gapBehindTxt = diffBehind > 0 ? `a ${diffBehind} ${diffBehind === 1 ? 'vuelta' : 'vueltas'}` : 'en la misma vuelta';
-                        msg += `Detrás: ${ctx.behind.driverName} por el carril ${ctx.behind.lane}, ${gapBehindTxt}.`;
-                    } else {
-                        msg += `Nadie detrás.`;
-                    }
+                    const timePart = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Carril ${ass.lane}. `;
+                    const posPart = `Posición ${ctx.position}. `;
+                    const aheadPart = ctx.ahead ? `Delante ${ctx.ahead.driverName}. ` : `Líder. `;
+                    const behindPart = ctx.behind ? `Detrás ${ctx.behind.driverName}.` : ``;
+                    msg = `${timePart}${posPart}${aheadPart}${behindPart}`.trim();
                 }
             }
 
@@ -5406,6 +5242,18 @@
                         <tbody>${rowsHtml}</tbody>
                     </table>
                 `;
+            } else if (matrixEl) {
+                matrixEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No hay mangas activas en este momento.</div>`;
+            }
+
+            if (state.heats.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full mac-studio-silver p-8 text-center space-y-3">
+                        <div class="text-sm font-black text-white uppercase">CUADRO DE MANGAS VACÍO</div>
+                        <p class="text-xs text-slate-400">Todas las mangas han sido borradas. Pulsa "Recalcular / Sortear" para volver a crear el cuadro.</p>
+                    </div>
+                `;
+                return;
             }
 
             container.innerHTML = state.heats.map(h => `
@@ -5432,6 +5280,34 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function openClearHeatsConfirmModal() {
+            const modal = document.getElementById('confirmClearHeatsModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeClearHeatsConfirmModal() {
+            const modal = document.getElementById('confirmClearHeatsModal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        function confirmAndClearAllHeats() {
+            stopAllTimers();
+            state.raceStatus = 'STANDBY';
+            state.heats = [];
+            state.currentHeatIndex = 0;
+            closeClearHeatsConfirmModal();
+            renderWizardStep3();
+            renderLiveRaceView();
+            renderStandingsView();
+            saveLocalDatabase();
         }
 
         function selectLiveHeat(idx) {
@@ -5574,8 +5450,12 @@
                 }
             }
             if (secTime === 0) {
-                const baseSec = 8.40 / sCount;
-                secTime = +(baseSec + (Math.random() * 0.32 - 0.14)).toFixed(3);
+                const drvObj = state.drivers.find(d => d.id === a.driverId);
+                const poleBase = (drvObj && drvObj.poleLap) ? drvObj.poleLap : (8.35 + (a.lane * 0.06));
+                const baseSec = poleBase / sCount;
+                const randomJitter = (Math.random() - 0.46) * (0.55 / Math.sqrt(sCount));
+                const occasionalTraffic = Math.random() < 0.12 ? (Math.random() * 0.45) : 0;
+                secTime = Math.max(0.45, +(baseSec + randomJitter + occasionalTraffic).toFixed(3));
             }
             a.lastCheckpointTime = now;
 
@@ -5629,16 +5509,11 @@
             if (state.mainTab === 'qr') renderDriversQRView();
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                // ESTRICTO: En modo móvil/código de barras, ignora por completo las vueltas de cualquier otro piloto
-                if (mobileSpotterVoiceEnabled && String(a.driverId) === String(activeMobileDriverId)) {
-                    const newHash = `${heat.heatNumber}_${a.laps}`;
-                    if (newHash !== lastSpokenMobileStateHash) {
-                        lastSpokenMobileStateHash = newHash;
-                        lastMobileSpeechTimestamp = Date.now();
-                        speakMobileDriverStatusNow(true);
-                    }
+                // SOLO canta cuando pasa por meta el coche del propio piloto del móvil (nunca cuando pasan los rivales)
+                if (mobileSpotterVoiceEnabled && a.driverId === activeMobileDriverId) {
+                    lastSpokenMobileStateHash = `${heat.heatNumber}_${a.laps}`;
+                    speakMobileDriverStatusNow(false);
                 }
-                return;
             }
 
             if (state.targetLaps !== 'infinity' && a.laps >= state.targetLaps) {
@@ -5646,7 +5521,7 @@
                 return;
             }
 
-            if (!activeMobileDriverId && !isMobileClientMode) {
+            if (!activeMobileDriverId) {
                 evaluateLiveSpotter(heat, a, lapSec, isPurple, isPersonal);
             }
         }
@@ -5744,16 +5619,20 @@
             centerText.textContent = '';
 
             for (let i = 1; i <= 5; i++) {
-                document.getElementById(`giantL${i}`).className = 'f1-light-giant';
-                document.getElementById(`f1L${i}`).className = 'f1-light';
+                const gl = document.getElementById(`giantL${i}`);
+                if (gl) gl.className = 'f1-light-giant';
+                const fl = document.getElementById(`f1L${i}`);
+                if (fl) fl.className = 'f1-light';
             }
 
             state.raceStatus = 'COUNTDOWN';
 
             for (let i = 1; i <= 5; i++) {
                 countdownTimeouts.push(setTimeout(() => {
-                    document.getElementById(`giantL${i}`).classList.add('red-on');
-                    document.getElementById(`f1L${i}`).classList.add('red-on');
+                    const gl = document.getElementById(`giantL${i}`);
+                    if (gl) gl.classList.add('red-on');
+                    const fl = document.getElementById(`f1L${i}`);
+                    if (fl) fl.classList.add('red-on');
                     const countNum = 6 - i;
                     centerText.textContent = String(countNum);
                     playF1SemaphoreSound('RED');
@@ -5763,8 +5642,10 @@
 
             countdownTimeouts.push(setTimeout(() => {
                 for (let i = 1; i <= 5; i++) {
-                    document.getElementById(`giantL${i}`).className = 'f1-light-giant green-on';
-                    document.getElementById(`f1L${i}`).className = 'f1-light green-on';
+                    const gl = document.getElementById(`giantL${i}`);
+                    if (gl) gl.className = 'f1-light-giant green-on';
+                    const fl = document.getElementById(`f1L${i}`);
+                    if (fl) fl.className = 'f1-light green-on';
                 }
                 centerText.textContent = '';
                 const relayEl = document.getElementById('relay-power-badge');
@@ -5826,14 +5707,39 @@
             }, 100);
         }
 
+        // ==================== FUNCIÓN DE ENTRADA PREVIA CON BLOQUEO EN HORIZONTAL ====================
+        async function enterApplicationInLandscape(requestFull = true) {
+            try {
+                if (requestFull && !document.fullscreenElement && document.documentElement.requestFullscreen) {
+                    await document.documentElement.requestFullscreen();
+                }
+            } catch (e) {}
+
+            try {
+                if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                    await screen.orientation.lock('landscape');
+                }
+            } catch (e) {}
+
+            const gate = document.getElementById('preAppLandscapeGate');
+            if (gate) {
+                gate.classList.add('hidden');
+                gate.classList.remove('flex');
+            }
+            primeMobileSpeechEngine();
+            renderLanesGrid();
+        }
+
         function renderLiveRaceView() {
             if (state.heats.length === 0) return;
             const heat = state.heats[state.currentHeatIndex];
             if (!heat) return;
 
             const doneSuffix = heat.status === 'FINISHED' ? ` · ${t('word_finished')} ✓` : '';
-            document.getElementById('live-heat-title').textContent = `${t('word_heat').toUpperCase()} ${heat.heatNumber}/${state.heats.length}${doneSuffix}`;
-            document.getElementById('live-target-badge').textContent = state.targetLaps === 'infinity' ? state.durationLabel : `META ${state.targetLaps}V`;
+            const titleEl = document.getElementById('live-heat-title');
+            if (titleEl) titleEl.textContent = `${t('word_heat').toUpperCase()} ${heat.heatNumber}/${state.heats.length}${doneSuffix}`;
+            const badgeEl = document.getElementById('live-target-badge');
+            if (badgeEl) badgeEl.textContent = state.targetLaps === 'infinity' ? state.durationLabel : `META ${state.targetLaps}V`;
             renderMasterClock();
 
             const tabsEl = document.getElementById('live-heat-tabs');
@@ -5874,55 +5780,7 @@
             saveLocalDatabase();
         }
 
-        // Generador universal de flechas Verde (mejora) / Roja (empeora) para todos los datos de telemetría
-        function getTimeDeltaArrowHtml(currentTime, referenceTime, showNumbers = true) {
-            if (!currentTime || !referenceTime || currentTime <= 0 || referenceTime <= 0 || currentTime === Infinity || referenceTime === Infinity) {
-                return `<span class="text-[#30d158] font-black">▼</span><span class="text-[#ff453a] font-black">▲</span>`;
-            }
-            const diff = currentTime - referenceTime;
-            // En tiempos: bajar tiempo (diff <= 0) es MEJORA (Flecha Verde ▼), subir tiempo (diff > 0) es PEOR (Flecha Roja ▲)
-            if (diff <= 0.0005) {
-                const txt = showNumbers ? `${diff.toFixed(2)}s` : '';
-                return `<span class="text-[#30d158] font-black inline-flex items-center gap-0.5" title="Mejora tiempo">▼${txt}</span>`;
-            } else {
-                const txt = showNumbers ? `+${diff.toFixed(2)}s` : '';
-                return `<span class="text-[#ff453a] font-black inline-flex items-center gap-0.5" title="Empeora tiempo">▲${txt}</span>`;
-            }
-        }
-
-        function getSpeedDeltaArrowHtml(currentSpeed, referenceSpeed, showNumbers = true) {
-            if (!currentSpeed || !referenceSpeed || currentSpeed <= 0 || referenceSpeed <= 0) {
-                return `<span class="text-[#30d158] font-black">▲</span><span class="text-[#ff453a] font-black">▼</span>`;
-            }
-            const diff = currentSpeed - referenceSpeed;
-            // En velocidad / meta estimada: subir (diff >= 0) es MEJORA (Flecha Verde ▲), bajar es PEOR (Flecha Roja ▼)
-            if (diff >= -0.01) {
-                const txt = showNumbers ? `+${diff.toFixed(1)}` : '';
-                return `<span class="text-[#30d158] font-black inline-flex items-center gap-0.5" title="Sube velocidad">▲${txt}</span>`;
-            } else {
-                const txt = showNumbers ? `${diff.toFixed(1)}` : '';
-                return `<span class="text-[#ff453a] font-black inline-flex items-center gap-0.5" title="Baja velocidad">▼${txt}</span>`;
-            }
-        }
-
-        function getSectorDeltaArrowHtml(a, secIdx) {
-            const cur = a.lastSectors ? a.lastSectors[secIdx] : null;
-            const prev = a.prevSectors ? a.prevSectors[secIdx] : null;
-            const best = a.bestSectors ? a.bestSectors[secIdx] : Infinity;
-            if (cur === null || cur === undefined) {
-                return `<span class="text-[#30d158] opacity-60 font-black">▼</span><span class="text-[#ff453a] opacity-60 font-black">▲</span>`;
-            }
-            const ref = (prev !== null && prev !== undefined && prev > 0) ? prev : (best < Infinity ? best : null);
-            if (!ref) return `<span class="text-[#30d158] font-black">▼</span>`;
-            const diff = cur - ref;
-            if (diff <= 0.0005) {
-                return `<span class="text-[#30d158] font-black text-[10px]">▼${diff.toFixed(2)}</span>`;
-            } else {
-                return `<span class="text-[#ff453a] font-black text-[10px]">▲+${diff.toFixed(2)}</span>`;
-            }
-        }
-
-        function buildExpertHorizontalBentoCardHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
+        function buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
             const pal = a.laneInfo || { hex: '#ff9f0a' };
             const isLeader = pos === 1 && a.laps > 0;
             const trackLen = state.trackLengthMeters || 28;
@@ -5933,9 +5791,6 @@
             const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
             const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
             const meanVal = getDriverMeanLap(a);
-            const prevMeanVal = a.history.length >= 2
-                ? a.history.slice(0, -1).reduce((x, y) => x + y, 0) / (a.history.length - 1)
-                : meanVal;
 
             const meanStr3 = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
             const lastStr3 = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
@@ -5943,11 +5798,8 @@
             const worstStr3 = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
 
             const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
-            const prevSpeedKmh = prevLapVal > 0 ? (trackLen / prevLapVal) * 3.6 : curSpeedKmh;
-            const meanSpeedKmh = meanVal > 0 ? (trackLen / meanVal) * 3.6 : 0;
             const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
             const scaleSpeedKmh = curSpeedKmh * scaleFactor;
-            const prevScaleSpeedKmh = prevSpeedKmh * scaleFactor;
 
             const speedStr2 = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
             const maxSpeedStr1 = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
@@ -5957,240 +5809,6 @@
             const projectedLaps = meanVal > 0
                 ? Math.round(a.laps + (state.timeRemaining / meanVal))
                 : a.laps;
-            const prevProjectedLaps = prevMeanVal > 0
-                ? Math.round(a.laps + (state.timeRemaining / prevMeanVal))
-                : projectedLaps;
-
-            let stdDev = 0;
-            if (a.history.length >= 2 && meanVal > 0) {
-                const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanVal, 2), 0) / a.history.length;
-                stdDev = Math.sqrt(variance);
-            }
-            const stdDevStr = `±${stdDev.toFixed(3)}s`;
-            const consistencyPct = (bestLapVal > 0 && meanVal > 0)
-                ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanVal)) * 100)))
-                : 100;
-
-            // Flechas verdes y rojas para cada bloque de datos
-            const arrowLastVsPrev = getTimeDeltaArrowHtml(lastLapVal, prevLapVal, true);
-            const arrowLastVsBest = getTimeDeltaArrowHtml(lastLapVal, bestLapVal, true);
-            const arrowMeanTrend = getTimeDeltaArrowHtml(lastLapVal, meanVal, true);
-            const arrowWorstGap = (lastLapVal > 0 && worstLapVal > 0)
-                ? (lastLapVal < worstLapVal
-                    ? `<span class="text-[#30d158] font-black">▼-${(worstLapVal - lastLapVal).toFixed(2)}s</span>`
-                    : `<span class="text-[#ff453a] font-black">▲PEOR</span>`)
-                : `<span class="text-[#ff453a] font-black">▲</span>`;
-            const arrowSpeedReal = getSpeedDeltaArrowHtml(curSpeedKmh, meanSpeedKmh || prevSpeedKmh, true);
-            const arrowSpeedScale = getSpeedDeltaArrowHtml(scaleSpeedKmh, prevScaleSpeedKmh, false);
-            const arrowProjLaps = projectedLaps >= prevProjectedLaps
-                ? `<span class="text-[#30d158] font-black">▲</span>`
-                : `<span class="text-[#ff453a] font-black">▼</span>`;
-
-            const activeBox = (idx) => curSec === idx ? 'border-[#5ac8fa] bg-[#0a84ff]/20' : 'border-white/10 bg-black/45';
-
-            return `
-            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq h-full min-h-0 flex flex-col justify-between overflow-hidden cursor-pointer select-none p-2.5 sm:p-3 relative gap-2" style="background: ${themeObj.bg}; border-left: 6px solid ${pal.hex};">
-                
-                <!-- BARRA SUPERIOR PANORÁMICA: Carril + Posición + Piloto + Próximo Destino + Selector de Nivel + Auditoría -->
-                <div class="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-white/15 shrink-0">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <div class="px-3 py-1 rounded-xl flex items-center gap-2 shadow border border-white/30 shrink-0" style="background: linear-gradient(135deg, ${pal.hex} 0%, #d97706 100%); color: #090b10;">
-                            <span class="font-mono-num font-black text-lg sm:text-xl leading-none">C${a.lane}</span>
-                            <span class="px-1.5 py-0.5 rounded bg-black/25 text-[10px] font-black uppercase leading-none">P${pos}</span>
-                        </div>
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-1.5">
-                                ${isLeader ? `<span class="w-2.5 h-2.5 rounded-full bg-[#ffd60a] shadow-[0_0_8px_#ffd60a] shrink-0"></span>` : ''}
-                                <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-sm sm:text-base md:text-lg uppercase tracking-tight truncate max-w-[180px] sm:max-w-[240px] focus:outline-none border-b border-transparent focus:border-white/40"/>
-                                <span class="hidden xl:inline-block px-2 py-0.5 rounded-md bg-white/10 text-[10px] font-mono-num font-bold text-[#ffd60a] shrink-0">${a.nextAction}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <div class="grid grid-cols-4 gap-0.5 bg-black/55 p-0.5 rounded-xl border border-white/10">
-                            ${layoutBtnsHtml}
-                        </div>
-                        <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-7 h-6 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-[10px] cursor-pointer" title="Cambiar Acabado Metálico">
-                            <i class="fa-solid fa-palette" style="color:${accentHex}"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-[#30d158]/30 text-white text-[10px] font-black transition cursor-pointer">+1</button>
-                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-[#ff453a]/30 text-white text-[10px] font-black transition cursor-pointer">-1</button>
-                    </div>
-                </div>
-
-                <!-- CUERPO CENTRAL BENTO HORIZONTAL CON FLECHAS VERDES Y ROJAS EN TODOS LOS DATOS -->
-                <div class="flex-1 min-h-0 grid grid-cols-12 gap-2 overflow-hidden">
-                    
-                    <!-- ZONA IZQUIERDA (3 cols): Vueltas + Meta Estimada + Velocidad & Distancia con Flechas -->
-                    <div class="col-span-4 sm:col-span-3 mac-silver-well p-2.5 flex flex-col justify-between border border-white/15 min-h-0">
-                        <div class="flex items-center justify-between text-[9px] font-black text-slate-300 uppercase">
-                            <span>${t('laps')} <span class="text-[#30d158]">▲</span></span>
-                            <span class="text-[#ffd60a]">${t('card_est_short')}: ${projectedLaps}V ${arrowProjLaps}</span>
-                        </div>
-                        <div class="font-mono-num font-black text-white text-center leading-none tracking-tighter my-auto flex items-center justify-center gap-1.5" style="font-size: clamp(2rem, min(11cqw, 26cqh), 4.2rem);">
-                            <span>${a.laps}</span>
-                            <span class="text-[0.42em] font-mono-num">${arrowLastVsPrev}</span>
-                        </div>
-                        <div class="pt-1.5 border-t border-white/10 flex flex-col gap-0.5 text-[10px] font-mono-num">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[#5ac8fa] font-black">${speedStr2} <small class="text-[8px]">km/h</small></span>
-                                <span>${arrowSpeedReal}</span>
-                            </div>
-                            <div class="flex items-center justify-between text-[9px]">
-                                <span class="text-slate-300 font-bold">1:${scaleFactor} → ${scaleSpeedStr} km/h</span>
-                                <span>${arrowSpeedScale}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ZONA CENTRAL (5 cols): Matriz Horizontal 2x2 de Tiempos (Todos con Flechas Verdes/Rojas) -->
-                    <div class="col-span-8 sm:col-span-5 flex flex-col justify-between gap-1.5 min-h-0">
-                        <div class="flex-1 grid grid-cols-2 gap-1.5 min-h-0">
-                            <!-- Última Vuelta -->
-                            <div class="rounded-xl px-2.5 py-1.5 flex flex-col justify-between border border-white/40 shadow-sm" style="background: linear-gradient(135deg, rgba(255, 241, 242, 0.95) 0%, rgba(254, 205, 211, 0.95) 100%);">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-black uppercase text-rose-950">${t('card_last_short')}</span>
-                                    <span class="text-[10px] font-mono-num bg-slate-950/90 px-1.5 py-0.5 rounded">${arrowLastVsPrev}</span>
-                                </div>
-                                <div class="font-mono-num font-black text-slate-950 text-right leading-none" style="font-size: clamp(1.15rem, min(7cqw, 16cqh), 2.1rem);">
-                                    ${lastStr3}
-                                </div>
-                            </div>
-
-                            <!-- Récord Personal -->
-                            <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#30d158]/50 bg-[#30d158]/15">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-black uppercase text-[#30d158]">★ ${t('record')} <span class="text-[#30d158]">▼</span></span>
-                                    <span class="text-[9px] font-mono-num font-bold">${arrowLastVsBest}</span>
-                                </div>
-                                <div class="font-mono-num font-black text-[#30d158] text-right leading-none flex items-baseline justify-end gap-1" style="font-size: clamp(1.15rem, min(7cqw, 16cqh), 2.1rem);">
-                                    <span class="text-[10px] text-[#68f789] font-bold">▲${maxSpeedStr1}k/h</span>
-                                    <span>${bestStr3}</span>
-                                </div>
-                            </div>
-
-                            <!-- Vuelta Media -->
-                            <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#5ac8fa]/35">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-black uppercase text-[#5ac8fa]">${t('mean_lap')}</span>
-                                    <span class="text-[9px] font-mono-num font-bold">${arrowMeanTrend}</span>
-                                </div>
-                                <div class="font-mono-num font-black text-white text-right leading-none flex items-baseline justify-end gap-1.5" style="font-size: clamp(1.05rem, min(6.5cqw, 14cqh), 1.85rem);">
-                                    <span class="text-[9px] font-bold ${consistencyPct >= 92 ? 'text-[#30d158]' : 'text-[#ff453a]'}">${consistencyPct >= 92 ? '▲' : '▼'}${consistencyPct}%</span>
-                                    <span>${meanStr3}</span>
-                                </div>
-                            </div>
-
-                            <!-- Más Lenta & Distancia -->
-                            <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#ff453a]/35">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-black uppercase text-[#ff8a84]">${t('card_slow_short')} <span class="text-[#ff453a]">▲</span></span>
-                                    <span class="text-[9px] font-mono-num font-bold">${arrowWorstGap}</span>
-                                </div>
-                                <div class="font-mono-num font-black text-[#ff8a84] text-right leading-none flex items-baseline justify-end gap-1.5" style="font-size: clamp(1.05rem, min(6.5cqw, 14cqh), 1.85rem);">
-                                    <span class="text-[9px] font-bold text-[#30d158]">▲${totalDistKm}km</span>
-                                    <span>${worstStr3}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Barra Horizontal de Sectores (S1 · S2 · S3) con Flechas Verdes/Rojas en cada Sector -->
-                        ${sCount >= 2 ? `
-                        <div class="grid grid-cols-${sCount} gap-1.5 shrink-0">
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(1)}">
-                                <span class="text-[9px] font-black text-slate-300">S1</span>
-                                <div class="flex items-center gap-1">
-                                    <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
-                                    ${getSectorDeltaArrowHtml(a, 1)}
-                                </div>
-                            </div>
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(2)}">
-                                <span class="text-[9px] font-black text-slate-300">${sCount === 2 ? 'META' : 'S2'}</span>
-                                <div class="flex items-center gap-1">
-                                    <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
-                                    ${getSectorDeltaArrowHtml(a, 2)}
-                                </div>
-                            </div>
-                            ${sCount === 3 ? `
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(3)}">
-                                <span class="text-[9px] font-black text-slate-300">S3</span>
-                                <div class="flex items-center gap-1">
-                                    <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
-                                    ${getSectorDeltaArrowHtml(a, 3)}
-                                </div>
-                            </div>` : ''}
-                        </div>` : ''}
-                    </div>
-
-                    <!-- ZONA DERECHA (4 cols): Gráfica de Ritmo Panorámica + Tira Horizontal de Vueltas con Flecha Verde/Roja en cada vuelta -->
-                    <div class="col-span-12 sm:col-span-4 mac-silver-well p-2 flex flex-col justify-between border border-white/15 min-h-0">
-                        <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-300 pb-1 border-b border-white/10 shrink-0">
-                            <span><i class="fa-solid fa-wave-square text-[#30d158] mr-1"></i>${t('card_pace_chart')}</span>
-                            <span class="font-mono-num text-[#ffd60a]">${t('card_std_dev')} ${stdDevStr} ${stdDev <= 0.15 ? '<span class="text-[#30d158]">▼</span>' : '<span class="text-[#ff453a]">▲</span>'}</span>
-                        </div>
-                        <div class="flex-1 min-h-0 w-full py-1">
-                            ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanVal, accentHex)}
-                        </div>
-                        <div class="pt-1 border-t border-white/10 flex items-center gap-1 overflow-x-auto shrink-0">
-                            ${(a.history.length > 0 ? a.history.slice(-5).reverse().map((lapT, idx) => {
-                                const realIdx = a.history.length - 1 - idx;
-                                const realLapNum = realIdx + 1;
-                                const prevT = realIdx > 0 ? a.history[realIdx - 1] : meanVal;
-                                const improved = prevT > 0 ? lapT <= prevT : true;
-                                const arrowIcon = improved
-                                    ? `<span class="text-[#30d158] font-black">▼</span>`
-                                    : `<span class="text-[#ff453a] font-black">▲</span>`;
-                                const isBest = a.bestLap < Infinity && Math.abs(lapT - a.bestLap) < 0.0005;
-                                return `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono-num font-black shrink-0 inline-flex items-center gap-0.5 ${idx === 0 ? 'bg-slate-950 text-white border border-white/40' : (isBest ? 'bg-[#30d158]/25 text-[#30d158] border border-[#30d158]/40' : 'bg-white/5 text-slate-200')}">
-                                    V${realLapNum}:${lapT.toFixed(2)}${arrowIcon}
-                                </span>`;
-                            }).join('') : `<span class="text-[10px] text-slate-500 font-bold uppercase">${t('card_touch_to_log')}</span>`)}
-                        </div>
-                    </div>
-
-                </div>
-            </div>`;
-        }
-
-        function buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
-            const pal = a.laneInfo || { hex: '#ff9f0a' };
-            const isLeader = pos === 1 && a.laps > 0;
-            const trackLen = state.trackLengthMeters || 28;
-            const scaleFactor = state.scaleFactor || 32;
-
-            const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
-            const prevLapVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
-            const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
-            const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
-            const meanVal = getDriverMeanLap(a);
-            const prevMeanVal = a.history.length >= 2
-                ? a.history.slice(0, -1).reduce((x, y) => x + y, 0) / (a.history.length - 1)
-                : meanVal;
-
-            const meanStr3 = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
-            const lastStr3 = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
-            const bestStr3 = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
-            const worstStr3 = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
-
-            const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
-            const prevSpeedKmh = prevLapVal > 0 ? (trackLen / prevLapVal) * 3.6 : curSpeedKmh;
-            const meanSpeedKmh = meanVal > 0 ? (trackLen / meanVal) * 3.6 : 0;
-            const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
-            const scaleSpeedKmh = curSpeedKmh * scaleFactor;
-            const prevScaleSpeedKmh = prevSpeedKmh * scaleFactor;
-
-            const speedStr2 = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
-            const maxSpeedStr1 = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
-            const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
-
-            const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
-            const projectedLaps = meanVal > 0
-                ? Math.round(a.laps + (state.timeRemaining / meanVal))
-                : a.laps;
-            const prevProjectedLaps = prevMeanVal > 0
-                ? Math.round(a.laps + (state.timeRemaining / prevMeanVal))
-                : projectedLaps;
 
             let stdDev = 0;
             if (a.history.length >= 2 && meanVal > 0) {
@@ -6202,101 +5820,78 @@
                 ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanVal)) * 100)))
                 : 100;
 
-            // Flechas verdes/rojas para todos los indicadores en modos Clásico, Básico y Medio
-            const diffPrevBadge = getTimeDeltaArrowHtml(lastLapVal, prevLapVal, true);
-            const arrowMeanBadge = getTimeDeltaArrowHtml(lastLapVal, meanVal, false);
-            const arrowBestBadge = getTimeDeltaArrowHtml(lastLapVal, bestLapVal, true);
-            const arrowSpeedBadge = getSpeedDeltaArrowHtml(curSpeedKmh, meanSpeedKmh || prevSpeedKmh, true);
-            const arrowScaleSpeedBadge = getSpeedDeltaArrowHtml(scaleSpeedKmh, prevScaleSpeedKmh, false);
-            const arrowProjBadge = projectedLaps >= prevProjectedLaps
-                ? `<span class="text-[#30d158] font-black">▲</span>`
-                : `<span class="text-[#ff453a] font-black">▼</span>`;
+            const lapDiffPrev = (lastLapVal > 0 && prevLapVal > 0) ? (lastLapVal - prevLapVal) : 0;
+            const diffPrevBadge = (lastLapVal > 0 && prevLapVal > 0)
+                ? (lapDiffPrev <= 0
+                    ? `<span class="text-[#30d158] font-black truncate">▼${lapDiffPrev.toFixed(2)}</span>`
+                    : `<span class="text-[#ff453a] font-black truncate">▲+${lapDiffPrev.toFixed(2)}</span>`)
+                : '';
 
-            // Bloques adicionales progresivos según el modo (1: BÁSICO, 2: MEDIO, 3: EXPERTO) manteniendo el estilo Clásico Apple
+            // Bloques adicionales progresivos según el modo global (1: BÁSICO, 2: MEDIO, 3: EXPERTO) sin desbordar jamás
             let extraTelemetryBlocksHtml = '';
 
             if (layoutMode >= 1) {
-                // MODO 1 (BÁSICO) y superiores: Añade Píldoras de RÉCORD y META ESTIMADA / REGULARIDAD con flechas verdes y rojas
+                // MODO 1 (BÁSICO) y superiores: Récord y Meta Estimada perfectamente contenidos
                 extraTelemetryBlocksHtml += `
-                <div class="grid grid-cols-2 gap-1.5 shrink-0 my-0.5">
-                    <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#30d158]/40 bg-[#30d158]/10">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-black uppercase text-[#30d158] tracking-tight">★ ${t('record')} <span class="text-[#30d158]">▼</span></span>
-                            <span class="text-[9px] font-mono-num font-bold">${arrowBestBadge}</span>
+                <div class="grid grid-cols-2 gap-1 shrink-0 my-0.5 min-w-0">
+                    <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-[#30d158]/40 bg-[#30d158]/10 min-w-0 overflow-hidden">
+                        <div class="flex items-center justify-between gap-1 min-w-0">
+                            <span class="text-[8px] font-black uppercase text-[#30d158] truncate">★ ${t('record')}</span>
+                            <span class="text-[8px] font-mono-num font-bold text-[#68f789] truncate shrink-0">${maxSpeedStr1}k/h</span>
                         </div>
-                        <div class="font-mono-num font-black text-[#30d158] text-right leading-none mt-0.5 flex items-baseline justify-end gap-1" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
-                            <span class="text-[9px] font-bold text-[#68f789]">▲${maxSpeedStr1}k/h</span>
-                            <span>${bestStr3}</span>
+                        <div class="font-mono-num font-black text-[#30d158] text-right leading-none mt-0.5 truncate" style="font-size: clamp(0.88rem, min(10.5cqw, 3.2cqh), 1.55rem);">
+                            ${bestStr3}
                         </div>
                     </div>
-                    <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-white/15">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-black uppercase text-[#ffd60a] tracking-tight">${t('card_est_short')} ${t('finish_line')}</span>
-                            <span class="text-[9px] font-mono-num font-bold ${consistencyPct >= 92 ? 'text-[#30d158]' : 'text-[#ff453a]'}">${consistencyPct >= 92 ? '▲' : '▼'}${consistencyPct}%</span>
+                    <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15 min-w-0 overflow-hidden">
+                        <div class="flex items-center justify-between gap-1 min-w-0">
+                            <span class="text-[8px] font-black uppercase text-[#ffd60a] truncate">${t('card_est_short')}</span>
+                            <span class="text-[8px] font-mono-num font-bold text-[#d982ff] shrink-0">${consistencyPct}%</span>
                         </div>
-                        <div class="font-mono-num font-black text-white text-right leading-none mt-0.5 flex items-baseline justify-end gap-1" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
-                            <span class="text-xs">${arrowProjBadge}</span>
-                            <span>${projectedLaps}<span class="text-[0.55em] text-[#ffd60a] ml-0.5">V</span></span>
+                        <div class="font-mono-num font-black text-white text-right leading-none mt-0.5 truncate" style="font-size: clamp(0.88rem, min(10.5cqw, 3.2cqh), 1.55rem);">
+                            ${projectedLaps}<span class="text-[0.6em] text-[#ffd60a] ml-0.5">V</span>
                         </div>
                     </div>
                 </div>`;
             }
 
             if (layoutMode >= 2) {
-                // MODO 2 (MEDIO) y superiores: Añade VUELTA LENTA, VELOCIDAD ESCALA 1:32, DISTANCIA y SECTORES con Flechas Verdes/Rojas
+                // MODO 2 (MEDIO) y superiores: Vuelta Lenta, Velocidad Escala 1:32, Distancia y Sectores contenidos
                 let compactSecRow = '';
                 if (sCount >= 2) {
                     const activeBox = (idx) => curSec === idx ? 'border-[#5ac8fa] bg-[#0a84ff]/20' : 'border-white/10 bg-black/40';
                     compactSecRow = `
-                    <div class="grid grid-cols-${sCount} gap-1 pt-0.5">
-                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(1)}">
-                            <span class="text-[8px] font-black text-slate-300">S1</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
-                                ${getSectorDeltaArrowHtml(a, 1)}
-                            </div>
+                    <div class="grid grid-cols-${sCount} gap-1 pt-0.5 min-w-0">
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="rounded-lg px-1.5 py-0.5 border flex items-center justify-between min-w-0 overflow-hidden ${activeBox(1)}">
+                            <span class="text-[8px] font-black text-slate-300 shrink-0">S1</span>
+                            <span class="font-mono-num font-black truncate ${getSecColor(a.sectorColors[1])}" style="font-size: clamp(0.72rem, min(8cqw, 2.4cqh), 1.05rem);">${s1Val}</span>
                         </div>
-                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(2)}">
-                            <span class="text-[8px] font-black text-slate-300">${sCount === 2 ? 'META' : 'S2'}</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
-                                ${getSectorDeltaArrowHtml(a, 2)}
-                            </div>
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="rounded-lg px-1.5 py-0.5 border flex items-center justify-between min-w-0 overflow-hidden ${activeBox(2)}">
+                            <span class="text-[8px] font-black text-slate-300 shrink-0">${sCount === 2 ? 'M' : 'S2'}</span>
+                            <span class="font-mono-num font-black truncate ${getSecColor(a.sectorColors[2])}" style="font-size: clamp(0.72rem, min(8cqw, 2.4cqh), 1.05rem);">${s2Val}</span>
                         </div>
                         ${sCount === 3 ? `
-                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(3)}">
-                            <span class="text-[8px] font-black text-slate-300">S3</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
-                                ${getSectorDeltaArrowHtml(a, 3)}
-                            </div>
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="rounded-lg px-1.5 py-0.5 border flex items-center justify-between min-w-0 overflow-hidden ${activeBox(3)}">
+                            <span class="text-[8px] font-black text-slate-300 shrink-0">S3</span>
+                            <span class="font-mono-num font-black truncate ${getSecColor(a.sectorColors[3])}" style="font-size: clamp(0.72rem, min(8cqw, 2.4cqh), 1.05rem);">${s3Val}</span>
                         </div>` : ''}
                     </div>`;
                 }
 
                 extraTelemetryBlocksHtml += `
-                <div class="flex flex-col gap-1 shrink-0 my-0.5">
-                    <div class="grid grid-cols-3 gap-1">
-                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-[#ff453a]/35">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[8px] font-black uppercase text-[#ff8a84]">${t('card_slow_short')}</span>
-                                <span class="text-[9px] text-[#ff453a] font-black">▲</span>
-                            </div>
-                            <span class="font-mono-num font-black text-[#ff8a84] text-xs sm:text-sm md:text-base leading-none text-right">${worstStr3}</span>
+                <div class="flex flex-col gap-1 shrink-0 my-0.5 min-w-0">
+                    <div class="grid grid-cols-3 gap-1 min-w-0">
+                        <div class="mac-silver-well px-1.5 py-1 flex flex-col justify-between border border-[#ff453a]/35 min-w-0 overflow-hidden">
+                            <span class="text-[7px] font-black uppercase text-[#ff8a84] truncate">${t('card_slow_short')}</span>
+                            <span class="font-mono-num font-black text-[#ff8a84] leading-none text-right truncate" style="font-size: clamp(0.72rem, min(8.2cqw, 2.5cqh), 1.1rem);">${worstStr3}</span>
                         </div>
-                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[8px] font-black uppercase text-[#5ac8fa]">1:${scaleFactor} KM/H</span>
-                                <span class="text-[9px]">${arrowScaleSpeedBadge}</span>
-                            </div>
-                            <span class="font-mono-num font-black text-[#5ac8fa] text-xs sm:text-sm md:text-base leading-none text-right">${scaleSpeedStr}</span>
+                        <div class="mac-silver-well px-1.5 py-1 flex flex-col justify-between border border-white/15 min-w-0 overflow-hidden">
+                            <span class="text-[7px] font-black uppercase text-[#5ac8fa] truncate">1:${scaleFactor}</span>
+                            <span class="font-mono-num font-black text-[#5ac8fa] leading-none text-right truncate" style="font-size: clamp(0.72rem, min(8.2cqw, 2.5cqh), 1.1rem);">${scaleSpeedStr}k</span>
                         </div>
-                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[8px] font-black uppercase text-slate-300">${t('card_dist')}</span>
-                                <span class="text-[9px] text-[#30d158] font-black">▲</span>
-                            </div>
-                            <span class="font-mono-num font-black text-white text-xs sm:text-sm md:text-base leading-none text-right">${totalDistKm}k</span>
+                        <div class="mac-silver-well px-1.5 py-1 flex flex-col justify-between border border-white/15 min-w-0 overflow-hidden">
+                            <span class="text-[7px] font-black uppercase text-slate-300 truncate">${t('card_dist')}</span>
+                            <span class="font-mono-num font-black text-white leading-none text-right truncate" style="font-size: clamp(0.72rem, min(8.2cqw, 2.5cqh), 1.1rem);">${totalDistKm}k</span>
                         </div>
                     </div>
                     ${compactSecRow}
@@ -6304,34 +5899,28 @@
             }
 
             if (layoutMode === 3) {
-                // MODO 3 (EXPERTO): Añade Curva Sparkline Apple en vivo + Desviación Estándar y Próximo Carril
+                // MODO 3 (EXPERTO): Curva Sparkline Apple en vivo + Desviación Estándar contenida
                 extraTelemetryBlocksHtml += `
-                <div class="mac-silver-well p-2 flex flex-col justify-between border border-white/20 shrink-0 h-20 sm:h-24 my-0.5">
-                    <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-300 pb-0.5 border-b border-white/10">
-                        <span><i class="fa-solid fa-wave-square text-[#30d158] mr-1"></i>${t('card_std_dev')} ${stdDevStr}</span>
-                        <span class="text-[#ffd60a] font-mono-num">${a.nextAction}</span>
+                <div class="mac-silver-well p-1.5 flex flex-col justify-between border border-white/20 shrink-0 h-16 sm:h-20 my-0.5 min-w-0 overflow-hidden">
+                    <div class="flex items-center justify-between gap-1 text-[8px] font-black uppercase text-slate-300 pb-0.5 border-b border-white/10 min-w-0">
+                        <span class="truncate"><i class="fa-solid fa-wave-square text-[#30d158] mr-1"></i>${stdDevStr}</span>
+                        <span class="text-[#ffd60a] font-mono-num truncate shrink-0">${a.nextAction}</span>
                     </div>
-                    <div class="flex-1 min-h-0 w-full pt-1">
+                    <div class="flex-1 min-h-0 w-full pt-0.5 overflow-hidden">
                         ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanVal, accentHex)}
                     </div>
                 </div>`;
             }
 
-            // Número de filas visibles en el listado vertical clásico según espacio ocupado por los módulos extra
-            const maxVisibleRows = layoutMode === 0 ? 11 : (layoutMode === 1 ? 8 : (layoutMode === 2 ? 6 : 4));
+            // Número de filas visibles en el listado vertical clásico según espacio disponible
+            const maxVisibleRows = layoutMode === 0 ? 11 : (layoutMode === 1 ? 9 : (layoutMode === 2 ? 7 : 5));
 
-            const indexedLaps = (a.history || []).map((val, idx) => {
-                const prevLapTime = idx > 0 ? a.history[idx - 1] : meanVal;
-                const diffFromPrev = prevLapTime > 0 ? (val - prevLapTime) : 0;
-                return {
-                    lapNum: idx + 1,
-                    time: val,
-                    diffFromPrev,
-                    improved: diffFromPrev <= 0.0005,
-                    isLatest: idx === a.history.length - 1,
-                    isRecord: a.bestLap < Infinity && Math.abs(val - a.bestLap) < 0.0005
-                };
-            });
+            const indexedLaps = (a.history || []).map((val, idx) => ({
+                lapNum: idx + 1,
+                time: val,
+                isLatest: idx === a.history.length - 1,
+                isRecord: a.bestLap < Infinity && Math.abs(val - a.bestLap) < 0.0005
+            }));
 
             const sortedBest = [...indexedLaps].sort((x, y) => x.time - y.time || y.lapNum - x.lapNum);
             let topRows = sortedBest.slice(0, maxVisibleRows);
@@ -6347,107 +5936,279 @@
                 const item = topRows[i];
                 if (!item) {
                     rowsHtml.push(`
-                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg text-white/15 font-mono-num select-none" style="font-size: clamp(0.9rem, min(13.5cqw, 4.6cqh), 2.05rem); line-height: 1.02;">
-                            <span class="text-[0.52em] font-semibold w-7 text-left">--</span>
-                            <span class="font-bold tracking-tighter flex-1 text-right">--.--</span>
+                        <div class="flex items-baseline justify-between px-2 py-0.5 rounded-lg text-white/15 font-mono-num select-none min-w-0 overflow-hidden" style="font-size: clamp(0.82rem, min(11.5cqw, 4.2cqh), 1.85rem); line-height: 1.02;">
+                            <span class="text-[0.52em] font-semibold w-6 text-left shrink-0">--</span>
+                            <span class="font-bold tracking-tighter flex-1 text-right truncate">--.--</span>
                         </div>
                     `);
                 } else if (item.isLatest) {
-                    const rowArrow = item.improved
-                        ? `<span class="text-[#16a34a] font-black text-[0.55em] ml-1">▼</span>`
-                        : `<span class="text-[#dc2626] font-black text-[0.55em] ml-1">▲</span>`;
                     rowsHtml.push(`
-                        <div class="px-2.5 py-0.5 rounded-xl font-mono-num flex items-baseline justify-between shadow-[0_6px_20px_rgba(255,255,255,0.22)] border border-white transition-all duration-200 my-0.5" style="background: linear-gradient(180deg, #ffffff 0%, #ffe4e6 100%); font-size: clamp(0.98rem, min(15cqw, 5cqh), 2.25rem); line-height: 1.02;">
-                            <span class="text-[0.48em] font-black text-rose-600 w-8 text-left">V${item.lapNum}</span>
-                            <span class="font-black tracking-tighter text-slate-950 flex-1 text-right">${item.time.toFixed(2)}${rowArrow}</span>
+                        <div class="px-2 py-0.5 rounded-xl font-mono-num flex items-baseline justify-between shadow-[0_4px_14px_rgba(255,255,255,0.2)] border border-white transition-all duration-200 my-0.5 min-w-0 overflow-hidden" style="background: linear-gradient(180deg, #ffffff 0%, #ffe4e6 100%); font-size: clamp(0.86rem, min(12.2cqw, 4.4cqh), 1.95rem); line-height: 1.02;">
+                            <span class="text-[0.48em] font-black text-rose-600 w-6 text-left shrink-0">V${item.lapNum}</span>
+                            <span class="font-black tracking-tighter text-slate-950 flex-1 text-right truncate">${item.time.toFixed(2)}</span>
                         </div>
                     `);
                 } else {
                     const timeColor = item.isRecord ? 'text-[#30d158]' : 'text-white/95';
-                    const rowArrow = item.improved
-                        ? `<span class="text-[#30d158] font-black text-[0.55em] ml-1">▼</span>`
-                        : `<span class="text-[#ff453a] font-black text-[0.55em] ml-1">▲</span>`;
                     rowsHtml.push(`
-                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg hover:bg-white/[0.04] transition font-mono-num" style="font-size: clamp(0.92rem, min(14cqw, 4.8cqh), 2.1rem); line-height: 1.02;">
-                            <span class="text-[0.52em] font-bold text-slate-400 w-8 text-left">V${item.lapNum}</span>
-                            <span class="font-extrabold tracking-tighter ${timeColor} flex-1 text-right">${item.time.toFixed(2)}${rowArrow}</span>
+                        <div class="flex items-baseline justify-between px-2 py-0.5 rounded-lg hover:bg-white/[0.04] transition font-mono-num min-w-0 overflow-hidden" style="font-size: clamp(0.84rem, min(11.8cqw, 4.2cqh), 1.9rem); line-height: 1.02;">
+                            <span class="text-[0.52em] font-bold text-slate-400 w-6 text-left shrink-0">${item.lapNum}</span>
+                            <span class="font-extrabold tracking-tighter ${timeColor} flex-1 text-right truncate">${item.time.toFixed(2)}</span>
                         </div>
                     `);
                 }
             }
 
             return `
-            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq h-full min-h-0 flex flex-col justify-between overflow-hidden cursor-pointer select-none p-2 sm:p-2.5 relative" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
+            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq h-full min-h-0 min-w-0 flex flex-col justify-between overflow-hidden cursor-pointer select-none p-1.5 sm:p-2 relative" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
                 
-                <!-- Cabecera Superior Clásica con Diseño Minimalista Apple y Flechas Verdes/Rojas -->
-                <div class="flex flex-col gap-1.5 pb-1.5 border-b border-white/10 shrink-0">
-                    <div class="flex items-stretch gap-2 h-14 sm:h-16">
+                <!-- Cabecera Superior Clásica con Diseño Minimalista Apple (Sin los 4 botones de modo) -->
+                <div class="flex flex-col gap-1 pb-1 border-b border-white/10 shrink-0 min-w-0">
+                    <div class="flex items-stretch gap-1.5 h-12 sm:h-14 min-w-0">
                         <!-- Número de Carril en Bloque Color Carril Anodizado -->
-                        <div class="w-12 sm:w-14 rounded-2xl flex flex-col items-center justify-center shadow-lg border border-white/30 shrink-0" style="background: linear-gradient(160deg, ${pal.hex} 0%, #d97706 100%); color: #090b10;">
-                            <span class="text-[9px] font-black uppercase tracking-widest opacity-80 leading-none">P${pos}</span>
-                            <span class="font-mono-num font-black text-2xl sm:text-3xl leading-none tracking-tighter">${a.lane}</span>
+                        <div class="w-10 sm:w-12 rounded-xl flex flex-col items-center justify-center shadow border border-white/30 shrink-0 overflow-hidden" style="background: linear-gradient(160deg, ${pal.hex} 0%, #d97706 100%); color: #090b10;">
+                            <span class="text-[8px] font-black uppercase tracking-tighter opacity-85 leading-none">P${pos}</span>
+                            <span class="font-mono-num font-black text-xl sm:text-2xl leading-none tracking-tighter">${a.lane}</span>
                         </div>
 
-                        <!-- Dos Píldoras Superiores: Verde (Vuelta Media + Flecha) y Blanco/Rosa (Última Vuelta + Flecha) -->
-                        <div class="flex-1 flex flex-col gap-1.5 justify-between min-w-0">
-                            <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-[#30d158]/50 shadow-inner" style="background: linear-gradient(90deg, rgba(48, 209, 88, 0.24) 0%, rgba(48, 209, 88, 0.38) 100%);">
-                                <span class="text-[9px] font-black uppercase tracking-tight text-[#30d158] truncate">${t('mean_lap')} ${arrowMeanBadge}</span>
-                                <span class="font-mono-num font-black text-[#68f789] text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${meanStr3}</span>
+                        <!-- Dos Píldoras Superiores: Verde (Vuelta Media) y Blanco/Rosa (Última Vuelta) perfectamente contenidas -->
+                        <div class="flex-1 flex flex-col gap-1 justify-between min-w-0 overflow-hidden">
+                            <div class="flex-1 rounded-lg px-2 flex items-center justify-between gap-1 border border-[#30d158]/50 shadow-inner min-w-0 overflow-hidden" style="background: linear-gradient(90deg, rgba(48, 209, 88, 0.24) 0%, rgba(48, 209, 88, 0.38) 100%);">
+                                <span class="text-[8px] font-black uppercase tracking-tight text-[#30d158] truncate">${t('mean_lap')}</span>
+                                <span class="font-mono-num font-black text-[#68f789] leading-none tracking-tight ml-auto shrink-0" style="font-size: clamp(0.82rem, min(10.5cqw, 3cqh), 1.25rem);">${meanStr3}</span>
                             </div>
-                            <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-white/40 shadow-sm" style="background: linear-gradient(90deg, rgba(255, 241, 242, 0.92) 0%, rgba(254, 205, 211, 0.95) 100%);">
-                                <span class="text-[9px] font-black uppercase tracking-tight text-rose-950/80 truncate">${t('card_last_lap')}</span>
-                                <span class="text-[10px] font-mono-num bg-slate-950/90 px-1.5 py-0.5 rounded shrink-0">${diffPrevBadge}</span>
-                                <span class="font-mono-num font-black text-slate-950 text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${lastStr3}</span>
+                            <div class="flex-1 rounded-lg px-2 flex items-center justify-between gap-1 border border-white/40 shadow-sm min-w-0 overflow-hidden" style="background: linear-gradient(90deg, rgba(255, 241, 242, 0.92) 0%, rgba(254, 205, 211, 0.95) 100%);">
+                                <span class="text-[8px] font-black uppercase tracking-tight text-rose-950/80 truncate">${t('card_last_lap')}</span>
+                                <span class="font-mono-num font-black text-slate-950 leading-none tracking-tight ml-auto shrink-0" style="font-size: clamp(0.82rem, min(10.5cqw, 3cqh), 1.25rem);">${lastStr3}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Nombre del Piloto + Controles Minimalistas -->
-                    <div class="flex items-center justify-between gap-1 px-0.5">
-                        <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                    <!-- Nombre del Piloto + Controles Minimalistas (+1, -1, Color) -->
+                    <div class="flex items-center justify-between gap-1 px-0.5 min-w-0">
+                        <div class="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
                             ${isLeader ? `<span class="w-2 h-2 rounded-full bg-[#ffd60a] shadow-[0_0_8px_#ffd60a] shrink-0"></span>` : ''}
-                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-xs sm:text-sm uppercase tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-white/40"/>
+                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black uppercase tracking-tight truncate w-full min-w-0 focus:outline-none border-b border-transparent focus:border-white/40" style="font-size: clamp(0.75rem, min(8.5cqw, 2.6cqh), 1.05rem);"/>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-6 h-5 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-[9px] cursor-pointer" title="Cambiar Acabado Metálico">
+                            <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-5 h-5 rounded-md bg-white/10 hover:bg-white/20 flex items-center justify-center text-[8px] cursor-pointer" title="Cambiar Acabado Metálico">
                                 <i class="fa-solid fa-palette" style="color:${accentHex}"></i>
                             </button>
-                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-1.5 py-0.5 rounded-lg bg-white/10 hover:bg-[#30d158]/30 text-white text-[9px] font-black transition cursor-pointer">+1</button>
-                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-1.5 py-0.5 rounded-lg bg-white/10 hover:bg-[#ff453a]/30 text-white text-[9px] font-black transition cursor-pointer">-1</button>
+                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-1.5 py-0.5 rounded-md bg-white/10 hover:bg-[#30d158]/30 text-white text-[8px] font-black transition cursor-pointer">+1</button>
+                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-1.5 py-0.5 rounded-md bg-white/10 hover:bg-[#ff453a]/30 text-white text-[8px] font-black transition cursor-pointer">-1</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque Hero Central: Vueltas Totales Gigantes + Velocidad + Línea Luminosa Naranja Apple -->
+                <div class="mac-silver-well py-1 px-2 my-0.5 text-center shrink-0 flex flex-col items-center justify-center relative overflow-hidden min-w-0">
+                    <div class="w-full flex items-center justify-between gap-1 px-0.5 text-[8px] font-black text-slate-400 uppercase min-w-0">
+                        <span class="truncate">${t('laps')}</span>
+                        <span class="shrink-0">${diffPrevBadge}</span>
+                    </div>
+                    <div class="font-mono-num font-black text-white leading-none tracking-tighter truncate max-w-full" style="font-size: clamp(1.75rem, min(22cqw, 9cqh), 3.8rem); text-shadow: 0 4px 18px rgba(0,0,0,0.6);">
+                        ${a.laps}
+                    </div>
+                    <div class="font-mono-num font-bold text-slate-300 leading-none mt-0.5 tracking-tight flex items-baseline justify-center gap-1 max-w-full overflow-hidden" style="font-size: clamp(0.88rem, min(11.5cqw, 4.2cqh), 1.65rem);">
+                        <span class="truncate">${speedStr2}</span>
+                        <span class="text-[8px] font-extrabold text-[#5ac8fa] uppercase shrink-0">km/h</span>
+                    </div>
+                    <!-- Línea Naranja Minimalista Característica con Glow Suave -->
+                    <div class="w-4/5 mx-auto h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent mt-1 shadow-[0_0_10px_#ff9f0a]"></div>
+                </div>
+
+                <!-- Bloques Progresivos de Telemetría (BÁSICO / MEDIO / EXPERTO) sin salirse de la tarjeta -->
+                ${extraTelemetryBlocksHtml}
+
+                <!-- Columna Vertical de Mejores Vueltas con Tipografía Nítida y Cápsula Blanca/Rosada en Última Vuelta -->
+                <div class="flex-1 min-h-0 min-w-0 flex flex-col justify-between overflow-y-auto overflow-x-hidden px-0.5 py-0.5 divide-y divide-white/[0.04]">
+                    ${rowsHtml.join('')}
+                </div>
+            </div>`;
+        }
+
+        // Diseño Bento Panorámico No-Columnar exclusivo para el modo 3. EXPERTO
+        function buildExpertBentoCardHtml(a, pos, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
+            const pal = a.laneInfo || { hex: '#ff9f0a' };
+            const isLeader = pos === 1 && a.laps > 0;
+            const trackLen = state.trackLengthMeters || 28;
+            const scaleFactor = state.scaleFactor || 32;
+
+            const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
+            const prevLapVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
+            const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
+            const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
+            const meanLapVal = getDriverMeanLap(a);
+
+            const lastLapStr = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
+            const bestLapStr = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
+            const worstLapStr = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
+            const meanLapStr = meanLapVal > 0 ? meanLapVal.toFixed(3) : '--.---';
+
+            const lapDiffPrev = (lastLapVal > 0 && prevLapVal > 0) ? (lastLapVal - prevLapVal) : 0;
+            const trendVsPrevArrow = (lastLapVal > 0 && prevLapVal > 0)
+                ? (lapDiffPrev <= 0
+                    ? `<span class="text-[#30d158] font-black">▼${lapDiffPrev.toFixed(3)}</span>`
+                    : `<span class="text-[#ff453a] font-black">▲+${lapDiffPrev.toFixed(3)}</span>`)
+                : `<span class="text-slate-400 font-bold">●</span>`;
+
+            const paceDelta = (lastLapVal > 0 && meanLapVal > 0) ? (lastLapVal - meanLapVal) : 0;
+            const trendVsMeanHtml = (lastLapVal > 0 && meanLapVal > 0)
+                ? (paceDelta <= 0
+                    ? `<span class="text-[#30d158] font-black">▼${paceDelta.toFixed(3)}</span>`
+                    : `<span class="text-[#ff453a] font-black">▲+${paceDelta.toFixed(3)}</span>`)
+                : `<span class="text-slate-400 font-bold">0.000</span>`;
+
+            let stdDev = 0;
+            if (a.history.length >= 2 && meanLapVal > 0) {
+                const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanLapVal, 2), 0) / a.history.length;
+                stdDev = Math.sqrt(variance);
+            }
+            const stdDevStr = `±${stdDev.toFixed(3)}`;
+            const consistencyPct = (bestLapVal > 0 && meanLapVal > 0)
+                ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanLapVal)) * 100)))
+                : 100;
+
+            const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
+            const avgSpeedKmh = meanLapVal > 0 ? (trackLen / meanLapVal) * 3.6 : 0;
+            const scaleSpeedKmh = curSpeedKmh * scaleFactor;
+
+            const curSpeedStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(1) : '0.0';
+            const avgSpeedStr = avgSpeedKmh > 0 ? avgSpeedKmh.toFixed(1) : '0.0';
+            const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
+
+            const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
+            const projectedLaps = meanLapVal > 0
+                ? Math.round(a.laps + (state.timeRemaining / meanLapVal))
+                : a.laps;
+
+            let compactSectorsHtml = '';
+            if (sCount >= 2) {
+                const activeBox = (idx) => curSec === idx ? 'border-[#5ac8fa] bg-[#0a84ff]/20' : 'border-white/10';
+                compactSectorsHtml = `
+                    <div class="grid grid-cols-${sCount} gap-1.5 pt-1 shrink-0 min-w-0">
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well px-2.5 py-1 flex items-center justify-between border min-w-0 overflow-hidden ${activeBox(1)}">
+                            <span class="text-[9px] font-black text-slate-300 shrink-0">${t('card_sector')} 1</span>
+                            <span class="font-mono-num font-black text-xs sm:text-sm truncate ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
+                        </div>
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well px-2.5 py-1 flex items-center justify-between border min-w-0 overflow-hidden ${activeBox(2)}">
+                            <span class="text-[9px] font-black text-slate-300 shrink-0">${sCount === 2 ? t('finish_line') : `${t('card_sector')} 2`}</span>
+                            <span class="font-mono-num font-black text-xs sm:text-sm truncate ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
+                        </div>
+                        ${sCount === 3 ? `
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well px-2.5 py-1 flex items-center justify-between border min-w-0 overflow-hidden ${activeBox(3)}">
+                            <span class="text-[9px] font-black text-slate-300 shrink-0">${t('finish_line')}</span>
+                            <span class="font-mono-num font-black text-xs sm:text-sm truncate ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
+                        </div>` : ''}
+                    </div>`;
+            }
+
+            return `
+            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq p-2.5 flex flex-col justify-between h-full min-h-0 min-w-0 relative overflow-hidden cursor-pointer select-none" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
+                <!-- Cabecera Bento Experto -->
+                <div class="flex justify-between items-center gap-2 pb-1.5 shrink-0 border-b border-white/15 min-w-0">
+                    <div class="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                        <span class="px-2.5 py-0.5 rounded-xl text-xs font-black uppercase shrink-0 shadow" style="background:${pal.hex}; color:#090b10;">
+                            C${a.lane}
+                        </span>
+                        <span class="px-2 py-0.5 rounded-xl text-xs font-black shrink-0 ${isLeader ? 'mac-silver-active' : 'bg-white/15 text-white border border-white/20'}">
+                            P${pos}
+                        </span>
+                        <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-sm sm:text-base tracking-tight truncate w-full min-w-0 focus:outline-none border-b border-transparent focus:border-white"/>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <span class="text-[10px] font-mono-num font-bold text-[#ffd60a] hidden xl:inline mr-1">${a.nextAction}</span>
+                        <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-6 h-6 rounded-lg mac-silver-btn flex items-center justify-center text-[10px] cursor-pointer" title="Cambiar Acabado Metálico">
+                            <i class="fa-solid fa-palette" style="color:${accentHex}"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-2 py-0.5 rounded-lg bg-[#30d158]/25 hover:bg-[#30d158]/45 border border-[#30d158]/50 text-[#30d158] text-[10px] font-black cursor-pointer">+1</button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-2 py-0.5 rounded-lg bg-[#ff453a]/25 hover:bg-[#ff453a]/45 border border-[#ff453a]/50 text-[#ff453a] text-[10px] font-black cursor-pointer">-1</button>
+                    </div>
+                </div>
+
+                <!-- Cuerpo Bento Experto en 2 niveles horizontales -->
+                <div class="flex-1 flex flex-col gap-1.5 min-h-0 pt-1.5 overflow-hidden">
+                    <!-- Nivel 1: 6 Celdas de Telemetría -->
+                    <div class="h-[46%] grid grid-cols-6 gap-1.5 min-h-0">
+                        <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15 min-w-0">
+                            <div class="flex items-center justify-between gap-1 min-w-0">
+                                <span class="text-[8px] font-black text-slate-300 truncate">${t('laps')}</span>
+                                <span class="text-[8px] font-mono-num font-black text-[#ffd60a] shrink-0">→${projectedLaps}V</span>
+                            </div>
+                            <div class="flex-1 flex items-center justify-center min-h-0">
+                                <span class="font-mono-num font-black text-white leading-none truncate" style="font-size: clamp(1.1rem, min(14cqw, 34cqh), 2.8rem);">${a.laps}</span>
+                            </div>
+                            <span class="text-[8px] font-mono-num font-bold text-slate-300 text-center border-t border-white/10 pt-0.5 truncate">${totalDistKm} km</span>
+                        </div>
+
+                        <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15 min-w-0">
+                            <span class="text-[8px] font-black text-slate-300 truncate">${t('card_last_short')}</span>
+                            <div class="flex-1 flex items-center justify-center min-h-0">
+                                <span class="font-mono-num font-black text-white leading-none truncate" style="font-size: clamp(0.95rem, min(12cqw, 30cqh), 2.3rem);">${lastLapStr}</span>
+                            </div>
+                            <span class="text-[8px] font-mono-num text-center border-t border-white/10 pt-0.5 truncate">${trendVsPrevArrow}</span>
+                        </div>
+
+                        <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15 min-w-0">
+                            <span class="text-[8px] font-black text-[#5ac8fa] truncate">${t('mean_lap')}</span>
+                            <div class="flex-1 flex items-center justify-center min-h-0">
+                                <span class="font-mono-num font-black text-[#5ac8fa] leading-none truncate" style="font-size: clamp(0.95rem, min(12cqw, 30cqh), 2.3rem);">${meanLapStr}</span>
+                            </div>
+                            <span class="text-[8px] font-mono-num text-center border-t border-white/10 pt-0.5 truncate">${trendVsMeanHtml}</span>
+                        </div>
+
+                        <div class="mac-silver-well well-cq p-1.5 h-full border border-[#30d158]/40 min-w-0">
+                            <span class="text-[8px] font-black text-[#30d158] truncate">★ ${t('record')}</span>
+                            <div class="flex-1 flex items-center justify-center min-h-0">
+                                <span class="font-mono-num font-black text-[#30d158] leading-none truncate" style="font-size: clamp(0.95rem, min(12cqw, 30cqh), 2.3rem);">${bestLapStr}</span>
+                            </div>
+                            <span class="text-[8px] font-mono-num font-bold text-[#ff8a84] text-center border-t border-white/10 pt-0.5 truncate">▲${worstLapStr}</span>
+                        </div>
+
+                        <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15 min-w-0">
+                            <span class="text-[8px] font-black text-[#d982ff] truncate">${t('card_consistency')}</span>
+                            <div class="flex-1 flex items-center justify-center min-h-0">
+                                <span class="font-mono-num font-black text-[#d982ff] leading-none truncate" style="font-size: clamp(0.95rem, min(12cqw, 30cqh), 2.3rem);">${consistencyPct}%</span>
+                            </div>
+                            <span class="text-[8px] font-mono-num font-bold text-slate-300 text-center border-t border-white/10 pt-0.5 truncate">${stdDevStr}</span>
+                        </div>
+
+                        <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15 min-w-0">
+                            <div class="flex items-center justify-between gap-0.5 min-w-0">
+                                <span class="text-[8px] font-black text-[#ffd60a] truncate">${t('card_speed')}</span>
+                                <span class="text-[7px] font-mono-num text-slate-400 shrink-0">M:${avgSpeedStr}</span>
+                            </div>
+                            <div class="flex-1 flex items-center justify-center min-h-0">
+                                <span class="font-mono-num font-black text-[#ffd60a] leading-none truncate" style="font-size: clamp(0.95rem, min(12cqw, 30cqh), 2.3rem);">${curSpeedStr}</span>
+                            </div>
+                            <span class="text-[8px] font-mono-num font-bold text-white text-center border-t border-white/10 pt-0.5 truncate">1:${scaleFactor}: ${scaleSpeedStr}k</span>
                         </div>
                     </div>
 
-                    <!-- Selector Segmented Estilo Apple (CLÁSICO · BÁSICO · MEDIO · EXPERTO) -->
-                    <div class="grid grid-cols-4 gap-0.5 bg-black/50 p-0.5 rounded-xl border border-white/10">
-                        ${layoutBtnsHtml}
+                    <!-- Nivel 2: Gráfica Sparkline a la izquierda + Historial de Vueltas a la derecha -->
+                    <div class="h-[54%] grid grid-cols-12 gap-1.5 min-h-0">
+                        <div class="col-span-7 mac-silver-well p-2 h-full border border-white/20 flex flex-col justify-between min-w-0 overflow-hidden">
+                            <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0 min-w-0">
+                                <span class="text-[9px] font-black text-slate-200 uppercase truncate"><i class="fa-solid fa-chart-area mr-1 text-[#30d158]"></i>${t('card_pace_chart')}</span>
+                                <span class="text-[9px] font-mono-num font-bold text-[#ffd60a] shrink-0">--- ${meanLapStr}</span>
+                            </div>
+                            <div class="flex-1 min-h-0 w-full overflow-hidden">
+                                ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanLapVal, accentHex)}
+                            </div>
+                        </div>
+
+                        <div class="col-span-5 mac-silver-well p-2 h-full border border-white/20 flex flex-col justify-between min-w-0 overflow-hidden">
+                            <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0 min-w-0">
+                                <span class="text-[9px] font-black text-slate-200 uppercase truncate"><i class="fa-solid fa-stopwatch mr-1 text-[#5ac8fa]"></i>${t('card_time_list')}</span>
+                                <span class="text-[9px] font-mono-num font-black text-[#30d158] shrink-0">▼ <span class="text-[#ff453a]">▲</span></span>
+                            </div>
+                            <div class="flex-1 min-h-0 overflow-hidden">
+                                ${buildLapHistoryListHtml(a.history, a.bestLap, worstLapVal, 5)}
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Bloque Hero Central: Vueltas Totales Gigantes + Velocidad con Flechas Verdes/Rojas + Línea Luminosa Naranja Apple -->
-                <div class="mac-silver-well py-1.5 px-2.5 my-0.5 text-center shrink-0 flex flex-col items-center justify-center relative overflow-hidden">
-                    <div class="w-full flex items-center justify-between px-1 text-[9px] font-black text-slate-400 uppercase">
-                        <span>${t('laps')} <span class="text-[#30d158]">▲</span></span>
-                        <span>${diffPrevBadge}</span>
-                    </div>
-                    <div class="font-mono-num font-black text-white leading-none tracking-tighter" style="font-size: clamp(2.2rem, min(26cqw, 10.5cqh), 4.6rem); text-shadow: 0 4px 18px rgba(0,0,0,0.6);">
-                        ${a.laps}
-                    </div>
-                    <div class="font-mono-num font-bold text-slate-300 leading-none mt-0.5 tracking-tight flex items-baseline justify-center gap-1.5" style="font-size: clamp(1.05rem, min(14cqw, 4.8cqh), 2rem);">
-                        <span>${speedStr2}</span>
-                        <span class="text-[9px] font-extrabold text-[#5ac8fa] uppercase">km/h</span>
-                        <span class="text-xs">${arrowSpeedBadge}</span>
-                    </div>
-                    <!-- Línea Naranja Minimalista Característica con Glow Suave -->
-                    <div class="w-4/5 mx-auto h-[2.5px] rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent mt-1 shadow-[0_0_12px_#ff9f0a]"></div>
-                </div>
-
-                <!-- Bloques Progresivos de Telemetría (BÁSICO / MEDIO / EXPERTO) con el mismo lenguaje visual -->
-                ${extraTelemetryBlocksHtml}
-
-                <!-- Columna Vertical de Mejores Vueltas con Tipografía Grande y Cápsula Blanca/Rosada en Última Vuelta -->
-                <div class="flex-1 min-h-0 flex flex-col justify-between overflow-y-auto px-0.5 py-0.5 divide-y divide-white/[0.04]">
-                    ${rowsHtml.join('')}
-                </div>
+                ${compactSectorsHtml}
             </div>`;
         }
 
@@ -6573,26 +6334,19 @@
             const n = assignments.length;
             const sCount = state.numSectors;
             const standings = getHeatStandingsMap(heat);
+            const activeGlobalMode = [0, 1, 2, 3].includes(state.globalCardLayout) ? state.globalCardLayout : 1;
 
-            // Detectar si el diseño global o mayoritario está en modo 3. EXPERTO para usar cuadrícula Bento panorámica (no columnas verticales estrechas)
-            const allInExpert = state.globalCardLayout === 3 || assignments.every(a => state.laneLayoutModes[a.lane] === 3);
+            // Modos 0, 1 y 2 en columnas verticales; Modo 3 (EXPERTO) en cuadrícula Bento panorámica
             let cols = Math.max(1, n);
             let rows = 1;
-
-            if (allInExpert) {
-                if (n <= 2) {
-                    cols = 1;
-                    rows = Math.max(1, n);
-                } else if (n <= 4) {
-                    cols = 2;
-                    rows = Math.ceil(n / 2);
-                } else if (n <= 6) {
-                    cols = 2;
-                    rows = Math.ceil(n / 2);
-                } else {
-                    cols = 3;
-                    rows = Math.ceil(n / 3);
-                }
+            if (activeGlobalMode === 3) {
+                if (n === 1) { cols = 1; rows = 1; }
+                else if (n === 2) { cols = 2; rows = 1; }
+                else if (n === 3) { cols = 3; rows = 1; }
+                else if (n === 4) { cols = 2; rows = 2; }
+                else if (n <= 6) { cols = 3; rows = 2; }
+                else if (n <= 8) { cols = 4; rows = 2; }
+                else { cols = 5; rows = 2; }
             }
 
             container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
@@ -6601,7 +6355,7 @@
             container.innerHTML = assignments.map(a => {
                 const pal = a.laneInfo;
                 const pos = standings[a.lane];
-                const rawMode = state.laneLayoutModes[a.lane] !== undefined ? state.laneLayoutModes[a.lane] : (state.globalCardLayout !== undefined ? state.globalCardLayout : 1);
+                const rawMode = state.laneLayoutModes[a.lane] !== undefined ? state.laneLayoutModes[a.lane] : activeGlobalMode;
                 const layoutMode = [0, 1, 2, 3].includes(rawMode) ? rawMode : 1;
                 const themeIdx = state.laneThemeIndices[a.lane] !== undefined ? state.laneThemeIndices[a.lane] : (state.globalThemeIndex || 0);
                 const themeObj = PILOT_CARD_THEMES[themeIdx] || PILOT_CARD_THEMES[0];
@@ -6613,23 +6367,10 @@
                 const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(2) : '--.--';
                 const curSec = a.currentSector || 1;
 
-                const levelLabels = [
-                    { num: 0, label: t('layout_0_short') },
-                    { num: 1, label: t('layout_1_short') },
-                    { num: 2, label: t('layout_2_short') },
-                    { num: 3, label: t('layout_3_short') }
-                ];
-                const layoutBtnsHtml = levelLabels.map(item => `
-                    <button onclick="event.stopPropagation(); setLaneCardLayout(${a.lane}, ${item.num})" class="py-0.5 px-1 rounded-lg text-[9px] font-black transition cursor-pointer truncate ${layoutMode === item.num ? 'mac-silver-active' : 'bg-white/5 text-slate-300 hover:text-white'}" title="${item.label}">
-                        ${item.label}
-                    </button>
-                `).join('');
-
                 if (layoutMode === 3) {
-                    return buildExpertHorizontalBentoCardHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
+                    return buildExpertBentoCardHtml(a, pos, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
                 }
-
-                return buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
+                return buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
             }).join('');
         }
 
@@ -6652,18 +6393,43 @@
 
         function startAutoSimLoop() {
             if (autoSimInterval) clearInterval(autoSimInterval);
-            // Cadencia pausada y realista (~8.5 a 10 segundos reales por vuelta de cada coche) para dar tiempo completo a la voz del móvil
-            let simTickIndex = 0;
+            // Simulación asíncrona realista: cada carril tiene su propio ritmo independiente y cruza meta en momentos aleatorios
             const sCount = state.numSectors || 1;
-            const intervalMs = Math.max(1850, Math.round(3600 / sCount));
+            const now = performance.now();
+            const heat = state.heats[state.currentHeatIndex];
+            if (heat && heat.assignments) {
+                heat.assignments.forEach(a => {
+                    const basePace = (2400 + Math.random() * 1400) / sCount;
+                    a._nextSimPassTime = now + 400 + Math.random() * basePace;
+                });
+            }
+
             autoSimInterval = setInterval(() => {
                 if (state.raceStatus !== 'RACING') return;
-                const heat = state.heats[state.currentHeatIndex];
-                if (!heat || heat.assignments.length === 0) return;
-                const currentAssignment = heat.assignments[simTickIndex % heat.assignments.length];
-                simTickIndex++;
-                triggerNextCheckpoint(currentAssignment.lane, null, true);
-            }, intervalMs);
+                const currentHeat = state.heats[state.currentHeatIndex];
+                if (!currentHeat || currentHeat.assignments.length === 0) return;
+
+                const tNow = performance.now();
+                // Barajar el orden de comprobación para que si dos coches coinciden, el orden sea aleatorio
+                const shuffled = [...currentHeat.assignments].sort(() => Math.random() - 0.5);
+
+                for (const a of shuffled) {
+                    if (!a._nextSimPassTime) {
+                        a._nextSimPassTime = tNow + (1200 + Math.random() * 1800) / sCount;
+                    }
+                    if (tNow >= a._nextSimPassTime) {
+                        // Programar el siguiente paso de este coche con variación aleatoria (adelantamientos, tráfico o vuelta rápida)
+                        const drv = state.drivers.find(d => d.id === a.driverId);
+                        const skillFactor = drv ? Math.max(0.88, Math.min(1.15, drv.poleLap / 8.5)) : 1.0;
+                        const randomIncident = Math.random() < 0.08 ? (700 + Math.random() * 900) : 0; // Pequeño derrape o tráfico ocasional
+                        const nextDelay = (((2300 + Math.random() * 1100) * skillFactor) + randomIncident) / sCount;
+                        a._nextSimPassTime = tNow + nextDelay;
+
+                        triggerNextCheckpoint(a.lane, null, true);
+                        break; // Procesa un paso por ciclo corto para mantener fluidez visual y sonora
+                    }
+                }
+            }, 180);
         }
 
         function toggleAutoSim() {
@@ -6906,820 +6672,12 @@
                     <td class="py-3.5 px-4 text-right font-mono-num text-lg font-black text-[#ffd60a]">${s.totalPoints} pts</td>
                 </tr>
             `).join('');
-
-            populateDbQueryFilterOptions();
-            runDatabaseQuery();
-        }
-
-        // ==================== MOTOR DE CONSULTAS SQL / NOSQL SOBRE LA BASE DE DATOS LOCAL ====================
-        let activeDbQueryPreset = 'GENERAL_DRIVERS';
-        let lastDbQueryExportRows = [];
-        let lastDbQueryExportHeaders = [];
-
-        function getArchivedRacesFromLocalDB() {
-            try {
-                const raw = localStorage.getItem('krono_archived_races_db');
-                if (!raw) return [];
-                const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) ? parsed : [];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function saveArchivedRacesToLocalDB(list) {
-            try {
-                localStorage.setItem('krono_archived_races_db', JSON.stringify(list));
-            } catch (e) {}
-        }
-
-        function saveCurrentRaceToArchiveDB() {
-            const archive = getArchivedRacesFromLocalDB();
-            const totalLapsAll = state.heats.reduce((acc, h) => acc + h.assignments.reduce((s, a) => s + a.laps, 0), 0);
-            let bestOverall = Infinity;
-            let bestPilotName = '—';
-
-            state.heats.forEach(h => {
-                h.assignments.forEach(a => {
-                    if (a.bestLap < bestOverall) {
-                        bestOverall = a.bestLap;
-                        bestPilotName = a.driverName;
-                    }
-                });
-            });
-
-            // Calcular ganador actual
-            const winnerRow = (() => {
-                if (!state.drivers.length) return '—';
-                const totals = state.drivers.map(d => {
-                    let l = 0, b = Infinity;
-                    state.heats.forEach(h => {
-                        const f = h.assignments.find(a => a.driverId === d.id);
-                        if (f) { l += f.laps; if (f.bestLap < b) b = f.bestLap; }
-                    });
-                    return { name: d.name, l, b };
-                }).sort((x, y) => (y.l - x.l) || (x.b - y.b));
-                return totals[0] ? `${totals[0].name} (${totals[0].l}V)` : '—';
-            })();
-
-            const recordEntry = {
-                archiveId: 'RACE_' + Date.now(),
-                savedAt: new Date().toLocaleString('es-ES'),
-                eventName: state.eventName || 'CAMPEONATO SOCIAL SLOT CLUB',
-                eventDate: state.eventDate || getTodayFormattedISO(),
-                category: state.activeClubCategory || 'GT',
-                lanesCount: state.lanesCount,
-                heatsCount: state.heats.length,
-                pilotsCount: state.drivers.length,
-                totalLaps: totalLapsAll,
-                bestLap: bestOverall < Infinity ? +bestOverall.toFixed(3) : null,
-                bestPilot: bestPilotName,
-                winner: winnerRow,
-                snapshot: {
-                    eventName: state.eventName,
-                    eventDate: state.eventDate,
-                    activeClubCategory: state.activeClubCategory,
-                    lanesCount: state.lanesCount,
-                    numSectors: state.numSectors,
-                    trackLengthMeters: state.trackLengthMeters,
-                    durationSeconds: state.durationSeconds,
-                    durationLabel: state.durationLabel,
-                    drivers: JSON.parse(JSON.stringify(state.drivers)),
-                    heats: state.heats.map(h => ({
-                        ...h,
-                        assignments: h.assignments.map(a => ({
-                            ...a,
-                            bestLap: serializeNumber(a.bestLap),
-                            bestSectors: {
-                                1: serializeNumber(a.bestSectors?.[1]),
-                                2: serializeNumber(a.bestSectors?.[2]),
-                                3: serializeNumber(a.bestSectors?.[3])
-                            }
-                        }))
-                    }))
-                }
-            };
-
-            archive.unshift(recordEntry);
-            saveArchivedRacesToLocalDB(archive.slice(0, 50));
-            playTone(1180, 130, 'sine', 0.8);
-            setDbPresetQuery('ARCHIVED_RACES');
-        }
-
-        function loadArchivedRaceIntoLiveState(archiveId) {
-            const archive = getArchivedRacesFromLocalDB();
-            const found = archive.find(r => r.archiveId === archiveId);
-            if (!found || !found.snapshot) return;
-            const snap = found.snapshot;
-
-            state.eventName = snap.eventName || state.eventName;
-            state.eventDate = snap.eventDate || state.eventDate;
-            state.activeClubCategory = snap.activeClubCategory || state.activeClubCategory;
-            state.lanesCount = snap.lanesCount || state.lanesCount;
-            state.numSectors = snap.numSectors || state.numSectors;
-            state.trackLengthMeters = snap.trackLengthMeters || state.trackLengthMeters;
-            state.durationSeconds = snap.durationSeconds || state.durationSeconds;
-            state.durationLabel = snap.durationLabel || state.durationLabel;
-            state.drivers = snap.drivers || [];
-            state.heats = (snap.heats || []).map(h => ({
-                ...h,
-                assignments: (h.assignments || []).map(a => ({
-                    ...a,
-                    bestLap: deserializeNumber(a.bestLap),
-                    bestSectors: {
-                        1: deserializeNumber(a.bestSectors?.[1]),
-                        2: deserializeNumber(a.bestSectors?.[2]),
-                        3: deserializeNumber(a.bestSectors?.[3])
-                    }
-                }))
-            }));
-            recalculateOverallBestLap();
-            saveLocalDatabase();
-            renderStandingsView();
-            setDbPresetQuery('GENERAL_DRIVERS');
-        }
-
-        function deleteArchivedRaceFromDB(archiveId) {
-            const archive = getArchivedRacesFromLocalDB().filter(r => r.archiveId !== archiveId);
-            saveArchivedRacesToLocalDB(archive);
-            runDatabaseQuery();
-        }
-
-        function populateDbQueryFilterOptions() {
-            const catSel = document.getElementById('db-filter-category');
-            const heatSel = document.getElementById('db-filter-heat');
-            const laneSel = document.getElementById('db-filter-lane');
-            const archiveCountEl = document.getElementById('db-archive-count-inline');
-
-            if (archiveCountEl) {
-                archiveCountEl.textContent = String(getArchivedRacesFromLocalDB().length);
-            }
-
-            if (catSel) {
-                const prevCat = catSel.value || 'ALL';
-                const cats = new Set([...(state.clubCategories || []), state.activeClubCategory || 'GT']);
-                state.drivers.forEach(d => { if (d.category) cats.add(d.category); });
-                catSel.innerHTML = `<option value="ALL">TODAS LAS CATEGORÍAS</option>` +
-                    [...cats].filter(Boolean).map(c => `<option value="${c}">${c}</option>`).join('');
-                if ([...cats].includes(prevCat)) catSel.value = prevCat;
-            }
-
-            if (heatSel) {
-                const prevHeat = heatSel.value || 'ALL';
-                heatSel.innerHTML = `<option value="ALL">TODAS LAS MANGAS (${state.heats.length})</option>` +
-                    state.heats.map(h => `<option value="${h.heatNumber}">MANGA ${h.heatNumber}</option>`).join('');
-                if (prevHeat !== 'ALL' && state.heats.some(h => String(h.heatNumber) === String(prevHeat))) {
-                    heatSel.value = prevHeat;
-                }
-            }
-
-            if (laneSel) {
-                const prevLane = laneSel.value || 'ALL';
-                const lanesArr = Array.from({ length: state.lanesCount || 4 }, (_, i) => i + 1);
-                laneSel.innerHTML = `<option value="ALL">TODOS LOS CARRILES</option>` +
-                    lanesArr.map(l => `<option value="${l}">CARRIL ${l} (${LANE_PALETTE[l]?.colorName || 'C'+l})</option>`).join('');
-                if (prevLane !== 'ALL' && lanesArr.includes(parseInt(prevLane, 10))) {
-                    laneSel.value = prevLane;
-                }
-            }
-        }
-
-        function setDbPresetQuery(presetName) {
-            activeDbQueryPreset = presetName;
-            const presets = ['GENERAL_DRIVERS', 'HEATS_BY_LANE', 'LANE_RECORDS', 'ALL_LAPS_LOG', 'CATEGORY_STATS', 'ARCHIVED_RACES'];
-            presets.forEach(p => {
-                const btn = document.getElementById(`db-preset-${p}`);
-                if (btn) {
-                    btn.className = (p === presetName)
-                        ? "px-3 py-1.5 rounded-xl text-[11px] font-black mac-silver-active cursor-pointer"
-                        : "px-3 py-1.5 rounded-xl text-[11px] font-bold mac-silver-btn cursor-pointer";
-                }
-            });
-            runDatabaseQuery();
-        }
-
-        function resetDbQueryFilters() {
-            const s = document.getElementById('db-filter-search');
-            const c = document.getElementById('db-filter-category');
-            const h = document.getElementById('db-filter-heat');
-            const l = document.getElementById('db-filter-lane');
-            const minL = document.getElementById('db-filter-min-laps');
-            const maxT = document.getElementById('db-filter-max-laptime');
-            const sort = document.getElementById('db-filter-sort');
-            if (s) s.value = '';
-            if (c) c.value = 'ALL';
-            if (h) h.value = 'ALL';
-            if (l) l.value = 'ALL';
-            if (minL) minL.value = '';
-            if (maxT) maxT.value = '';
-            if (sort) sort.value = 'BEST_ASC';
-            runDatabaseQuery();
-        }
-
-        function runDatabaseQuery() {
-            const thead = document.getElementById('db-query-thead');
-            const tbody = document.getElementById('db-query-tbody');
-            const kpiBox = document.getElementById('db-query-kpi-summary');
-            const badgeCount = document.getElementById('db-query-badge-count');
-            const archiveCountEl = document.getElementById('db-archive-count-inline');
-            if (!thead || !tbody) return;
-
-            const archiveList = getArchivedRacesFromLocalDB();
-            if (archiveCountEl) archiveCountEl.textContent = String(archiveList.length);
-
-            const searchTxt = (document.getElementById('db-filter-search')?.value || '').trim().toUpperCase();
-            const catFilter = document.getElementById('db-filter-category')?.value || 'ALL';
-            const heatFilter = document.getElementById('db-filter-heat')?.value || 'ALL';
-            const laneFilter = document.getElementById('db-filter-lane')?.value || 'ALL';
-            const minLapsFilter = parseInt(document.getElementById('db-filter-min-laps')?.value || '0', 10) || 0;
-            const maxLapTimeFilter = parseFloat(document.getElementById('db-filter-max-laptime')?.value || '0') || 0;
-            const sortBy = document.getElementById('db-filter-sort')?.value || 'BEST_ASC';
-            const trackLen = state.trackLengthMeters || 28;
-
-            const drvMap = {};
-            state.drivers.forEach(d => { drvMap[d.id] = d; });
-
-            // MODO 6: HISTÓRICO DE CARRERAS GUARDADAS EN LA BASE DE DATOS
-            if (activeDbQueryPreset === 'ARCHIVED_RACES') {
-                const filteredArchive = archiveList.filter(item => {
-                    if (catFilter !== 'ALL' && item.category !== catFilter) return false;
-                    if (searchTxt && !(`${item.eventName} ${item.bestPilot} ${item.winner} ${item.category}`.toUpperCase().includes(searchTxt))) return false;
-                    return true;
-                });
-
-                if (badgeCount) badgeCount.textContent = `${filteredArchive.length} CARRERAS ARCHIVADAS`;
-                if (kpiBox) {
-                    const totalSavedLaps = filteredArchive.reduce((acc, r) => acc + (r.totalLaps || 0), 0);
-                    const fastestSaved = filteredArchive.reduce((min, r) => (r.bestLap && r.bestLap < min ? r.bestLap : min), Infinity);
-                    kpiBox.innerHTML = `
-                        <div class="mac-silver-well px-3 py-2 border border-white/10">
-                            <div class="text-[9px] font-bold text-slate-400">CARRERAS EN DB</div>
-                            <div class="text-lg font-mono-num font-black text-[#5ac8fa]">${filteredArchive.length}</div>
-                        </div>
-                        <div class="mac-silver-well px-3 py-2 border border-white/10">
-                            <div class="text-[9px] font-bold text-slate-400">VUELTAS HISTÓRICAS</div>
-                            <div class="text-lg font-mono-num font-black text-[#30d158]">${totalSavedLaps} V</div>
-                        </div>
-                        <div class="mac-silver-well px-3 py-2 border border-white/10">
-                            <div class="text-[9px] font-bold text-slate-400">RÉCORD HISTÓRICO DB</div>
-                            <div class="text-lg font-mono-num font-black text-[#d982ff]">${fastestSaved < Infinity ? fastestSaved.toFixed(3) + 's' : '--.---'}</div>
-                        </div>
-                        <div class="mac-silver-well px-3 py-2 border border-white/10">
-                            <div class="text-[9px] font-bold text-slate-400">EVENTO ACTIVO</div>
-                            <div class="text-xs font-black text-[#ffd60a] truncate">${state.eventName || 'CLUB'}</div>
-                        </div>
-                    `;
-                }
-
-                thead.innerHTML = `
-                    <tr>
-                        <th class="py-2.5 px-3">Fecha Guardado</th>
-                        <th class="py-2.5 px-3">Evento / Campeonato</th>
-                        <th class="py-2.5 px-3 text-center">Categoría</th>
-                        <th class="py-2.5 px-3 text-center">Pilotos / Mangas</th>
-                        <th class="py-2.5 px-3 text-right">Total Vueltas</th>
-                        <th class="py-2.5 px-3 text-right">Récord</th>
-                        <th class="py-2.5 px-3">Ganador</th>
-                        <th class="py-2.5 px-3 text-right">Acciones DB</th>
-                    </tr>
-                `;
-
-                lastDbQueryExportHeaders = ['Fecha', 'Evento', 'Categoria', 'Pilotos', 'Mangas', 'Total_Vueltas', 'Record_Seg', 'Ganador'];
-                lastDbQueryExportRows = filteredArchive.map(r => [
-                    r.savedAt, r.eventName, r.category, r.pilotsCount, r.heatsCount, r.totalLaps, r.bestLap || '', r.winner
-                ]);
-
-                if (filteredArchive.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400">No hay carreras archivadas todavía. Pulsa el botón verde <b>"GUARDAR EN HISTÓRICO DB"</b> arriba a la derecha para archivar la carrera actual.</td></tr>`;
-                } else {
-                    tbody.innerHTML = filteredArchive.map(r => `
-                        <tr class="hover:bg-white/5 transition">
-                            <td class="py-2.5 px-3 text-slate-300">${r.savedAt}</td>
-                            <td class="py-2.5 px-3 font-black text-white">${r.eventName} <span class="text-[10px] text-slate-400">(${r.eventDate})</span></td>
-                            <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded bg-[#0a84ff]/20 text-[#5ac8fa] font-black">${r.category}</span></td>
-                            <td class="py-2.5 px-3 text-center">${r.pilotsCount} Pil · ${r.heatsCount} M</td>
-                            <td class="py-2.5 px-3 text-right font-black text-[#30d158]">${r.totalLaps} V</td>
-                            <td class="py-2.5 px-3 text-right font-bold text-[#d982ff]">${r.bestLap ? r.bestLap.toFixed(3) + 's (' + r.bestPilot + ')' : '--.---'}</td>
-                            <td class="py-2.5 px-3 font-black text-[#ffd60a]">${r.winner}</td>
-                            <td class="py-2.5 px-3 text-right space-x-1">
-                                <button onclick="loadArchivedRaceIntoLiveState('${r.archiveId}')" class="px-2.5 py-1 rounded-lg btn-neon-blue text-[10px] font-black cursor-pointer">CARGAR</button>
-                                <button onclick="deleteArchivedRaceFromDB('${r.archiveId}')" class="px-2 py-1 rounded-lg bg-[#ff453a]/25 hover:bg-[#ff453a] text-white text-[10px] font-black cursor-pointer">✕</button>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-                return;
-            }
-
-            // MODO 3: RÉCORDS POR CARRIL (C1..C10)
-            if (activeDbQueryPreset === 'LANE_RECORDS') {
-                const lanesStats = [];
-                for (let l = 1; l <= state.lanesCount; l++) {
-                    if (laneFilter !== 'ALL' && parseInt(laneFilter, 10) !== l) continue;
-                    let totalLaps = 0;
-                    let bestLap = Infinity;
-                    let bestDriver = '—';
-                    letBestHeat = null;
-                    let allLapTimes = [];
-
-                    state.heats.forEach(h => {
-                        if (heatFilter !== 'ALL' && String(h.heatNumber) !== String(heatFilter)) return;
-                        const ass = h.assignments.find(a => a.lane === l);
-                        if (ass) {
-                            const dObj = drvMap[ass.driverId];
-                            const dCat = dObj?.category || state.activeClubCategory || 'GT';
-                            if (catFilter !== 'ALL' && dCat !== catFilter) return;
-                            if (searchTxt && !(`${ass.driverName} ${ass.driverCar}`.toUpperCase().includes(searchTxt))) return;
-
-                            totalLaps += ass.laps;
-                            allLapTimes.push(...ass.history);
-                            if (ass.bestLap < bestLap) {
-                                bestLap = ass.bestLap;
-                                bestDriver = ass.driverName;
-                                letBestHeat = h.heatNumber;
-                            }
-                        }
-                    });
-
-                    const meanLap = allLapTimes.length > 0 ? (allLapTimes.reduce((x, y) => x + y, 0) / allLapTimes.length) : 0;
-                    const topSpeed = bestLap < Infinity ? (trackLen / bestLap) * 3.6 : 0;
-
-                    if (totalLaps >= minLapsFilter && (maxLapTimeFilter <= 0 || (bestLap < Infinity && bestLap <= maxLapTimeFilter))) {
-                        lanesStats.push({
-                            lane: l,
-                            pal: LANE_PALETTE[l] || { hex: '#5ac8fa', colorName: 'C' + l },
-                            totalLaps,
-                            bestLap,
-                            bestDriver,
-                            bestHeat: letBestHeat,
-                            meanLap,
-                            topSpeed
-                        });
-                    }
-                }
-
-                if (badgeCount) badgeCount.textContent = `${lanesStats.length} CARRILES ANALIZADOS`;
-                thead.innerHTML = `
-                    <tr>
-                        <th class="py-2.5 px-3">Carril</th>
-                        <th class="py-2.5 px-3">Piloto Récord del Carril</th>
-                        <th class="py-2.5 px-3 text-center">Manga Récord</th>
-                        <th class="py-2.5 px-3 text-right">Vueltas en Carril</th>
-                        <th class="py-2.5 px-3 text-right">Mejor Crono Carril</th>
-                        <th class="py-2.5 px-3 text-right">Media del Carril</th>
-                        <th class="py-2.5 px-3 text-right">Velocidad Punta</th>
-                    </tr>
-                `;
-
-                lastDbQueryExportHeaders = ['Carril', 'Piloto_Record', 'Manga', 'Vueltas_Totales', 'Mejor_Crono_Seg', 'Media_Carril_Seg', 'Velocidad_Kmh'];
-                lastDbQueryExportRows = lanesStats.map(r => [
-                    `C${r.lane}`, r.bestDriver, r.bestHeat || '-', r.totalLaps,
-                    r.bestLap < Infinity ? r.bestLap.toFixed(3) : '',
-                    r.meanLap > 0 ? r.meanLap.toFixed(3) : '',
-                    r.topSpeed > 0 ? r.topSpeed.toFixed(2) : ''
-                ]);
-
-                tbody.innerHTML = lanesStats.map(r => `
-                    <tr class="hover:bg-white/5 transition">
-                        <td class="py-2.5 px-3">
-                            <span class="px-2.5 py-1 rounded-lg font-black text-xs" style="background:${r.pal.hex}25; color:${r.pal.hex}; border:1px solid ${r.pal.hex}55;">
-                                CARRIL ${r.lane} (${r.pal.colorName})
-                            </span>
-                        </td>
-                        <td class="py-2.5 px-3 font-black text-white">${r.bestDriver}</td>
-                        <td class="py-2.5 px-3 text-center text-slate-300">${r.bestHeat ? 'MANGA ' + r.bestHeat : '—'}</td>
-                        <td class="py-2.5 px-3 text-right font-black text-[#30d158]">${r.totalLaps} V <span class="text-[#30d158]">▲</span></td>
-                        <td class="py-2.5 px-3 text-right font-black text-[#d982ff]">${r.bestLap < Infinity ? r.bestLap.toFixed(3) + 's ▼' : '--.---'}</td>
-                        <td class="py-2.5 px-3 text-right text-[#5ac8fa]">${r.meanLap > 0 ? r.meanLap.toFixed(3) + 's' : '--.---'}</td>
-                        <td class="py-2.5 px-3 text-right font-bold text-[#ffd60a]">${r.topSpeed > 0 ? r.topSpeed.toFixed(2) + ' km/h ▲' : '0.00 km/h'}</td>
-                    </tr>
-                `).join('');
-                return;
-            }
-
-            // MODO 4: AUDITORÍA VUELTA A VUELTA (TODAS LAS VUELTAS INDIVIDUALES REGISTRADAS EN LA DB)
-            if (activeDbQueryPreset === 'ALL_LAPS_LOG') {
-                let allLapsRows = [];
-                state.heats.forEach(h => {
-                    if (heatFilter !== 'ALL' && String(h.heatNumber) !== String(heatFilter)) return;
-                    h.assignments.forEach(a => {
-                        if (laneFilter !== 'ALL' && String(a.lane) !== String(laneFilter)) return;
-                        const dObj = drvMap[a.driverId];
-                        const dCat = dObj?.category || state.activeClubCategory || 'GT';
-                        if (catFilter !== 'ALL' && dCat !== catFilter) return;
-                        if (searchTxt && !(`${a.driverName} ${a.driverCar} ${dCat}`.toUpperCase().includes(searchTxt))) return;
-                        if (a.laps < minLapsFilter) return;
-
-                        a.history.forEach((lapSec, idx) => {
-                            if (maxLapTimeFilter > 0 && lapSec > maxLapTimeFilter) return;
-                            const prevLap = idx > 0 ? a.history[idx - 1] : null;
-                            const delta = prevLap !== null ? (lapSec - prevLap) : 0;
-                            const speed = lapSec > 0 ? (trackLen / lapSec) * 3.6 : 0;
-                            allLapsRows.push({
-                                heatNumber: h.heatNumber,
-                                lane: a.lane,
-                                laneHex: a.laneInfo?.hex || '#5ac8fa',
-                                driverName: a.driverName,
-                                category: dCat,
-                                lapNum: idx + 1,
-                                lapSec,
-                                delta,
-                                speed,
-                                isRecord: Math.abs(lapSec - a.bestLap) < 0.0005
-                            });
-                        });
-                    });
-                });
-
-                if (sortBy === 'BEST_ASC') allLapsRows.sort((a, b) => a.lapSec - b.lapSec);
-                else if (sortBy === 'SPEED_DESC') allLapsRows.sort((a, b) => b.speed - a.speed);
-                else if (sortBy === 'NAME_ASC') allLapsRows.sort((a, b) => a.driverName.localeCompare(b.driverName));
-
-                if (badgeCount) badgeCount.textContent = `${allLapsRows.length} VUELTAS ENCONTRADAS`;
-                thead.innerHTML = `
-                    <tr>
-                        <th class="py-2.5 px-3">Manga / Carril</th>
-                        <th class="py-2.5 px-3">Piloto</th>
-                        <th class="py-2.5 px-3 text-center">Categoría</th>
-                        <th class="py-2.5 px-3 text-center">Nº Vuelta</th>
-                        <th class="py-2.5 px-3 text-right">Tiempo Vuelta</th>
-                        <th class="py-2.5 px-3 text-right">Evolución</th>
-                        <th class="py-2.5 px-3 text-right">Velocidad</th>
-                    </tr>
-                `;
-
-                lastDbQueryExportHeaders = ['Manga', 'Carril', 'Piloto', 'Categoria', 'Num_Vuelta', 'Tiempo_Seg', 'Delta_Seg', 'Velocidad_Kmh'];
-                lastDbQueryExportRows = allLapsRows.map(r => [
-                    `M${r.heatNumber}`, `C${r.lane}`, r.driverName, r.category, r.lapNum,
-                    r.lapSec.toFixed(3), r.delta.toFixed(3), r.speed.toFixed(2)
-                ]);
-
-                if (allLapsRows.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">No hay vueltas individuales que coincidan con los filtros seleccionados.</td></tr>`;
-                } else {
-                    tbody.innerHTML = allLapsRows.slice(0, 250).map(r => {
-                        const arrowHtml = r.delta <= 0
-                            ? `<span class="text-[#30d158] font-black">▼ ${r.delta.toFixed(3)}s</span>`
-                            : `<span class="text-[#ff453a] font-black">▲ +${r.delta.toFixed(3)}s</span>`;
-                        return `
-                        <tr class="hover:bg-white/5 transition ${r.isRecord ? 'bg-[#30d158]/10' : ''}">
-                            <td class="py-2 px-3">
-                                <span class="px-2 py-0.5 rounded font-black text-[10px]" style="background:${r.laneHex}25; color:${r.laneHex};">M${r.heatNumber} · C${r.lane}</span>
-                            </td>
-                            <td class="py-2 px-3 font-black text-white">${r.driverName} ${r.isRecord ? '<span class="text-[#30d158] text-[10px]">★ RÉCORD</span>' : ''}</td>
-                            <td class="py-2 px-3 text-center text-[#5ac8fa]">${r.category}</td>
-                            <td class="py-2 px-3 text-center font-bold">V${r.lapNum}</td>
-                            <td class="py-2 px-3 text-right font-black ${r.isRecord ? 'text-[#30d158]' : 'text-white'}">${r.lapSec.toFixed(3)}s</td>
-                            <td class="py-2 px-3 text-right">${arrowHtml}</td>
-                            <td class="py-2 px-3 text-right text-[#ffd60a]">${r.speed.toFixed(2)} km/h</td>
-                        </tr>`;
-                    }).join('');
-                }
-                return;
-            }
-
-            // MODO 5: RENDIMIENTO POR CATEGORÍA DEL CLUB
-            if (activeDbQueryPreset === 'CATEGORY_STATS') {
-                const catMap = {};
-                state.drivers.forEach(d => {
-                    const c = d.category || state.activeClubCategory || 'GT';
-                    if (catFilter !== 'ALL' && c !== catFilter) return;
-                    if (!catMap[c]) {
-                        catMap[c] = { category: c, pilots: 0, totalLaps: 0, bestLap: Infinity, bestPilot: '—', allTimes: [] };
-                    }
-                    catMap[c].pilots += 1;
-                });
-
-                state.heats.forEach(h => {
-                    if (heatFilter !== 'ALL' && String(h.heatNumber) !== String(heatFilter)) return;
-                    h.assignments.forEach(a => {
-                        if (laneFilter !== 'ALL' && String(a.lane) !== String(laneFilter)) return;
-                        const dObj = drvMap[a.driverId];
-                        const c = dObj?.category || state.activeClubCategory || 'GT';
-                        if (!catMap[c]) return;
-                        catMap[c].totalLaps += a.laps;
-                        catMap[c].allTimes.push(...a.history);
-                        if (a.bestLap < catMap[c].bestLap) {
-                            catMap[c].bestLap = a.bestLap;
-                            catMap[c].bestPilot = a.driverName;
-                        }
-                    });
-                });
-
-                const catRows = Object.values(catMap);
-                if (badgeCount) badgeCount.textContent = `${catRows.length} CATEGORÍAS`;
-
-                thead.innerHTML = `
-                    <tr>
-                        <th class="py-2.5 px-3">Categoría del Club</th>
-                        <th class="py-2.5 px-3 text-center">Pilotos Inscritos</th>
-                        <th class="py-2.5 px-3 text-right">Total Vueltas</th>
-                        <th class="py-2.5 px-3 text-right">Récord de Categoría</th>
-                        <th class="py-2.5 px-3">Piloto más Rápido</th>
-                        <th class="py-2.5 px-3 text-right">Media de Categoría</th>
-                    </tr>
-                `;
-
-                lastDbQueryExportHeaders = ['Categoria', 'Pilotos', 'Total_Vueltas', 'Record_Seg', 'Piloto_Record', 'Media_Seg'];
-                lastDbQueryExportRows = catRows.map(r => {
-                    const mean = r.allTimes.length > 0 ? (r.allTimes.reduce((x, y) => x + y, 0) / r.allTimes.length) : 0;
-                    return [r.category, r.pilots, r.totalLaps, r.bestLap < Infinity ? r.bestLap.toFixed(3) : '', r.bestPilot, mean > 0 ? mean.toFixed(3) : ''];
-                });
-
-                tbody.innerHTML = catRows.map(r => {
-                    const mean = r.allTimes.length > 0 ? (r.allTimes.reduce((x, y) => x + y, 0) / r.allTimes.length) : 0;
-                    return `
-                    <tr class="hover:bg-white/5 transition">
-                        <td class="py-2.5 px-3 font-black text-[#5ac8fa]">★ ${r.category}</td>
-                        <td class="py-2.5 px-3 text-center font-bold text-white">${r.pilots}</td>
-                        <td class="py-2.5 px-3 text-right font-black text-[#30d158]">${r.totalLaps} V ▲</td>
-                        <td class="py-2.5 px-3 text-right font-black text-[#d982ff]">${r.bestLap < Infinity ? r.bestLap.toFixed(3) + 's ▼' : '--.---'}</td>
-                        <td class="py-2.5 px-3 font-black text-[#ffd60a]">${r.bestPilot}</td>
-                        <td class="py-2.5 px-3 text-right text-slate-300">${mean > 0 ? mean.toFixed(3) + 's' : '--.---'}</td>
-                    </tr>`;
-                }).join('');
-                return;
-            }
-
-            // MODO 2: DESGLOSE DE MANGAS Y CARRILES
-            if (activeDbQueryPreset === 'HEATS_BY_LANE') {
-                let heatRows = [];
-                state.heats.forEach(h => {
-                    if (heatFilter !== 'ALL' && String(h.heatNumber) !== String(heatFilter)) return;
-                    h.assignments.forEach(a => {
-                        if (laneFilter !== 'ALL' && String(a.lane) !== String(laneFilter)) return;
-                        const dObj = drvMap[a.driverId];
-                        const dCat = dObj?.category || state.activeClubCategory || 'GT';
-                        if (catFilter !== 'ALL' && dCat !== catFilter) return;
-                        if (searchTxt && !(`${a.driverName} ${a.driverCar} ${dCat}`.toUpperCase().includes(searchTxt))) return;
-                        if (a.laps < minLapsFilter) return;
-                        if (maxLapTimeFilter > 0 && (a.bestLap === Infinity || a.bestLap > maxLapTimeFilter)) return;
-
-                        const mean = getDriverMeanLap(a);
-                        const worst = a.history.length > 0 ? Math.max(...a.history) : 0;
-                        const topSpeed = a.bestLap < Infinity ? (trackLen / a.bestLap) * 3.6 : 0;
-
-                        heatRows.push({
-                            heatNumber: h.heatNumber,
-                            lane: a.lane,
-                            laneHex: a.laneInfo?.hex || '#5ac8fa',
-                            driverName: a.driverName,
-                            driverCar: a.driverCar,
-                            category: dCat,
-                            laps: a.laps,
-                            bestLap: a.bestLap,
-                            meanLap: mean,
-                            worstLap: worst,
-                            topSpeed
-                        });
-                    });
-                });
-
-                if (sortBy === 'BEST_ASC') heatRows.sort((a, b) => a.bestLap - b.bestLap || b.laps - a.laps);
-                else if (sortBy === 'LAPS_DESC') heatRows.sort((a, b) => b.laps - a.laps || a.bestLap - b.bestLap);
-                else if (sortBy === 'MEAN_ASC') heatRows.sort((a, b) => (a.meanLap || 999) - (b.meanLap || 999));
-                else if (sortBy === 'SPEED_DESC') heatRows.sort((a, b) => b.topSpeed - a.topSpeed);
-                else if (sortBy === 'NAME_ASC') heatRows.sort((a, b) => a.driverName.localeCompare(b.driverName));
-
-                if (badgeCount) badgeCount.textContent = `${heatRows.length} REGISTROS DE MANGA`;
-
-                thead.innerHTML = `
-                    <tr>
-                        <th class="py-2.5 px-3">Manga · Carril</th>
-                        <th class="py-2.5 px-3">Piloto / Coche</th>
-                        <th class="py-2.5 px-3 text-center">Cat.</th>
-                        <th class="py-2.5 px-3 text-right">Vueltas</th>
-                        <th class="py-2.5 px-3 text-right">Mejor Crono</th>
-                        <th class="py-2.5 px-3 text-right">Media</th>
-                        <th class="py-2.5 px-3 text-right">Más Lenta</th>
-                        <th class="py-2.5 px-3 text-right">Vel. Punta</th>
-                    </tr>
-                `;
-
-                lastDbQueryExportHeaders = ['Manga', 'Carril', 'Piloto', 'Coche', 'Categoria', 'Vueltas', 'Mejor_Seg', 'Media_Seg', 'Lenta_Seg', 'Vel_Kmh'];
-                lastDbQueryExportRows = heatRows.map(r => [
-                    `M${r.heatNumber}`, `C${r.lane}`, r.driverName, r.driverCar, r.category, r.laps,
-                    r.bestLap < Infinity ? r.bestLap.toFixed(3) : '',
-                    r.meanLap > 0 ? r.meanLap.toFixed(3) : '',
-                    r.worstLap > 0 ? r.worstLap.toFixed(3) : '',
-                    r.topSpeed > 0 ? r.topSpeed.toFixed(2) : ''
-                ]);
-
-                tbody.innerHTML = heatRows.map(r => `
-                    <tr class="hover:bg-white/5 transition">
-                        <td class="py-2 px-3">
-                            <span class="px-2 py-0.5 rounded font-black text-[10px]" style="background:${r.laneHex}25; color:${r.laneHex}; border:1px solid ${r.laneHex}55;">
-                                M${r.heatNumber} · C${r.lane}
-                            </span>
-                        </td>
-                        <td class="py-2 px-3">
-                            <div class="font-black text-white">${r.driverName}</div>
-                            <div class="text-[10px] text-slate-400">${r.driverCar}</div>
-                        </td>
-                        <td class="py-2 px-3 text-center text-[#5ac8fa] font-bold">${r.category}</td>
-                        <td class="py-2 px-3 text-right font-black text-[#30d158]">${r.laps} V ▲</td>
-                        <td class="py-2 px-3 text-right font-black text-[#d982ff]">${r.bestLap < Infinity ? r.bestLap.toFixed(3) + 's ▼' : '--.---'}</td>
-                        <td class="py-2 px-3 text-right text-white">${r.meanLap > 0 ? r.meanLap.toFixed(3) + 's' : '--.---'}</td>
-                        <td class="py-2 px-3 text-right text-[#ff8a84]">${r.worstLap > 0 ? r.worstLap.toFixed(3) + 's ▲' : '--.---'}</td>
-                        <td class="py-2 px-3 text-right font-bold text-[#ffd60a]">${r.topSpeed > 0 ? r.topSpeed.toFixed(2) + ' km/h' : '0.00 km/h'}</td>
-                    </tr>
-                `).join('');
-                return;
-            }
-
-            // MODO 1 (POR DEFECTO): RESUMEN GENERAL DE PILOTOS FILTRADO
-            let pilotRows = state.drivers.map(d => {
-                const dCat = d.category || state.activeClubCategory || 'GT';
-                let laps = 0;
-                let bestLap = Infinity;
-                let worstLap = 0;
-                let allTimes = [];
-                let lanesUsed = [];
-
-                state.heats.forEach(h => {
-                    if (heatFilter !== 'ALL' && String(h.heatNumber) !== String(heatFilter)) return;
-                    const ass = h.assignments.find(a => a.driverId === d.id);
-                    if (ass) {
-                        if (laneFilter !== 'ALL' && String(ass.lane) !== String(laneFilter)) return;
-                        laps += ass.laps;
-                        if (ass.bestLap < bestLap) bestLap = ass.bestLap;
-                        allTimes.push(...ass.history);
-                        lanesUsed.push(`M${h.heatNumber}:C${ass.lane}(${ass.laps}V)`);
-                    }
-                });
-
-                if (allTimes.length > 0) worstLap = Math.max(...allTimes);
-                const meanLap = allTimes.length > 0 ? (allTimes.reduce((x, y) => x + y, 0) / allTimes.length) : 0;
-                const topSpeed = bestLap < Infinity ? (trackLen / bestLap) * 3.6 : 0;
-                const distKm = ((laps * trackLen) / 1000).toFixed(2);
-
-                return {
-                    id: d.id,
-                    name: d.name,
-                    car: d.car,
-                    category: dCat,
-                    poleLap: d.poleLap,
-                    laps,
-                    bestLap,
-                    meanLap,
-                    worstLap,
-                    topSpeed,
-                    distKm,
-                    lanesUsed
-                };
-            }).filter(r => {
-                if (catFilter !== 'ALL' && r.category !== catFilter) return false;
-                if (searchTxt && !(`${r.name} ${r.car} ${r.category}`.toUpperCase().includes(searchTxt))) return false;
-                if (r.laps < minLapsFilter) return false;
-                if (maxLapTimeFilter > 0 && (r.bestLap === Infinity || r.bestLap > maxLapTimeFilter)) return false;
-                return true;
-            });
-
-            if (sortBy === 'BEST_ASC') pilotRows.sort((a, b) => a.bestLap - b.bestLap || b.laps - a.laps);
-            else if (sortBy === 'LAPS_DESC') pilotRows.sort((a, b) => b.laps - a.laps || a.bestLap - b.bestLap);
-            else if (sortBy === 'MEAN_ASC') pilotRows.sort((a, b) => (a.meanLap || 999) - (b.meanLap || 999));
-            else if (sortBy === 'SPEED_DESC') pilotRows.sort((a, b) => b.topSpeed - a.topSpeed);
-            else if (sortBy === 'NAME_ASC') pilotRows.sort((a, b) => a.name.localeCompare(b.name));
-
-            if (badgeCount) badgeCount.textContent = `${pilotRows.length} PILOTOS EN CONSULTA`;
-
-            if (kpiBox) {
-                const sumLaps = pilotRows.reduce((acc, r) => acc + r.laps, 0);
-                const fastestRow = [...pilotRows].sort((a, b) => a.bestLap - b.bestLap)[0];
-                const topDistance = ((sumLaps * trackLen) / 1000).toFixed(2);
-                kpiBox.innerHTML = `
-                    <div class="mac-silver-well px-3 py-2 border border-white/10">
-                        <div class="text-[9px] font-bold text-slate-400">PILOTOS FILTRADOS</div>
-                        <div class="text-lg font-mono-num font-black text-white">${pilotRows.length} / ${state.drivers.length}</div>
-                    </div>
-                    <div class="mac-silver-well px-3 py-2 border border-white/10">
-                        <div class="text-[9px] font-bold text-slate-400">SUMA DE VUELTAS CONSULTA</div>
-                        <div class="text-lg font-mono-num font-black text-[#30d158]">${sumLaps} V <span class="text-xs">▲</span></div>
-                    </div>
-                    <div class="mac-silver-well px-3 py-2 border border-white/10">
-                        <div class="text-[9px] font-bold text-slate-400">MEJOR CRONO EN CONSULTA</div>
-                        <div class="text-lg font-mono-num font-black text-[#d982ff]">${fastestRow && fastestRow.bestLap < Infinity ? fastestRow.bestLap.toFixed(3) + 's (' + fastestRow.name + ')' : '--.---'}</div>
-                    </div>
-                    <div class="mac-silver-well px-3 py-2 border border-white/10">
-                        <div class="text-[9px] font-bold text-slate-400">DISTANCIA RECORRIDA</div>
-                        <div class="text-lg font-mono-num font-black text-[#5ac8fa]">${topDistance} km</div>
-                    </div>
-                `;
-            }
-
-            thead.innerHTML = `
-                <tr>
-                    <th class="py-2.5 px-3">#</th>
-                    <th class="py-2.5 px-3">Piloto / Coche</th>
-                    <th class="py-2.5 px-3 text-center">Cat.</th>
-                    <th class="py-2.5 px-3 text-right">Vueltas</th>
-                    <th class="py-2.5 px-3 text-right">Mejor Crono</th>
-                    <th class="py-2.5 px-3 text-right">Media</th>
-                    <th class="py-2.5 px-3 text-right">Más Lenta</th>
-                    <th class="py-2.5 px-3 text-right">Vel. Punta</th>
-                    <th class="py-2.5 px-3 text-right">Distancia</th>
-                </tr>
-            `;
-
-            lastDbQueryExportHeaders = ['Pos', 'Piloto', 'Coche', 'Categoria', 'Vueltas', 'Mejor_Crono_Seg', 'Media_Seg', 'Mas_Lenta_Seg', 'Vel_Punta_Kmh', 'Distancia_Km'];
-            lastDbQueryExportRows = pilotRows.map((r, i) => [
-                i + 1, r.name, r.car, r.category, r.laps,
-                r.bestLap < Infinity ? r.bestLap.toFixed(3) : '',
-                r.meanLap > 0 ? r.meanLap.toFixed(3) : '',
-                r.worstLap > 0 ? r.worstLap.toFixed(3) : '',
-                r.topSpeed > 0 ? r.topSpeed.toFixed(2) : '',
-                r.distKm
-            ]);
-
-            if (pilotRows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-400">Ningún registro coincide con los filtros de búsqueda en la base de datos.</td></tr>`;
-            } else {
-                tbody.innerHTML = pilotRows.map((r, idx) => `
-                    <tr class="hover:bg-white/5 transition">
-                        <td class="py-2.5 px-3 font-black text-slate-300">${idx + 1}</td>
-                        <td class="py-2.5 px-3">
-                            <div class="font-black text-white">${r.name}</div>
-                            <div class="text-[10px] text-slate-400">${r.car}</div>
-                        </td>
-                        <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded bg-[#0a84ff]/20 text-[#5ac8fa] font-black">${r.category}</span></td>
-                        <td class="py-2.5 px-3 text-right font-black text-[#30d158]">${r.laps} V <span class="text-[#30d158]">▲</span></td>
-                        <td class="py-2.5 px-3 text-right font-black text-[#d982ff]">${r.bestLap < Infinity ? r.bestLap.toFixed(3) + 's ▼' : '--.---'}</td>
-                        <td class="py-2.5 px-3 text-right text-white">${r.meanLap > 0 ? r.meanLap.toFixed(3) + 's' : '--.---'}</td>
-                        <td class="py-2.5 px-3 text-right text-[#ff8a84]">${r.worstLap > 0 ? r.worstLap.toFixed(3) + 's ▲' : '--.---'}</td>
-                        <td class="py-2.5 px-3 text-right font-bold text-[#ffd60a]">${r.topSpeed > 0 ? r.topSpeed.toFixed(2) + ' km/h ▲' : '0.00 km/h'}</td>
-                        <td class="py-2.5 px-3 text-right text-[#5ac8fa]">${r.distKm} km</td>
-                    </tr>
-                `).join('');
-            }
-        }
-
-        function exportCurrentDbQueryCSV() {
-            if (!lastDbQueryExportHeaders || lastDbQueryExportHeaders.length === 0) {
-                runDatabaseQuery();
-            }
-            let csv = lastDbQueryExportHeaders.join(',') + '\n';
-            lastDbQueryExportRows.forEach(row => {
-                csv += row.map(val => `"${String(val ?? '').replace(/"/g, '""')}"`).join(',') + '\n';
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Consulta_DB_${activeDbQueryPreset}_${state.eventDate || ''}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         }
 
         function toggleFullScreenMode() {
             if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
             else document.exitFullscreen().catch(() => {});
         }
-
-        let userConfirmedLandscapeGate = false;
-
-        async function forceLockHorizontalMode() {
-            userConfirmedLandscapeGate = true;
-            try {
-                if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-                    await document.documentElement.requestFullscreen();
-                }
-            } catch (e) {}
-            try {
-                if (screen.orientation && screen.orientation.lock) {
-                    await screen.orientation.lock('landscape');
-                }
-            } catch (e) {}
-            const overlay = document.getElementById('forceLandscapeOverlay');
-            if (overlay) {
-                overlay.classList.add('force-dismissed');
-            }
-        }
-
-        function checkScreenOrientationOverlay() {
-            const overlay = document.getElementById('forceLandscapeOverlay');
-            const dot = document.getElementById('landscape-StatusDot');
-            const txt = document.getElementById('landscape-StatusText');
-            if (!overlay) return;
-
-            const isPortrait = window.innerHeight > window.innerWidth;
-            if (isPortrait) {
-                // Si el usuario gira el dispositivo a vertical, vuelve a aparecer la pantalla negra bloqueando la vista
-                overlay.classList.remove('force-dismissed');
-                if (dot) dot.className = 'w-2 h-2 rounded-full bg-[#ff453a] animate-ping';
-                if (txt) txt.textContent = 'VERTICAL DETECTADO · GIRA EL DISPOSITIVO';
-            } else {
-                if (dot) dot.className = 'w-2 h-2 rounded-full bg-[#30d158]';
-                if (txt) txt.textContent = 'ORIENTACIÓN HORIZONTAL DETECTADA · LISTO';
-                if (userConfirmedLandscapeGate) {
-                    overlay.classList.add('force-dismissed');
-                }
-            }
-        }
-
-        window.addEventListener('resize', checkScreenOrientationOverlay);
-        window.addEventListener('orientationchange', checkScreenOrientationOverlay);
 
         window.addEventListener('keydown', (e) => {
             if (state.mainTab !== 'race' || ['INPUT', 'SELECT'].includes(document.activeElement.tagName)) return;
@@ -7728,7 +6686,6 @@
         });
 
         window.onload = async function () {
-            checkScreenOrientationOverlay();
             initLangDropdown();
             setupGlobalMobileTouchUnlock();
             const restored = await loadLocalDatabase();
@@ -7757,6 +6714,11 @@
             }
 
             if (resolvedPilotId) {
+                const gate = document.getElementById('preAppLandscapeGate');
+                if (gate) {
+                    gate.classList.add('hidden');
+                    gate.classList.remove('flex');
+                }
                 if (roomParam) {
                     connectMobileClientToHostRoom(roomParam);
                 }
