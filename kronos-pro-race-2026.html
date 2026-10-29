@@ -1284,7 +1284,20 @@
                         <p id="mob-driver-car" class="text-[11px] text-[#94a3b8] mt-0.5">Scaleauto GT3</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                    <select id="mob-lang-select" onchange="changeMobileSpotterLangOrVoice()" class="bg-black/80 border border-white/20 rounded-xl px-2 py-1 text-[11px] font-black text-white focus:outline-none cursor-pointer" title="Idioma del Spotter Móvil">
+                        <option value="es">🇪🇸 ES</option>
+                        <option value="ca">🏴 CA</option>
+                        <option value="eu">🏴 EU</option>
+                        <option value="en">🇬🇧 EN</option>
+                        <option value="fr">🇫🇷 FR</option>
+                        <option value="it">🇮🇹 IT</option>
+                        <option value="de">🇩🇪 DE</option>
+                    </select>
+                    <select id="mob-voice-gender-select" onchange="changeMobileSpotterLangOrVoice()" class="bg-black/80 border border-white/20 rounded-xl px-2 py-1 text-[11px] font-black text-[#5ac8fa] focus:outline-none cursor-pointer" title="Voz Hombre / Mujer">
+                        <option value="AUTO_MALE">👨</option>
+                        <option value="AUTO_FEMALE">👩</option>
+                    </select>
                     <button onclick="toggleMobileVoiceSpotter()" id="mob-voice-btn" class="px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-neon-green flex items-center gap-1 cursor-pointer">
                         <i class="fa-solid fa-volume-high"></i>
                         <span id="mob-voice-status">VOZ ON</span>
@@ -2398,6 +2411,39 @@
         let customQrBaseUrl = '';
         let qrPayloadMode = 'url';
         let zoomedDriverId = null;
+        let mobileUserOverrodeLang = false;
+
+        function syncMobileLangVoiceSelectorsUI() {
+            const mLang = document.getElementById('mob-lang-select');
+            const mVoice = document.getElementById('mob-voice-gender-select');
+            const hVoice = document.getElementById('headerVoiceSelect');
+            if (mLang) mLang.value = state.lang || 'es';
+            if (mVoice && hVoice) mVoice.value = hVoice.value || 'AUTO_MALE';
+        }
+
+        function changeMobileSpotterLangOrVoice() {
+            mobileUserOverrodeLang = true;
+            const mLang = document.getElementById('mob-lang-select');
+            const mVoice = document.getElementById('mob-voice-gender-select');
+            const hVoice = document.getElementById('headerVoiceSelect');
+
+            if (mLang && mLang.value && I18N[mLang.value]) {
+                state.lang = mLang.value;
+                document.documentElement.lang = mLang.value;
+                const meta = LANG_META[mLang.value] || LANG_META.es;
+                const flagEl = document.getElementById('currentLangFlag');
+                const lblEl = document.getElementById('currentLangLabel');
+                if (flagEl) flagEl.innerHTML = meta.svg;
+                if (lblEl) lblEl.textContent = mLang.value.toUpperCase();
+                updateVoiceLabels();
+            }
+            if (mVoice && hVoice) {
+                hVoice.value = mVoice.value;
+            }
+            primeMobileSpeechEngine();
+            updateMobileCompanionModalUI();
+            setTimeout(() => speakMobileDriverStatusNow(true), 80);
+        }
 
         async function enterApplicationInLandscape(requestFullscreenAndLock = true) {
             const gate = document.getElementById('preAppLandscapeGate');
@@ -2523,11 +2569,14 @@
         }
 
         function buildCompactLivePacket(triggerDriverId = null, lapSec = null) {
+            const voiceSelect = document.getElementById('headerVoiceSelect');
             return {
                 type: 'LIVE_STATE_SYNC',
                 ts: Date.now(),
                 triggerDriverId,
                 lapSec,
+                lang: state.lang || 'es',
+                voicePref: voiceSelect ? voiceSelect.value : 'AUTO_MALE',
                 eventName: state.eventName,
                 eventDate: state.eventDate,
                 activeClubCategory: state.activeClubCategory,
@@ -2552,6 +2601,18 @@
 
         function applyIncomingLiveTelemetryPacket(packet) {
             if (!packet) return;
+            if (!mobileUserOverrodeLang) {
+                if (packet.lang && I18N[packet.lang] && packet.lang !== state.lang) {
+                    state.lang = packet.lang;
+                    document.documentElement.lang = packet.lang;
+                    updateVoiceLabels();
+                }
+                if (packet.voicePref) {
+                    const hVoice = document.getElementById('headerVoiceSelect');
+                    if (hVoice) hVoice.value = packet.voicePref;
+                }
+                syncMobileLangVoiceSelectorsUI();
+            }
             if (packet.eventName) state.eventName = packet.eventName;
             if (packet.eventDate) state.eventDate = packet.eventDate;
             if (packet.activeClubCategory) state.activeClubCategory = packet.activeClubCategory;
@@ -3323,6 +3384,7 @@
             if (camBtnTxt) camBtnTxt.textContent = isCameraScannerRunning ? t('qr_stop_cam') : t('qr_scan_cam');
 
             updateVoiceLabels();
+            syncMobileLangVoiceSelectorsUI();
             updateAutoButtonUI();
             renderWizardStep1();
             renderDriversList();
@@ -3332,6 +3394,7 @@
             if (state.mainTab === 'qr') renderDriversQRView();
             if (activeMobileDriverId) updateMobileCompanionModalUI();
             updateHeaderSummary();
+            forceBroadcastLiveStateToMobiles(null, null);
             saveLocalDatabase();
         }
 
@@ -3511,8 +3574,11 @@
                 return `KRONO PRO: ${ctx.driver.name} (${barcodeCode}) | M${ctx.heatNumber} ${laneStr} ${posStr} | Vueltas:${ctx.totalCareerLaps} | Record:${bestStr}`;
             }
 
+            const voiceSelect = document.getElementById('headerVoiceSelect');
+            const voiceCode = (voiceSelect && voiceSelect.value === 'AUTO_FEMALE') ? 'F' : 'M';
+            const langCode = encodeURIComponent(state.lang || 'es');
             const baseUrl = window.location.href.split('?')[0].split('#')[0];
-            return `${baseUrl}?p=${shortPilotIndex}&r=${encodeURIComponent(roomCodeId)}`;
+            return `${baseUrl}?p=${shortPilotIndex}&r=${encodeURIComponent(roomCodeId)}&l=${langCode}&v=${voiceCode}`;
         }
 
         function openQrZoomModal(driverId) {
@@ -3647,6 +3713,17 @@
                     const pShort = urlObj.searchParams.get('p');
                     const snapParam = urlObj.searchParams.get('snap');
                     const roomParam = urlObj.searchParams.get('r') || urlObj.searchParams.get('room');
+                    const langParam = urlObj.searchParams.get('l') || urlObj.searchParams.get('lang');
+                    const voiceParam = urlObj.searchParams.get('v') || urlObj.searchParams.get('voice');
+
+                    if (langParam && I18N[langParam]) {
+                        changeLanguage(langParam);
+                    }
+                    if (voiceParam) {
+                        const hVoice = document.getElementById('headerVoiceSelect');
+                        if (hVoice) hVoice.value = (voiceParam === 'F' || voiceParam === 'AUTO_FEMALE') ? 'AUTO_FEMALE' : 'AUTO_MALE';
+                        syncMobileLangVoiceSelectorsUI();
+                    }
                     if (snapParam) hydrateStateFromUrlSnapshot(snapParam);
                     if (roomParam) connectMobileClientToHostRoom(roomParam);
 
@@ -3883,6 +3960,7 @@
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
             }
+            syncMobileLangVoiceSelectorsUI();
             primeMobileSpeechEngine();
             updateMobileUnlockBannerUI();
             updateMobileCompanionModalUI();
@@ -3987,8 +4065,10 @@
             if (!ctx) return;
             const ass = ctx.assignment;
 
+            const lang = state.lang || 'es';
             let msg = '';
-            if (state.lang === 'ca') {
+
+            if (lang === 'ca') {
                 if (!ass) {
                     msg = `${ctx.driver.name}, comissari. ${ctx.totalCareerLaps} voltes.`;
                 } else {
@@ -3996,6 +4076,56 @@
                     const posStr = `Posició ${ctx.position}. `;
                     const aheadStr = ctx.ahead ? `Davant ${ctx.ahead.driverName}. ` : `Líder. `;
                     const behindStr = ctx.behind ? `Darrere ${ctx.behind.driverName}.` : ``;
+                    msg = `${lapStr}${posStr}${aheadStr}${behindStr}`;
+                }
+            } else if (lang === 'eu') {
+                if (!ass) {
+                    msg = `${ctx.driver.name}, komisarioa. ${ctx.totalCareerLaps} itzuli.`;
+                } else {
+                    const lapStr = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `${ass.lane}. erreia. `;
+                    const posStr = `${ctx.position}. postua. `;
+                    const aheadStr = ctx.ahead ? `Aurrean ${ctx.ahead.driverName}. ` : `Liderra. `;
+                    const behindStr = ctx.behind ? `Atzean ${ctx.behind.driverName}.` : ``;
+                    msg = `${lapStr}${posStr}${aheadStr}${behindStr}`;
+                }
+            } else if (lang === 'en') {
+                if (!ass) {
+                    msg = `${ctx.driver.name}, marshal. ${ctx.totalCareerLaps} laps.`;
+                } else {
+                    const lapStr = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Lane ${ass.lane}. `;
+                    const posStr = `Position ${ctx.position}. `;
+                    const aheadStr = ctx.ahead ? `Ahead ${ctx.ahead.driverName}. ` : `Leader. `;
+                    const behindStr = ctx.behind ? `Behind ${ctx.behind.driverName}.` : ``;
+                    msg = `${lapStr}${posStr}${aheadStr}${behindStr}`;
+                }
+            } else if (lang === 'fr') {
+                if (!ass) {
+                    msg = `${ctx.driver.name}, commissaire. ${ctx.totalCareerLaps} tours.`;
+                } else {
+                    const lapStr = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Voie ${ass.lane}. `;
+                    const posStr = `Position ${ctx.position}. `;
+                    const aheadStr = ctx.ahead ? `Devant ${ctx.ahead.driverName}. ` : `Leader. `;
+                    const behindStr = ctx.behind ? `Derrière ${ctx.behind.driverName}.` : ``;
+                    msg = `${lapStr}${posStr}${aheadStr}${behindStr}`;
+                }
+            } else if (lang === 'it') {
+                if (!ass) {
+                    msg = `${ctx.driver.name}, commissario. ${ctx.totalCareerLaps} giri.`;
+                } else {
+                    const lapStr = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Corsia ${ass.lane}. `;
+                    const posStr = `Posizione ${ctx.position}. `;
+                    const aheadStr = ctx.ahead ? `Davanti ${ctx.ahead.driverName}. ` : `Leader. `;
+                    const behindStr = ctx.behind ? `Dietro ${ctx.behind.driverName}.` : ``;
+                    msg = `${lapStr}${posStr}${aheadStr}${behindStr}`;
+                }
+            } else if (lang === 'de') {
+                if (!ass) {
+                    msg = `${ctx.driver.name}, Streckenposten. ${ctx.totalCareerLaps} Runden.`;
+                } else {
+                    const lapStr = ass.lastLap > 0 ? `${fmtSec(ass.lastLap)}. ` : `Spur ${ass.lane}. `;
+                    const posStr = `Position ${ctx.position}. `;
+                    const aheadStr = ctx.ahead ? `Vorne ${ctx.ahead.driverName}. ` : `Spitzenreiter. `;
+                    const behindStr = ctx.behind ? `Hinten ${ctx.behind.driverName}.` : ``;
                     msg = `${lapStr}${posStr}${aheadStr}${behindStr}`;
                 }
             } else {
@@ -6867,6 +6997,20 @@
             const shortPilotIdx = params.get('p');
             const snapParam = params.get('snap');
             const roomParam = params.get('r') || params.get('room');
+            const urlLangParam = params.get('l') || params.get('lang');
+            const urlVoiceParam = params.get('v') || params.get('voice');
+
+            if (urlLangParam && I18N[urlLangParam]) {
+                state.lang = urlLangParam;
+                changeLanguage(urlLangParam);
+            }
+            if (urlVoiceParam) {
+                const hVoice = document.getElementById('headerVoiceSelect');
+                if (hVoice) {
+                    hVoice.value = (urlVoiceParam === 'F' || urlVoiceParam === 'AUTO_FEMALE') ? 'AUTO_FEMALE' : 'AUTO_MALE';
+                }
+                syncMobileLangVoiceSelectorsUI();
+            }
 
             if (snapParam) {
                 hydrateStateFromUrlSnapshot(snapParam);
