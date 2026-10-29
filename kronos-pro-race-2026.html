@@ -1054,12 +1054,19 @@
         <!-- TARJETAS INTERACTIVAS DE CARRIL KRONOS PRO AUTOAJUSTABLES EN PANTALLA HORIZONTAL -->
         <div id="lanesGridContainer" class="flex-1 grid gap-2.5 min-h-0 h-full overflow-hidden"></div>
 
-        <!-- BARRA INFERIOR EXCLUSIVA EN MODO CARRERA ACTIVA (SOLO TRACK CALL E INICIO) -->
-        <div id="race-ActiveBottomBar" class="hidden mac-window px-4 py-2 items-center justify-between gap-4 shrink-0 z-40">
-            <button onclick="exitFullscreenRaceToMenu()" class="px-6 py-2.5 btn-silver font-black text-xs md:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 uppercase">
+        <!-- BARRA INFERIOR EXCLUSIVA EN MODO CARRERA ACTIVA (INICIO + MODOS + CRONO + TRACK CALL) -->
+        <div id="race-ActiveBottomBar" class="hidden mac-window px-4 py-2 items-center justify-between gap-3 flex-wrap shrink-0 z-40">
+            <button onclick="exitFullscreenRaceToMenu()" class="px-5 py-2 btn-silver font-black text-xs md:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 uppercase">
                 <i class="fa-solid fa-house text-[#5ac8fa]"></i>
                 <span data-i18n="btn_home_menu">INICIO</span>
             </button>
+
+            <div class="apple-segmented bg-black/60 p-1">
+                <button onclick="setGlobalCardLayout(0)" id="bottom-layout-0" data-i18n="layout_0_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">0. CLÁSICO</button>
+                <button onclick="setGlobalCardLayout(1)" id="bottom-layout-1" data-i18n="layout_1_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
+                <button onclick="setGlobalCardLayout(2)" id="bottom-layout-2" data-i18n="layout_2_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
+                <button onclick="setGlobalCardLayout(3)" id="bottom-layout-3" data-i18n="layout_3_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">3. EXPERTO</button>
+            </div>
 
             <div class="flex items-center gap-3">
                 <span id="active-race-heat-label" class="text-xs md:text-sm font-black text-[#5ac8fa] uppercase tracking-wider">MANGA 1</span>
@@ -1067,7 +1074,7 @@
                 <span id="active-race-clock" class="text-xl md:text-2xl font-mono-num font-black text-white leading-none">03:00.0</span>
             </div>
 
-            <button onclick="toggleTrackCall()" id="btn-track-call-bottom" class="px-8 py-2.5 bg-[#ff9f0a] hover:bg-[#ffb340] text-black font-black text-xs md:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-[0_0_20px_rgba(255,159,10,0.45)] uppercase">
+            <button onclick="toggleTrackCall()" id="btn-track-call-bottom" class="px-7 py-2 bg-[#ff9f0a] hover:bg-[#ffb340] text-black font-black text-xs md:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-[0_0_20px_rgba(255,159,10,0.45)] uppercase">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 <span id="btn-track-call-bottom-text">TRACK CALL</span>
             </button>
@@ -3376,7 +3383,7 @@
                 if (state.heats.length === 0) rebuildHeats();
                 renderLiveRaceView();
             } else if (tab === 'config') {
-                goToWizardStep(state.wizardStep || 1);
+                goToWizardStep(1);
             } else if (tab === 'qr') {
                 if (state.drivers.length === 0) loadPdfExampleDrivers();
                 if (state.heats.length === 0) rebuildHeats();
@@ -5607,12 +5614,13 @@
             }
 
             for (let l = 0; l <= 3; l++) {
+                const isSelected = state.globalCardLayout === l;
+                const activeCls = "px-3 py-1.5 rounded-lg text-xs font-black mac-silver-active cursor-pointer";
+                const inactiveCls = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white cursor-pointer";
                 const lb = document.getElementById(`global-layout-${l}`);
-                if (lb) {
-                    lb.className = (state.globalCardLayout === l)
-                        ? "px-3 py-1.5 rounded-lg text-xs font-black mac-silver-active cursor-pointer"
-                        : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white cursor-pointer";
-                }
+                if (lb) lb.className = isSelected ? activeCls : inactiveCls;
+                const blb = document.getElementById(`bottom-layout-${l}`);
+                if (blb) blb.className = isSelected ? activeCls : inactiveCls;
             }
             renderLanesGrid();
         }
