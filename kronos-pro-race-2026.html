@@ -1300,7 +1300,7 @@
                     </select>
                     <button onclick="toggleMobileVoiceSpotter()" id="mob-voice-btn" class="px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-neon-green flex items-center gap-1 cursor-pointer">
                         <i class="fa-solid fa-volume-high"></i>
-                        <span id="mob-voice-status">VOZ ON</span>
+                        <span id="mob-voice-status" data-i18n="mob_voice_on">VOZ ON</span>
                     </button>
                     <button onclick="closeMobileCompanion()" class="w-8 h-8 rounded-xl btn-silver flex items-center justify-center text-xs font-black text-[#94a3b8] hover:text-white cursor-pointer">
                         ✕
@@ -1314,16 +1314,16 @@
                 <div id="mob-audio-unlock-banner" onclick="unlockMobileVoiceAndAudio()" class="p-2.5 rounded-2xl bg-[#30d158]/20 border border-[#30d158]/50 text-[#30d158] flex items-center justify-between gap-2 cursor-pointer">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-[#30d158] animate-ping shrink-0"></span>
-                        <span class="text-xs font-black uppercase">🔊 SPOTTER AUTOMÁTICO ACTIVO · CANTA CADA VUELTA Y RIVALES SOLO</span>
+                        <span id="mob-banner-text" data-i18n="mob_spotter_active_banner" class="text-xs font-black uppercase">🔊 SPOTTER AUTOMÁTICO ACTIVO · CANTA CADA VUELTA Y RIVALES SOLO</span>
                     </div>
-                    <span id="mob-auto-freq-badge" class="px-2 py-0.5 rounded bg-black/50 text-[#ffd60a] text-[10px] font-mono-num font-black shrink-0">MANOS LIBRES</span>
+                    <span id="mob-auto-freq-badge" data-i18n="mob_hands_free" class="px-2 py-0.5 rounded bg-black/50 text-[#ffd60a] text-[10px] font-mono-num font-black shrink-0">MANOS LIBRES</span>
                 </div>
 
                 <!-- Barra de Estado de Conexión en Vivo con Pista -->
                 <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/60 border border-white/10 text-[10px]">
                     <div class="flex items-center gap-1.5">
                         <span id="mob-live-conn-dot" class="w-2 h-2 rounded-full bg-[#30d158] animate-pulse"></span>
-                        <span id="mob-live-conn-text" class="font-black text-slate-200 uppercase">SINCRONIZADO EN VIVO CON PISTA</span>
+                        <span id="mob-live-conn-text" data-i18n="mob_synced_live" class="font-black text-slate-200 uppercase">SINCRONIZADO EN VIVO CON PISTA</span>
                     </div>
                     <span id="mob-event-cat-badge" class="font-mono-num font-bold text-[#5ac8fa]">GT · EN VIVO</span>
                 </div>
@@ -1332,7 +1332,7 @@
                 <div class="grid grid-cols-2 gap-2.5">
                     <div class="mac-group-box p-2.5 border-l-4 border-[#ff9f0a]">
                         <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-black text-[#ff9f0a] uppercase"><i class="fa-solid fa-caret-up mr-1"></i>DELANTE TUYO</span>
+                            <span class="text-[9px] font-black text-[#ff9f0a] uppercase"><i class="fa-solid fa-caret-up mr-1"></i><span data-i18n="mob_ahead_you">DELANTE TUYO</span></span>
                             <span id="mob-ahead-gap" class="text-[10px] font-mono-num font-bold text-white/80">—</span>
                         </div>
                         <div id="mob-ahead-name" class="text-sm font-black text-white truncate mt-1">LÍDER DE MANGA</div>
@@ -1341,7 +1341,7 @@
 
                     <div class="mac-group-box p-2.5 border-l-4 border-[#5ac8fa]">
                         <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-black text-[#5ac8fa] uppercase"><i class="fa-solid fa-caret-down mr-1"></i>DETRÁS TUYO</span>
+                            <span class="text-[9px] font-black text-[#5ac8fa] uppercase"><i class="fa-solid fa-caret-down mr-1"></i><span data-i18n="mob_behind_you">DETRÁS TUYO</span></span>
                             <span id="mob-behind-gap" class="text-[10px] font-mono-num font-bold text-white/80">—</span>
                         </div>
                         <div id="mob-behind-name" class="text-sm font-black text-white truncate mt-1">—</div>
@@ -1355,19 +1355,19 @@
                         <span id="mob-heat-label">MANGA EN CURSO</span>
                         <span id="mob-next-lane" class="text-[#ffd60a]">→ SIGUIENTE</span>
                     </div>
-                    <div class="text-[10px] font-extrabold text-[#5ac8fa] uppercase">ÚLTIMA VUELTA</div>
+                    <div data-i18n="card_last_lap" class="text-[10px] font-extrabold text-[#5ac8fa] uppercase">ÚLTIMA VUELTA</div>
                     <div id="mob-last-lap" class="text-4xl font-mono-num font-black text-white tracking-tight my-0.5">--.---s</div>
                     <div class="grid grid-cols-3 gap-2 pt-2 mt-2 border-t border-white/10">
                         <div>
-                            <div class="text-[9px] font-bold text-[#94a3b8]">VUELTAS MANGA</div>
+                            <div data-i18n="mob_heat_laps" class="text-[9px] font-bold text-[#94a3b8]">VUELTAS MANGA</div>
                             <div id="mob-laps" class="text-lg font-mono-num font-black text-[#30d158]">0</div>
                         </div>
                         <div>
-                            <div class="text-[9px] font-bold text-[#94a3b8]">MEJOR CRONO</div>
+                            <div data-i18n="mob_best_time" class="text-[9px] font-bold text-[#94a3b8]">MEJOR CRONO</div>
                             <div id="mob-best-lap" class="text-lg font-mono-num font-black text-[#d982ff]">--.---s</div>
                         </div>
                         <div>
-                            <div class="text-[9px] font-bold text-[#94a3b8]">MEDIA</div>
+                            <div data-i18n="mob_avg_short" class="text-[9px] font-bold text-[#94a3b8]">MEDIA</div>
                             <div id="mob-mean-lap" class="text-lg font-mono-num font-black text-white">0.000s</div>
                         </div>
                     </div>
@@ -1377,17 +1377,17 @@
                 <div class="mac-group-box px-3 py-2 flex items-center justify-between gap-2 border border-[#30d158]/40 bg-[#30d158]/10">
                     <div class="flex items-center gap-2 min-w-0">
                         <i class="fa-solid fa-headset text-[#30d158] text-sm animate-pulse shrink-0"></i>
-                        <span id="mob-live-speech-caption" class="text-[11px] font-bold text-white truncate italic">Spotter automático conectado: cantando cada paso por meta y rivales...</span>
+                        <span id="mob-live-speech-caption" data-i18n="mob_spotter_listening" class="text-[11px] font-bold text-white truncate italic">Spotter automático conectado: cantando cada paso por meta y rivales...</span>
                     </div>
                     <button onclick="speakMobileDriverStatusNow(true)" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-black text-[#5ac8fa] shrink-0 cursor-pointer" title="Repetir locución ahora">
-                        🔊 REPETIR
+                        🔊 <span data-i18n="mob_repeat_btn">REPETIR</span>
                     </button>
                 </div>
 
                 <!-- Historial de Vueltas en el Móvil -->
                 <div class="mac-group-box p-2.5">
                     <div class="flex items-center justify-between mb-1.5">
-                        <span class="text-[10px] font-extrabold text-[#94a3b8] uppercase">HISTORIAL DE VUELTAS DEL PILOTO</span>
+                        <span data-i18n="mob_driver_lap_history" class="text-[10px] font-extrabold text-[#94a3b8] uppercase">HISTORIAL DE VUELTAS DEL PILOTO</span>
                         <span id="mob-total-career-laps" class="text-[10px] font-mono-num font-bold text-[#30d158]">Total Carrera: 0V</span>
                     </div>
                     <div id="mob-lap-history" class="max-h-36 overflow-y-auto divide-y divide-white/5 text-xs font-mono-num"></div>
@@ -1398,11 +1398,11 @@
             <div class="p-3 bg-black/80 border-t border-white/10 grid grid-cols-2 gap-2">
                 <button onclick="downloadDriverTelemetryHTML()" class="py-2.5 px-3 rounded-xl btn-neon-green font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-file-code"></i>
-                    <span>BAJAR INFORME HTML</span>
+                    <span data-i18n="mob_btn_html">BAJAR INFORME HTML</span>
                 </button>
                 <button onclick="downloadDriverTelemetryCSV()" class="py-2.5 px-3 rounded-xl btn-silver font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-file-csv text-[#5ac8fa]"></i>
-                    <span>GUARDAR TABLA CSV</span>
+                    <span data-i18n="mob_btn_csv">GUARDAR TABLA CSV</span>
                 </button>
             </div>
         </div>
@@ -1586,6 +1586,22 @@
         const UI_EXTRA_TRANSLATIONS = {
             es: {
                 btn_queries: "CONSULTAS",
+                mob_voice_on: "VOZ ON", mob_voice_off: "VOZ OFF",
+                mob_spotter_active_banner: "🔊 SPOTTER AUTOMÁTICO ACTIVO · CANTA TIEMPOS Y RIVALES SOLO",
+                mob_hands_free: "MANOS LIBRES",
+                mob_synced_live: "SINCRONIZADO EN VIVO CON PISTA",
+                mob_ahead_you: "DELANTE TUYO", mob_behind_you: "DETRÁS TUYO",
+                mob_you_are_leader: "ERES EL LÍDER (P1)", mob_clear_track_ahead: "Pista libre delante",
+                mob_no_rival_behind: "SIN RIVAL DETRÁS", mob_nobody_behind: "Nadie detrás en manga",
+                mob_heat_laps: "VUELTAS MANGA", mob_best_time: "MEJOR CRONO", mob_avg_short: "MEDIA",
+                mob_spotter_listening: "Spotter automático conectado: cantando cada paso por meta y rivales...",
+                mob_repeat_btn: "REPETIR",
+                mob_driver_lap_history: "HISTORIAL DE VUELTAS DEL PILOTO",
+                mob_total_race_laps: "Total Carrera:",
+                mob_waiting_finish_line: "Esperando paso por meta para cantar tiempos...",
+                mob_lap_word: "Vuelta", mob_marshal_badge: "COMISARIO", mob_next_on_track: "EN PISTA PRÓX. MANGA",
+                mob_parallel: "En paralelo", mob_close_behind: "Pegado", mob_last_abbr: "Últ",
+                mob_btn_html: "BAJAR INFORME HTML", mob_btn_csv: "GUARDAR TABLA CSV",
                 layout_0_btn: "0. CLÁSICO", layout_0_short: "CLÁSICO",
                 layout_1_btn: "1. BÁSICO", layout_2_btn: "2. MEDIO", layout_3_btn: "3. EXPERTO",
                 layout_1_short: "BÁSICO", layout_2_short: "MEDIO", layout_3_short: "EXPERTO",
@@ -1643,6 +1659,22 @@
             },
             ca: {
                 btn_queries: "CONSULTES",
+                mob_voice_on: "VEU ON", mob_voice_off: "VEU OFF",
+                mob_spotter_active_banner: "🔊 SPOTTER AUTOMÀTIC ACTIU · CANTA TEMPS I RIVALS SOL",
+                mob_hands_free: "MANS LLIURES",
+                mob_synced_live: "SINCRONITZAT EN VIU AMB PISTA",
+                mob_ahead_you: "DAVANT TEU", mob_behind_you: "DARRERE TEU",
+                mob_you_are_leader: "ETS EL LÍDER (P1)", mob_clear_track_ahead: "Pista lliure davant",
+                mob_no_rival_behind: "SENSE RIVAL DARRERE", mob_nobody_behind: "Ningú darrere a la màniga",
+                mob_heat_laps: "VOLTES MÀNIGA", mob_best_time: "MILLOR CRONO", mob_avg_short: "MITJANA",
+                mob_spotter_listening: "Spotter automàtic connectat: cantant cada pas per meta i rivals...",
+                mob_repeat_btn: "REPETIR",
+                mob_driver_lap_history: "HISTORIAL DE VOLTES DEL PILOT",
+                mob_total_race_laps: "Total Cursa:",
+                mob_waiting_finish_line: "Esperant pas per meta per cantar temps...",
+                mob_lap_word: "Volta", mob_marshal_badge: "COMISSARI", mob_next_on_track: "A PISTA PRÒX. MÀNIGA",
+                mob_parallel: "En paral·lel", mob_close_behind: "Enganxat", mob_last_abbr: "Últ",
+                mob_btn_html: "BAIXAR INFORME HTML", mob_btn_csv: "DESAR TAULA CSV",
                 layout_0_btn: "0. CLÀSSIC", layout_0_short: "CLÀSSIC",
                 layout_1_btn: "1. BÀSIC", layout_2_btn: "2. MITJÀ", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BÀSIC", layout_2_short: "MITJÀ", layout_3_short: "EXPERT",
@@ -1700,6 +1732,22 @@
             },
             eu: {
                 btn_queries: "KONTSULTAK",
+                mob_voice_on: "AHOTSA ON", mob_voice_off: "AHOTSA OFF",
+                mob_spotter_active_banner: "🔊 SPOTTER AUTOMATIKOA AKTIBO · DENBORAK ETA AURKARIAK BAKARRIK ABESTEN",
+                mob_hands_free: "ESKU LIBREAK",
+                mob_synced_live: "ZUZENEAN PISTAREKIN SINKRONIZATUTA",
+                mob_ahead_you: "ZURE AURREAN", mob_behind_you: "ZURE ATZEAN",
+                mob_you_are_leader: "LIDERRA ZARA (P1)", mob_clear_track_ahead: "Pista libre aurrean",
+                mob_no_rival_behind: "AURKARIRIK EZ ATZEAN", mob_nobody_behind: "Inor ez atzean txandan",
+                mob_heat_laps: "TXANDA ITZULIAK", mob_best_time: "DENBORA ONENA", mob_avg_short: "BATEZ BESTE",
+                mob_spotter_listening: "Spotter automatikoa konektatuta: helmugako igaroera bakoitza abesten...",
+                mob_repeat_btn: "ERREPIKATU",
+                mob_driver_lap_history: "GIDARIAREN ITZULIEN HISTORIA",
+                mob_total_race_laps: "Lasterketa Guztira:",
+                mob_waiting_finish_line: "Helmugatik igarotzeko zain denborak abesteko...",
+                mob_lap_word: "Itzulia", mob_marshal_badge: "KOMISARIOA", mob_next_on_track: "PISTAN HURRENGO TXANDAN",
+                mob_parallel: "Paraleloan", mob_close_behind: "Itsatsita", mob_last_abbr: "Azk",
+                mob_btn_html: "HTML TXOSTENA JEITSI", mob_btn_csv: "CSV TAULA GORDE",
                 layout_0_btn: "0. KLASIKOA", layout_0_short: "KLASIK.",
                 layout_1_btn: "1. OINARRIZKOA", layout_2_btn: "2. ERTAINA", layout_3_btn: "3. ADITUA",
                 layout_1_short: "OINARR.", layout_2_short: "ERTAINA", layout_3_short: "ADITUA",
@@ -1757,6 +1805,22 @@
             },
             en: {
                 btn_queries: "QUERIES",
+                mob_voice_on: "VOICE ON", mob_voice_off: "VOICE OFF",
+                mob_spotter_active_banner: "🔊 AUTO SPOTTER ACTIVE · CALLING LAPS & RIVALS HANDS-FREE",
+                mob_hands_free: "HANDS-FREE",
+                mob_synced_live: "LIVE SYNCED WITH TRACK",
+                mob_ahead_you: "CAR AHEAD", mob_behind_you: "CAR BEHIND",
+                mob_you_are_leader: "YOU ARE THE LEADER (P1)", mob_clear_track_ahead: "Clear track ahead",
+                mob_no_rival_behind: "NO RIVAL BEHIND", mob_nobody_behind: "Nobody behind in heat",
+                mob_heat_laps: "HEAT LAPS", mob_best_time: "BEST LAP", mob_avg_short: "AVERAGE",
+                mob_spotter_listening: "Auto spotter connected: calling every lap and rivals...",
+                mob_repeat_btn: "REPEAT",
+                mob_driver_lap_history: "DRIVER LAP HISTORY",
+                mob_total_race_laps: "Total Race:",
+                mob_waiting_finish_line: "Waiting for finish line crossing to call lap times...",
+                mob_lap_word: "Lap", mob_marshal_badge: "MARSHAL", mob_next_on_track: "ON TRACK NEXT HEAT",
+                mob_parallel: "Side by side", mob_close_behind: "Right behind", mob_last_abbr: "Last",
+                mob_btn_html: "DOWNLOAD HTML REPORT", mob_btn_csv: "SAVE CSV TABLE",
                 layout_0_btn: "0. CLASSIC", layout_0_short: "CLASSIC",
                 layout_1_btn: "1. BASIC", layout_2_btn: "2. MEDIUM", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIC", layout_2_short: "MEDIUM", layout_3_short: "EXPERT",
@@ -1814,6 +1878,22 @@
             },
             fr: {
                 btn_queries: "REQUÊTES",
+                mob_voice_on: "VOIX ON", mob_voice_off: "VOIX OFF",
+                mob_spotter_active_banner: "🔊 SPOTTER AUTO ACTIF · ANNONCE TOURS ET RIVAUX SEUL",
+                mob_hands_free: "MAINS LIBRES",
+                mob_synced_live: "SYNCHRONISÉ EN DIRECT AVEC LA PISTE",
+                mob_ahead_you: "DEVANT VOUS", mob_behind_you: "DERRIÈRE VOUS",
+                mob_you_are_leader: "VOUS ÊTES LEADER (P1)", mob_clear_track_ahead: "Piste libre devant",
+                mob_no_rival_behind: "AUCUN RIVAL DERRIÈRE", mob_nobody_behind: "Personne derrière",
+                mob_heat_laps: "TOURS MANCHE", mob_best_time: "MEILLEUR TEMPS", mob_avg_short: "MOYENNE",
+                mob_spotter_listening: "Spotter auto connecté : annonce de chaque tour et rivaux...",
+                mob_repeat_btn: "RÉPÉTER",
+                mob_driver_lap_history: "HISTORIQUE DES TOURS DU PILOTE",
+                mob_total_race_laps: "Total Course:",
+                mob_waiting_finish_line: "En attente du passage sur la ligne pour annoncer les temps...",
+                mob_lap_word: "Tour", mob_marshal_badge: "COMMISSAIRE", mob_next_on_track: "EN PISTE PROCH. MANCHE",
+                mob_parallel: "Côte à côte", mob_close_behind: "Collé", mob_last_abbr: "Dern",
+                mob_btn_html: "TÉLÉCHARGER RAPPORT HTML", mob_btn_csv: "ENREGISTRER TABLE CSV",
                 layout_0_btn: "0. CLASSIQUE", layout_0_short: "CLASSIQ.",
                 layout_1_btn: "1. BASIQUE", layout_2_btn: "2. MOYEN", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIQUE", layout_2_short: "MOYEN", layout_3_short: "EXPERT",
@@ -1871,6 +1951,22 @@
             },
             it: {
                 btn_queries: "CONSULTAZIONI",
+                mob_voice_on: "VOCE ON", mob_voice_off: "VOCE OFF",
+                mob_spotter_active_banner: "🔊 SPOTTER AUTO ATTIVO · ANNUNCIA TEMPI E RIVALI DA SOLO",
+                mob_hands_free: "MANI LIBERE",
+                mob_synced_live: "SINCRONIZZATO LIVE CON LA PISTA",
+                mob_ahead_you: "DAVANTI A TE", mob_behind_you: "DIETRO DI TE",
+                mob_you_are_leader: "SEI IL LEADER (P1)", mob_clear_track_ahead: "Pista libera davanti",
+                mob_no_rival_behind: "NESSUN RIVALE DIETRO", mob_nobody_behind: "Nessuno dietro nella manche",
+                mob_heat_laps: "GIRI MANCHE", mob_best_time: "MIGLIOR TEMPO", mob_avg_short: "MEDIA",
+                mob_spotter_listening: "Spotter automatico connesso: annuncia ogni giro e rivali...",
+                mob_repeat_btn: "RIPETI",
+                mob_driver_lap_history: "STORICO GIRI DEL PILOTA",
+                mob_total_race_laps: "Totale Gara:",
+                mob_waiting_finish_line: "In attesa del passaggio sul traguardo per annunciare i tempi...",
+                mob_lap_word: "Giro", mob_marshal_badge: "COMMISSARIO", mob_next_on_track: "IN PISTA PROSS. MANCHE",
+                mob_parallel: "Affiancati", mob_close_behind: "Incollato", mob_last_abbr: "Ult",
+                mob_btn_html: "SCARICA REPORT HTML", mob_btn_csv: "SALVA TABELLA CSV",
                 layout_0_btn: "0. CLASSICO", layout_0_short: "CLASSICO",
                 layout_1_btn: "1. BASE", layout_2_btn: "2. MEDIO", layout_3_btn: "3. ESPERTO",
                 layout_1_short: "BASE", layout_2_short: "MEDIO", layout_3_short: "ESPERTO",
@@ -1928,6 +2024,22 @@
             },
             de: {
                 btn_queries: "ABFRAGEN",
+                mob_voice_on: "STIMME EIN", mob_voice_off: "STIMME AUS",
+                mob_spotter_active_banner: "🔊 AUTO-SPOTTER AKTIV · SAGT ZEITEN & GEGNER AUTOMATISCH AN",
+                mob_hands_free: "FREIHÄNDIG",
+                mob_synced_live: "LIVE MIT STRECKE SYNCHRONISIERT",
+                mob_ahead_you: "VOR DIR", mob_behind_you: "HINTER DIR",
+                mob_you_are_leader: "DU BIST SPITZENREITER (P1)", mob_clear_track_ahead: "Freie Strecke voraus",
+                mob_no_rival_behind: "KEIN GEGNER DAHINTER", mob_nobody_behind: "Niemand hinter dir im Lauf",
+                mob_heat_laps: "LAUF-RUNDEN", mob_best_time: "BESTZEIT", mob_avg_short: "SCHNITT",
+                mob_spotter_listening: "Auto-Spotter verbunden: sagt jede Runde und Gegner an...",
+                mob_repeat_btn: "WIEDERHOLEN",
+                mob_driver_lap_history: "RUNDENVERLAUF DES FAHRERS",
+                mob_total_race_laps: "Rennen Gesamt:",
+                mob_waiting_finish_line: "Warte auf Zieldurchfahrt für Zeitenansage...",
+                mob_lap_word: "Runde", mob_marshal_badge: "STRECKENPOSTEN", mob_next_on_track: "IM NÄCHSTEN LAUF AUF SPUR",
+                mob_parallel: "Nebeneinander", mob_close_behind: "Dicht dran", mob_last_abbr: "Letzte",
+                mob_btn_html: "HTML-BERICHT LADEN", mob_btn_csv: "CSV-TABELLE SPEICHERN",
                 layout_0_btn: "0. KLASSISCH", layout_0_short: "KLASSIK",
                 layout_1_btn: "1. BASIS", layout_2_btn: "2. MITTEL", layout_3_btn: "3. EXPERTE",
                 layout_1_short: "BASIS", layout_2_short: "MITTEL", layout_3_short: "EXPERTE",
@@ -2421,6 +2533,21 @@
             if (mVoice && hVoice) mVoice.value = hVoice.value || 'AUTO_MALE';
         }
 
+        function translateMobileModalStaticLabels() {
+            const modal = document.getElementById('mobileDriverModal');
+            if (!modal) return;
+            modal.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translated = t(key);
+                if (translated) el.textContent = translated;
+            });
+            const voiceStatusEl = document.getElementById('mob-voice-status');
+            if (voiceStatusEl) {
+                voiceStatusEl.textContent = mobileSpotterVoiceEnabled ? t('mob_voice_on') : t('mob_voice_off');
+            }
+            updateMobileUnlockBannerUI();
+        }
+
         function changeMobileSpotterLangOrVoice() {
             mobileUserOverrodeLang = true;
             const mLang = document.getElementById('mob-lang-select');
@@ -2428,18 +2555,12 @@
             const hVoice = document.getElementById('headerVoiceSelect');
 
             if (mLang && mLang.value && I18N[mLang.value]) {
-                state.lang = mLang.value;
-                document.documentElement.lang = mLang.value;
-                const meta = LANG_META[mLang.value] || LANG_META.es;
-                const flagEl = document.getElementById('currentLangFlag');
-                const lblEl = document.getElementById('currentLangLabel');
-                if (flagEl) flagEl.innerHTML = meta.svg;
-                if (lblEl) lblEl.textContent = mLang.value.toUpperCase();
-                updateVoiceLabels();
+                changeLanguage(mLang.value);
             }
             if (mVoice && hVoice) {
                 hVoice.value = mVoice.value;
             }
+            translateMobileModalStaticLabels();
             primeMobileSpeechEngine();
             updateMobileCompanionModalUI();
             setTimeout(() => speakMobileDriverStatusNow(true), 80);
@@ -2535,9 +2656,9 @@
             banner.innerHTML = `
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-[#30d158] animate-ping shrink-0"></span>
-                    <span class="text-xs font-black uppercase">🔊 SPOTTER AUTOMÁTICO ACTIVO · CANTA TIEMPOS Y RIVALES SOLO</span>
+                    <span class="text-xs font-black uppercase">${t('mob_spotter_active_banner')}</span>
                 </div>
-                <span class="px-2 py-0.5 rounded bg-black/50 text-[#ffd60a] text-[10px] font-mono-num font-black shrink-0">AUTO ON</span>
+                <span class="px-2 py-0.5 rounded bg-black/50 text-[#ffd60a] text-[10px] font-mono-num font-black shrink-0">${t('mob_hands_free')}</span>
             `;
         }
 
@@ -2605,7 +2726,13 @@
                 if (packet.lang && I18N[packet.lang] && packet.lang !== state.lang) {
                     state.lang = packet.lang;
                     document.documentElement.lang = packet.lang;
+                    document.querySelectorAll('[data-i18n]').forEach(el => {
+                        const key = el.getAttribute('data-i18n');
+                        const translated = t(key);
+                        if (translated) el.textContent = translated;
+                    });
                     updateVoiceLabels();
+                    translateMobileModalStaticLabels();
                 }
                 if (packet.voicePref) {
                     const hVoice = document.getElementById('headerVoiceSelect');
@@ -2739,7 +2866,7 @@
             const btn = document.getElementById('mob-voice-btn');
             const txt = document.getElementById('mob-voice-status');
             if (btn) btn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-neon-green flex items-center gap-1 cursor-pointer";
-            if (txt) txt.textContent = "VOZ ON";
+            if (txt) txt.textContent = t('mob_voice_on');
 
             setTimeout(() => {
                 speakMobileDriverStatusNow(true);
@@ -3498,7 +3625,7 @@
                         else if (aheadDriver.lastLap > 0 && currentAssignment.lastLap > 0) {
                             const diff = Math.abs(currentAssignment.lastLap - aheadDriver.lastLap).toFixed(2);
                             gapAheadText = `+${diff}s`;
-                        } else gapAheadText = 'En paralelo';
+                        } else gapAheadText = t('mob_parallel');
                     }
                     if (idx < sorted.length - 1) {
                         behindDriver = sorted[idx + 1];
@@ -3507,7 +3634,7 @@
                         else if (behindDriver.lastLap > 0 && currentAssignment.lastLap > 0) {
                             const diff = Math.abs(behindDriver.lastLap - currentAssignment.lastLap).toFixed(2);
                             gapBehindText = `-${diff}s`;
-                        } else gapBehindText = 'Pegado';
+                        } else gapBehindText = t('mob_close_behind');
                     }
                 }
             }
@@ -3961,6 +4088,7 @@
                 modal.classList.add('flex');
             }
             syncMobileLangVoiceSelectorsUI();
+            translateMobileModalStaticLabels();
             primeMobileSpeechEngine();
             updateMobileUnlockBannerUI();
             updateMobileCompanionModalUI();
@@ -3994,11 +4122,11 @@
             const txt = document.getElementById('mob-voice-status');
             if (mobileSpotterVoiceEnabled) {
                 btn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-neon-green flex items-center gap-1 cursor-pointer";
-                txt.textContent = "VOZ ON";
+                txt.textContent = t('mob_voice_on');
                 speakMobileDriverStatusNow(true);
             } else {
                 btn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-silver flex items-center gap-1 cursor-pointer";
-                txt.textContent = "VOZ OFF";
+                txt.textContent = t('mob_voice_off');
             }
         }
 
@@ -4007,6 +4135,8 @@
             const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
             if (!ctx) return;
 
+            translateMobileModalStaticLabels();
+
             const ass = ctx.assignment;
             const laneBadge = document.getElementById('mob-lane-badge');
             if (ass) {
@@ -4014,7 +4144,7 @@
                 laneBadge.style.backgroundColor = ass.laneInfo.hex;
                 laneBadge.style.color = '#090b10';
             } else {
-                laneBadge.textContent = 'COMISARIO';
+                laneBadge.textContent = t('mob_marshal_badge');
                 laneBadge.style.backgroundColor = '#ff9f0a';
                 laneBadge.style.color = '#090b10';
             }
@@ -4022,27 +4152,27 @@
             document.getElementById('mob-driver-name').textContent = ctx.driver.name;
             document.getElementById('mob-driver-car').textContent = ctx.driver.car;
             document.getElementById('mob-pos-badge').textContent = ctx.position ? `P${ctx.position}` : 'BOX';
-            document.getElementById('mob-heat-label').textContent = `MANGA ${ctx.heatNumber}/${state.heats.length}`;
-            document.getElementById('mob-next-lane').textContent = ass ? ass.nextAction : 'EN PISTA PRÓX. MANGA';
+            document.getElementById('mob-heat-label').textContent = `${t('word_heat')} ${ctx.heatNumber}/${state.heats.length}`;
+            document.getElementById('mob-next-lane').textContent = ass ? ass.nextAction : t('mob_next_on_track');
 
             const catBadge = document.getElementById('mob-event-cat-badge');
             if (catBadge) {
                 catBadge.textContent = `${state.eventName || 'CLUB'} · ${ctx.driver.category || state.activeClubCategory || 'GT'}`;
             }
 
-            document.getElementById('mob-ahead-name').textContent = ctx.ahead ? `${ctx.ahead.driverName} (C${ctx.ahead.lane})` : 'ERES EL LÍDER (P1)';
+            document.getElementById('mob-ahead-name').textContent = ctx.ahead ? `${ctx.ahead.driverName} (C${ctx.ahead.lane})` : t('mob_you_are_leader');
             document.getElementById('mob-ahead-gap').textContent = ctx.gapAheadText;
-            document.getElementById('mob-ahead-detail').textContent = ctx.ahead ? `${ctx.ahead.laps} V · Últ: ${ctx.ahead.lastLap > 0 ? ctx.ahead.lastLap.toFixed(3) + 's' : '--'}` : 'Pista libre delante';
+            document.getElementById('mob-ahead-detail').textContent = ctx.ahead ? `${ctx.ahead.laps} V · ${t('mob_last_abbr')}: ${ctx.ahead.lastLap > 0 ? ctx.ahead.lastLap.toFixed(3) + 's' : '--'}` : t('mob_clear_track_ahead');
 
-            document.getElementById('mob-behind-name').textContent = ctx.behind ? `${ctx.behind.driverName} (C${ctx.behind.lane})` : 'SIN RIVAL DETRÁS';
+            document.getElementById('mob-behind-name').textContent = ctx.behind ? `${ctx.behind.driverName} (C${ctx.behind.lane})` : t('mob_no_rival_behind');
             document.getElementById('mob-behind-gap').textContent = ctx.gapBehindText;
-            document.getElementById('mob-behind-detail').textContent = ctx.behind ? `${ctx.behind.laps} V · Últ: ${ctx.behind.lastLap > 0 ? ctx.behind.lastLap.toFixed(3) + 's' : '--'}` : 'Nadie detrás en manga';
+            document.getElementById('mob-behind-detail').textContent = ctx.behind ? `${ctx.behind.laps} V · ${t('mob_last_abbr')}: ${ctx.behind.lastLap > 0 ? ctx.behind.lastLap.toFixed(3) + 's' : '--'}` : t('mob_nobody_behind');
 
             document.getElementById('mob-last-lap').textContent = (ass && ass.lastLap > 0) ? `${ass.lastLap.toFixed(3)}s` : '--.---s';
             document.getElementById('mob-laps').textContent = ass ? String(ass.laps) : '0';
             document.getElementById('mob-best-lap').textContent = (ctx.careerBestLap < Infinity) ? `${ctx.careerBestLap.toFixed(3) + 's'}` : '--.---s';
             document.getElementById('mob-mean-lap').textContent = (ass && getDriverMeanLap(ass) > 0) ? `${getDriverMeanLap(ass).toFixed(3)}s` : '0.000s';
-            document.getElementById('mob-total-career-laps').textContent = `Total Carrera: ${ctx.totalCareerLaps}V`;
+            document.getElementById('mob-total-career-laps').textContent = `${t('mob_total_race_laps')} ${ctx.totalCareerLaps}V`;
 
             const histEl = document.getElementById('mob-lap-history');
             if (ass && ass.history.length > 0) {
@@ -4050,12 +4180,12 @@
                     const lapNum = ass.history.length - i;
                     const isBest = lapTime === ass.bestLap;
                     return `<div class="py-1 px-2 flex justify-between items-center ${isBest ? 'text-[#30d158] font-black' : 'text-white'}">
-                        <span>Vuelta ${lapNum} (M${ctx.heatNumber}·C${ass.lane})</span>
-                        <span>${lapTime.toFixed(3)}s ${isBest ? '★ RÉCORD' : ''}</span>
+                        <span>${t('mob_lap_word')} ${lapNum} (M${ctx.heatNumber}·C${ass.lane})</span>
+                        <span>${lapTime.toFixed(3)}s ${isBest ? `★ ${t('record')}` : ''}</span>
                     </div>`;
                 }).join('');
             } else {
-                histEl.innerHTML = `<div class="py-3 text-center text-[#64748b]">Esperando paso por meta para cantar tiempos...</div>`;
+                histEl.innerHTML = `<div class="py-3 text-center text-[#64748b]">${t('mob_waiting_finish_line')}</div>`;
             }
         }
 
