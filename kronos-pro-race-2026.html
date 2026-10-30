@@ -5214,14 +5214,21 @@
                 const pal = LANE_PALETTE[i];
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.onclick = () => { state.lanesCount = i; syncDriversToRaceGroups(); rebuildHeats(); renderWizardStep1(); updateHeaderSummary(); };
+                btn.onclick = () => {
+                    state.lanesCount = i;
+                    syncDriversToRaceGroups();
+                    rebuildHeats();
+                    renderWizardStep1();
+                    updateHeaderSummary();
+                };
                 btn.className = active
-                    ? "p-2 rounded-xl text-xs font-black border transition mac-silver-active"
-                    : "p-2 rounded-xl text-xs font-bold border transition mac-silver-btn";
+                    ? "p-2 rounded-xl text-xs font-black border transition mac-silver-active cursor-pointer"
+                    : "p-2 rounded-xl text-xs font-bold border transition mac-silver-btn cursor-pointer";
                 btn.innerHTML = `<span style="color:${active ? '#090b10' : pal.hex}">●</span> C${i}`;
                 laneContainer.appendChild(btn);
             }
-            document.getElementById('lanes-selected-badge').textContent = `${state.lanesCount} ${t('lane')}S`;
+            const lanesBadge = document.getElementById('lanes-selected-badge');
+            if (lanesBadge) lanesBadge.textContent = `${state.lanesCount} ${t('lane')}S`;
 
             [1, 2, 3].forEach(sec => {
                 const b = document.getElementById(`sec-btn-${sec}`);
@@ -5230,8 +5237,18 @@
                     : "px-2.5 py-1 rounded-lg text-[10px] font-semibold text-slate-300 hover:text-white cursor-pointer";
             });
 
+            const trackLenInp = document.getElementById('manual-track-length');
+            if (trackLenInp && document.activeElement !== trackLenInp) {
+                trackLenInp.value = state.trackLengthMeters || 28;
+            }
+
             const activeSeq = getClubLaneSequence(state.lanesCount, state.rotationMode);
-            document.getElementById('wheel-preview-badge').textContent = activeSeq.join('→');
+            const wheelBadge = document.getElementById('wheel-preview-badge');
+            if (wheelBadge) wheelBadge.textContent = activeSeq.join('→');
+            const rotInput = document.getElementById('manual-rotation-input');
+            if (rotInput && document.activeElement !== rotInput) {
+                rotInput.value = activeSeq.join(', ');
+            }
 
             const durations = [
                 { s: 120, label: '2 Min' },
@@ -5249,22 +5266,148 @@
                     ? "p-1.5 rounded-xl text-[11px] font-black border transition mac-silver-active cursor-pointer"
                     : "p-1.5 rounded-xl text-[11px] font-bold border transition mac-silver-btn cursor-pointer";
             });
-            document.getElementById('duration-selected-badge').textContent = state.durationLabel;
+            const durBadge = document.getElementById('duration-selected-badge');
+            if (durBadge) durBadge.textContent = state.durationLabel;
+
+            const minEl = document.getElementById('manual-dur-min');
+            const secEl = document.getElementById('manual-dur-sec');
+            if (minEl && document.activeElement !== minEl) minEl.value = Math.floor(state.durationSeconds / 60);
+            if (secEl && document.activeElement !== secEl) secEl.value = state.durationSeconds % 60;
+
+            // BLOQUE 3: Modalidad por Tiempo o Meta de Vueltas
+            const lapOptions = ['infinity', 15, 25, 40, 50, 100];
+            lapOptions.forEach(lap => {
+                const btn = document.getElementById(`lap-btn-${lap}`);
+                if (!btn) return;
+                const spanClass = (lap === 'infinity' || lap === 100) ? 'col-span-2' : '';
+                btn.className = (state.targetLaps === lap)
+                    ? `${spanClass} p-2 rounded-xl text-[11px] font-black border transition mac-silver-active cursor-pointer`
+                    : `${spanClass} p-2 rounded-xl text-[11px] font-bold border transition mac-silver-btn cursor-pointer`;
+            });
+            const lapsBadge = document.getElementById('laps-selected-badge');
+            if (lapsBadge) {
+                lapsBadge.textContent = state.targetLaps === 'infinity' ? '∞ Tiempo' : `${state.targetLaps} ${t('laps')}`;
+            }
+            const manualLapsInp = document.getElementById('manual-target-laps-input');
+            if (manualLapsInp && document.activeElement !== manualLapsInp) {
+                manualLapsInp.value = state.targetLaps === 'infinity' ? '' : state.targetLaps;
+            }
+
+            // BLOQUE 4: Tipo de Sesión y Número de Mangas
+            ['PRACTICE', 'CLUB'].forEach(st => {
+                const b = document.getElementById(`sess-btn-${st}`);
+                if (b) b.className = (state.sessionType === st)
+                    ? "p-2 rounded-xl text-[11px] font-black border transition mac-silver-active cursor-pointer"
+                    : "p-2 rounded-xl text-[11px] font-bold border transition mac-silver-btn cursor-pointer";
+            });
+
+            ['auto', 'lanes', 6, 10].forEach(hm => {
+                const b = document.getElementById(`heat-btn-${hm}`);
+                if (b) b.className = (state.heatMode === hm && state.sessionType !== 'PRACTICE')
+                    ? "p-1.5 rounded-xl text-[10px] font-black border transition mac-silver-active cursor-pointer"
+                    : "p-1.5 rounded-xl text-[10px] font-bold border transition mac-silver-btn cursor-pointer";
+            });
+
+            const totalHeatsCount = state.sessionType === 'PRACTICE'
+                ? 1
+                : (state.heats.length || (typeof state.heatMode === 'number' ? state.heatMode : state.lanesCount));
+            const heatsBadge = document.getElementById('heats-selected-badge');
+            if (heatsBadge) heatsBadge.textContent = `${totalHeatsCount} ${t('word_heat')}S`;
+
+            const manualHeatsInp = document.getElementById('manual-heats-input');
+            if (manualHeatsInp && document.activeElement !== manualHeatsInp) {
+                manualHeatsInp.value = totalHeatsCount;
+            }
+
+            // BLOQUE 5: Orden de Rotación de Carriles
+            ['club_odd_even', 'random', 'sequential'].forEach(rm => {
+                const b = document.getElementById(`rot-wiz-${rm}`);
+                if (b) b.className = (state.rotationMode === rm)
+                    ? "p-2 rounded-xl text-[10px] font-black border transition text-center mac-silver-active cursor-pointer"
+                    : "p-2 rounded-xl text-[10px] font-bold border transition text-center mac-silver-btn cursor-pointer";
+            });
+            const customRotBtn = document.getElementById('rot-wiz-custom');
+            if (customRotBtn) {
+                customRotBtn.className = (state.rotationMode === 'custom')
+                    ? "px-3 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer"
+                    : "px-3 py-1 rounded-lg mac-silver-btn text-[10px] font-bold cursor-pointer";
+            }
+
+            // BLOQUE 6: Cálculo del Ganador (Vueltas, Tiempo o Puntos)
+            ['laps', 'time', 'points'].forEach(sm => {
+                const b = document.getElementById(`score-wiz-${sm}`);
+                if (b) b.className = (state.scoringMethod === sm)
+                    ? "p-2.5 text-left rounded-xl text-xs font-black border transition mac-silver-active cursor-pointer flex items-center justify-between"
+                    : "p-2.5 text-left rounded-xl text-xs font-bold border transition mac-silver-btn cursor-pointer flex items-center justify-between";
+            });
 
             renderClubCategoriesManager();
             updateEventHeaderBadges();
+
+            // Resumen en vivo en la barra superior de Crear Carrera
+            const liveSum = document.getElementById('mac-config-live-summary');
+            if (liveSum) {
+                const modeTxt = state.targetLaps === 'infinity' ? '∞ Por Tiempo' : `Meta ${state.targetLaps} Vueltas`;
+                liveSum.textContent = `${state.eventName || 'EVENTO'} (${state.eventDate || ''}) · [${state.activeClubCategory || 'GT'}] · ${state.lanesCount} Carriles · ${totalHeatsCount} Mangas x ${state.durationLabel} · ${modeTxt} · Rueda ${activeSeq.join('→')}`;
+            }
         }
 
-        function setSectorsCount(n) { state.numSectors = n; renderWizardStep1(); renderLiveRaceView(); saveLocalDatabase(); }
-        function selectDurationPreset(seconds, label, category) {
-            state.durationSeconds = seconds; state.durationLabel = label; state.durationCategory = category; state.timeRemaining = seconds;
-            renderWizardStep1(); updateHeaderSummary(); renderMasterClock(); saveLocalDatabase();
+        function setSectorsCount(n) {
+            state.numSectors = n;
+            renderWizardStep1();
+            renderLiveRaceView();
+            saveLocalDatabase();
         }
-        function setTargetLaps(laps) { state.targetLaps = laps; renderWizardStep1(); updateHeaderSummary(); renderMasterClock(); saveLocalDatabase(); }
-        function setSessionType(type) { state.sessionType = type; rebuildHeats(); renderWizardStep1(); updateHeaderSummary(); saveLocalDatabase(); }
-        function setHeatMode(mode) { state.heatMode = mode; rebuildHeats(); renderWizardStep1(); saveLocalDatabase(); }
-        function setRotationModeWizard(mode) { state.rotationMode = mode; rebuildHeats(); renderWizardStep1(); saveLocalDatabase(); }
-        function setScoringMethodWizard(mode) { state.scoringMethod = mode; renderWizardStep1(); saveLocalDatabase(); }
+        function selectDurationPreset(seconds, label, category) {
+            state.durationSeconds = seconds;
+            state.durationLabel = label;
+            state.durationCategory = category;
+            state.timeRemaining = seconds;
+            renderWizardStep1();
+            updateHeaderSummary();
+            renderMasterClock();
+            saveLocalDatabase();
+        }
+        function setTargetLaps(laps) {
+            state.targetLaps = laps;
+            renderWizardStep1();
+            updateHeaderSummary();
+            renderMasterClock();
+            saveLocalDatabase();
+        }
+        function setSessionType(type) {
+            state.sessionType = type;
+            if (type === 'PRACTICE') {
+                state.heatMode = 1;
+            } else if (state.heatMode === 1) {
+                state.heatMode = 'auto';
+            }
+            rebuildHeats();
+            renderWizardStep1();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+        function setHeatMode(mode) {
+            state.sessionType = 'CLUB';
+            state.heatMode = mode;
+            rebuildHeats();
+            renderWizardStep1();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+        function setRotationModeWizard(mode) {
+            state.rotationMode = mode;
+            rebuildHeats();
+            renderWizardStep1();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+        function setScoringMethodWizard(mode) {
+            state.scoringMethod = mode;
+            renderWizardStep1();
+            renderStandingsView();
+            saveLocalDatabase();
+        }
 
         function updateHeaderSummary() {
             const badge = document.getElementById('badge-category');
@@ -5274,7 +5417,10 @@
             if (sum) sum.textContent = `${state.eventName || 'CLUB'} (${state.eventDate || ''}) · ${state.lanesCount} ${t('lane')}S · ${lapsTxt}`;
         }
 
-        function sortDriversByPole() { state.drivers.sort((a, b) => a.poleLap - b.poleLap); }
+        // ==================== GESTIÓN DE PILOTOS, MANGAS Y PISTA EN VIVO ====================
+        function sortDriversByPole() {
+            state.drivers.sort((a, b) => a.poleLap - b.poleLap);
+        }
 
         function loadPdfExampleDrivers() {
             const cat = state.activeClubCategory || 'GT';
@@ -5302,21 +5448,53 @@
             const rawCar = carInput.value.trim();
             const car = rawCar ? `${chosenCat} · ${rawCar}` : `${chosenCat} · Oficial Club`;
             state.drivers.push({ id: 'drv_' + Date.now(), name, category: chosenCat, car, poleLap: +(8.35 + Math.random() * 0.65).toFixed(3) });
-            nameInput.value = ''; carInput.value = '';
-            sortDriversByPole(); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase();
+            nameInput.value = '';
+            carInput.value = '';
+            sortDriversByPole();
+            syncDriversToRaceGroups();
+            rebuildHeats();
+            renderDriversList();
+            saveLocalDatabase();
         }
 
-        function removeDriver(id) { state.drivers = state.drivers.filter(d => d.id !== id); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase(); }
-        function clearAllDrivers() { state.drivers = []; state.raceGroups = []; state.heats = []; renderDriversList(); saveLocalDatabase(); }
+        function removeDriver(id) {
+            state.drivers = state.drivers.filter(d => d.id !== id);
+            syncDriversToRaceGroups();
+            rebuildHeats();
+            renderDriversList();
+            saveLocalDatabase();
+        }
+
+        function clearAllDrivers() {
+            state.drivers = [];
+            state.raceGroups = [];
+            state.heats = [];
+            renderDriversList();
+            saveLocalDatabase();
+        }
+
         function simulatePoleSession() {
             if (state.drivers.length === 0) loadPdfExampleDrivers();
             state.drivers.forEach(d => { d.poleLap = +(8.20 + Math.random() * 0.70).toFixed(3); });
-            sortDriversByPole(); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase();
+            sortDriversByPole();
+            syncDriversToRaceGroups();
+            rebuildHeats();
+            renderDriversList();
+            saveLocalDatabase();
         }
+
         function updateDriverPole(id, val) {
             const drv = state.drivers.find(d => d.id === id);
-            if (drv) { drv.poleLap = parseFloat(val) || 9.999; sortDriversByPole(); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase(); }
+            if (drv) {
+                drv.poleLap = parseFloat(val) || 9.999;
+                sortDriversByPole();
+                syncDriversToRaceGroups();
+                rebuildHeats();
+                renderDriversList();
+                saveLocalDatabase();
+            }
         }
+
         function updateDriverCategory(id, newCat) {
             const drv = state.drivers.find(d => d.id === id);
             if (!drv) return;
@@ -5333,9 +5511,10 @@
             const container = document.getElementById('drivers-list-container');
             if (!container) return;
             renderClubCategoriesManager();
-            document.getElementById('drivers-count-badge').textContent = `${state.drivers.length} Pilotos`;
+            const badge = document.getElementById('drivers-count-badge');
+            if (badge) badge.textContent = `${state.drivers.length} Pilotos`;
             if (state.drivers.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Sin pilotos inscritos.</div>`;
+                container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Sin pilotos inscritos. Pulsa "Cargar 6 Pilotos Oficiales de Ejemplo" o añade uno arriba.</div>`;
                 return;
             }
             container.innerHTML = state.drivers.map((d, idx) => {
@@ -5350,7 +5529,7 @@
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="font-bold text-white text-sm">${d.name}</span>
-                                <select onchange="updateDriverCategory('${d.id}', this.value)" class="bg-[#0a84ff]/20 border border-[#5ac8fa]/40 text-[#5ac8fa] rounded-lg px-2 py-0.5 text-[10px] font-black cursor-pointer">
+                                <select onchange="updateDriverCategory('${d.id}', this.value)" class="bg-[#0a84ff]/20 border border-[#5ac8fa]/40 text-[#5ac8fa] rounded-lg px-2 py-0.5 text-[10px] font-black cursor-pointer focus:outline-none">
                                     ${catOptions}
                                 </select>
                             </div>
@@ -5412,13 +5591,15 @@
             if (!container) return;
 
             renderCursaPreparadaBoards('cursa-preparada-boards');
+
             const totalLanes = state.lanesCount;
             const seq = getClubLaneSequence(totalLanes, state.rotationMode);
-            document.getElementById('step3-subtitle').textContent = `Rueda Oficial [${seq.join(' → ')}] · ${state.heats.length} ${t('word_heat')}s x ${state.durationLabel}`;
+            const subEl = document.getElementById('step3-subtitle');
+            if (subEl) subEl.textContent = `Rueda Oficial [${seq.join(' → ')}] · ${state.heats.length} ${t('word_heat')}s x ${state.durationLabel}`;
 
-            if (!state.heats || state.heats.length === 0) {
+            if (state.heats.length === 0) {
                 if (matrixEl) {
-                    matrixEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">Todas las mangas han sido borradas. Pulsa <b>"Recalcular / Sortear"</b> cuando quieras volver a generar el cuadro de mangas.</div>`;
+                    matrixEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">Todas las mangas han sido borradas. Pulsa <b>"Recalcular / Sortear"</b> para volver a generar el cuadro de mangas.</div>`;
                 }
                 container.innerHTML = '';
                 return;
@@ -5435,34 +5616,53 @@
                         totalRuns += heatsInLane.length;
                         const pal = LANE_PALETTE[laneNum];
                         return `<td class="px-2.5 py-1.5 text-center font-mono-num text-[11px] border-l border-white/5">
-                            ${heatsInLane.length > 0 ? `<span class="px-1.5 py-0.5 rounded font-bold" style="background:${pal.hex}20; color:${pal.hex}">${heatsInLane.join(', ')}</span>` : `<span class="text-slate-600">—</span>`}
+                            ${heatsInLane.length > 0
+                                ? `<span class="px-1.5 py-0.5 rounded font-bold" style="background:${pal.hex}20; color:${pal.hex}">${heatsInLane.join(', ')}</span>`
+                                : `<span class="text-slate-600">—</span>`}
                         </td>`;
                     }).join('');
-                    return `<tr class="border-t border-white/10">
+
+                    const marshalHeats = state.heats
+                        .filter(h => h.marshals.includes(drv.name))
+                        .map(h => `M${h.heatNumber}`);
+
+                    return `<tr class="border-t border-white/10 hover:bg-white/5">
                         <td class="px-3 py-1.5 font-bold text-white text-xs">P${idx + 1} · ${drv.name}</td>
                         ${cells}
                         <td class="px-3 py-1.5 text-center font-mono-num text-xs font-black text-[#30d158] border-l border-white/10">${totalRuns}</td>
+                        <td class="px-3 py-1.5 text-center font-mono-num text-[11px] text-[#ff9f0a] border-l border-white/10">${marshalHeats.length > 0 ? marshalHeats.join(', ') : '—'}</td>
                     </tr>`;
                 }).join('');
 
                 matrixEl.innerHTML = `
+                    <div class="mb-2 flex items-center justify-between text-xs">
+                        <span class="font-extrabold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-table-cells mr-1.5"></i>Matriz de Verificación: Rotación de Pilotos por Carril</span>
+                        <span class="text-[11px] font-bold text-[#30d158]">✓ Ciclo de rotación verificado</span>
+                    </div>
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="text-[10px] uppercase text-slate-300 bg-black/40">
                                 <th class="px-3 py-1.5">Piloto</th>
                                 ${lanesList.map(l => `<th class="px-2.5 py-1.5 text-center border-l border-white/5" style="color:${LANE_PALETTE[l].hex}">Carril ${l}</th>`).join('')}
                                 <th class="px-3 py-1.5 text-center border-l border-white/10 text-[#30d158]">Total</th>
+                                <th class="px-3 py-1.5 text-center border-l border-white/10 text-[#ff9f0a]">Comisario</th>
                             </tr>
                         </thead>
                         <tbody>${rowsHtml}</tbody>
-                    </table>`;
+                    </table>
+                `;
             }
 
             container.innerHTML = state.heats.map(h => `
                 <div class="mac-studio-silver overflow-hidden">
                     <div class="px-4 py-2.5 bg-black/50 border-b border-white/10 flex items-center justify-between">
-                        <span class="font-black text-xs text-white">${t('word_heat').toUpperCase()} ${h.heatNumber}</span>
-                        <span class="text-[11px] font-bold text-[#ffd60a]">${h.marshals.length > 0 ? `D-1: ${h.marshals.join(', ')}` : ''}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-xs text-white">${t('word_heat').toUpperCase()} ${h.heatNumber}</span>
+                            ${h.groupTitle ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-[#0a84ff]/25 text-[#5ac8fa] border border-[#5ac8fa]/40">${h.groupTitle} · T${h.turnNumber || 1}</span>` : ''}
+                        </div>
+                        <span class="text-[11px] font-bold text-[#ffd60a]">
+                            ${h.marshals.length > 0 ? `<i class="fa-solid fa-mug-hot mr-1"></i>D-1 Descans: ${h.marshals.join(', ')}` : ''}
+                        </span>
                     </div>
                     <div class="divide-y divide-white/10">
                         ${h.assignments.map(a => `
@@ -5516,12 +5716,16 @@
             const cleanName = newName.trim().toUpperCase();
             const a = heat.assignments.find(x => x.lane === laneNum);
             if (a) {
+                const oldName = a.driverName;
                 const drv = state.drivers.find(d => d.id === a.driverId);
                 if (drv) drv.name = cleanName;
                 state.heats.forEach(h => {
                     h.assignments.forEach(ass => {
                         if (ass.driverId === a.driverId) ass.driverName = cleanName;
                     });
+                    if (Array.isArray(h.marshals)) {
+                        h.marshals = h.marshals.map(m => m === oldName ? cleanName : m);
+                    }
                 });
                 renderDriversList();
                 renderLiveRaceView();
@@ -5608,11 +5812,11 @@
             }
             if (secTime === 0) {
                 const drvObj = state.drivers.find(d => d.id === a.driverId);
-                const driverBaseLap = drvObj && drvObj.poleLap ? drvObj.poleLap : (8.25 + (a.lane * 0.08));
+                const driverBaseLap = (drvObj && drvObj.poleLap) ? drvObj.poleLap : (8.25 + (a.lane * 0.06));
                 const baseSec = driverBaseLap / sCount;
-                const randomJitter = (Math.random() - 0.46) * (0.48 / sCount);
-                const trafficIncident = Math.random() < 0.08 ? (Math.random() * 0.45) : 0;
-                secTime = Math.max(0.85, +(baseSec + randomJitter + trafficIncident).toFixed(3));
+                const randomJitter = (Math.random() - 0.46) * (0.42 / sCount);
+                const trafficBump = Math.random() < 0.14 ? (Math.random() * 0.35) : 0;
+                secTime = Math.max(0.85, +(baseSec + randomJitter + trafficBump).toFixed(3));
             }
             a.lastCheckpointTime = now;
 
@@ -5660,6 +5864,7 @@
             renderLanesGrid();
             renderMasterClock();
             saveLocalDatabase();
+
             forceBroadcastLiveStateToMobiles(a.driverId, lapSec);
 
             if (state.mainTab === 'qr') renderDriversQRView();
@@ -5751,6 +5956,7 @@
                 }, 200);
                 return;
             }
+
             launchF1LightsSequence();
         }
 
@@ -5771,21 +5977,19 @@
             const actionBtn = document.getElementById('centerF1ActionBtn');
             if (actionBtn) {
                 actionBtn.onclick = () => startF1Sequence();
-                actionBtn.textContent = '✕ CANCELAR SALIDA';
-                actionBtn.className = 'mt-6 px-6 py-2.5 rounded-xl btn-silver text-xs md:text-sm font-black text-[#94a3b8] hover:text-white cursor-pointer';
+                actionBtn.className = "mt-6 px-6 py-2.5 rounded-xl btn-silver text-xs md:text-sm font-black text-[#94a3b8] hover:text-white cursor-pointer";
+                actionBtn.innerHTML = '✕ CANCELAR SALIDA';
             }
 
             for (let i = 1; i <= 5; i++) {
-                const gl = document.getElementById(`giantL${i}`);
-                if (gl) gl.className = 'f1-light-giant';
+                document.getElementById(`giantL${i}`).className = 'f1-light-giant';
             }
 
             state.raceStatus = 'COUNTDOWN';
 
             for (let i = 1; i <= 5; i++) {
                 countdownTimeouts.push(setTimeout(() => {
-                    const gl = document.getElementById(`giantL${i}`);
-                    if (gl) gl.classList.add('red-on');
+                    document.getElementById(`giantL${i}`).classList.add('red-on');
                     const countNum = 6 - i;
                     centerText.textContent = String(countNum);
                     playF1SemaphoreSound('RED');
@@ -5795,10 +5999,15 @@
 
             countdownTimeouts.push(setTimeout(() => {
                 for (let i = 1; i <= 5; i++) {
-                    const gl = document.getElementById(`giantL${i}`);
-                    if (gl) gl.className = 'f1-light-giant green-on';
+                    document.getElementById(`giantL${i}`).className = 'f1-light-giant green-on';
                 }
                 centerText.textContent = '';
+                const relayEl = document.getElementById('relay-power-badge');
+                if (relayEl) {
+                    relayEl.textContent = 'RELÉ PISTA: ON (12.8V)';
+                    relayEl.className = 'hidden 2xl:inline text-[9px] font-black px-1.5 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40 shrink-0';
+                }
+
                 playF1SemaphoreSound('GREEN');
                 speakText(t('tts_go'), null, 'HIGH');
 
@@ -5874,14 +6083,21 @@
             }
 
             for (let l = 0; l <= 3; l++) {
-                const isSelected = state.globalCardLayout === l;
-                const activeCls = "px-3 py-1.5 rounded-lg text-xs font-black mac-silver-active cursor-pointer";
-                const inactiveCls = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white cursor-pointer";
+                const isAct = state.globalCardLayout === l;
                 const lb = document.getElementById(`global-layout-${l}`);
-                if (lb) lb.className = isSelected ? activeCls : inactiveCls;
+                if (lb) {
+                    lb.className = isAct
+                        ? "px-3 py-1.5 rounded-lg text-xs font-black mac-silver-active cursor-pointer"
+                        : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white cursor-pointer";
+                }
                 const blb = document.getElementById(`bottom-layout-${l}`);
-                if (blb) blb.className = isSelected ? activeCls : inactiveCls;
+                if (blb) {
+                    blb.className = isAct
+                        ? "px-3 py-1.5 rounded-lg text-xs font-black mac-silver-active cursor-pointer"
+                        : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white cursor-pointer";
+                }
             }
+
             renderLanesGrid();
         }
 
@@ -5917,7 +6133,9 @@
 
         function buildLapSparklineSVG(history, bestLap, worstLap, meanLap, accentHex) {
             if (!history || history.length === 0) {
-                return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase tracking-wider text-xs">${t('card_waiting_laps')}</div>`;
+                return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                    <i class="fa-solid fa-chart-line mr-1.5 opacity-60"></i>${t('card_waiting_laps')}
+                </div>`;
             }
             const recent = history.slice(-14);
             const minV = Math.min(...recent);
@@ -5951,294 +6169,372 @@
             const meanNorm = Math.max(0, Math.min(1, (meanLap - minV) / span));
             const meanY = (padY + meanNorm * plotH).toFixed(1);
 
-            const dotsSvg = pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.6" fill="#30d158" stroke="#090b10" stroke-width="1.2"/>`).join('');
+            const dotsSvg = pts.map((p, i) => {
+                const prevVal = i > 0 ? pts[i - 1].val : null;
+                const improved = prevVal !== null ? p.val <= prevVal : true;
+                const dotColor = p.val === bestLap ? '#30d158' : (p.val === worstLap && recent.length > 2 ? '#ff453a' : (improved ? '#30d158' : '#ff453a'));
+                return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.8" fill="${dotColor}" stroke="#090b10" stroke-width="1.4"/>`;
+            }).join('');
 
-            return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+            return `
+            <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" class="w-full h-full overflow-visible">
                 <line x1="${padX}" y1="${meanY}" x2="${w - padX}" y2="${meanY}" stroke="#ffd60a" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.8"/>
                 ${barsSvg}
-                <polyline fill="none" stroke="#ffffff" stroke-width="2" points="${polyPoints}"/>
+                <polyline fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" points="${polyPoints}"/>
                 ${dotsSvg}
             </svg>`;
         }
 
         function buildLapHistoryListHtml(history, bestLap, worstLap, maxItems = 6) {
             if (!history || history.length === 0) {
-                return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase text-center px-2 text-xs">${t('card_touch_to_log')}</div>`;
+                return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase text-center px-2 text-[10px]">
+                    ${t('card_touch_to_log')}
+                </div>`;
             }
             const items = [];
             const startIdx = Math.max(0, history.length - maxItems);
             for (let i = history.length - 1; i >= startIdx; i--) {
                 const tLap = history[i];
+                const prevLap = i > 0 ? history[i - 1] : null;
+                const diff = prevLap !== null ? (tLap - prevLap) : 0;
                 const isBest = tLap === bestLap;
-                items.push(`<div class="flex items-center justify-between px-2 py-0.5 rounded-lg border font-mono-num text-xs ${isBest ? 'bg-[#30d158]/20 text-[#30d158] border-[#30d158]/40 font-black' : 'bg-white/5 text-white border-white/10'}">
-                    <span>V${i + 1} ${isBest ? '★' : ''}</span>
-                    <span>${tLap.toFixed(3)}s</span>
-                </div>`);
+                const isWorst = history.length > 2 && tLap === worstLap;
+
+                let arrowBadge = `<span class="text-slate-400 font-black">●</span>`;
+                if (prevLap !== null) {
+                    if (diff <= 0) arrowBadge = `<span class="text-[#30d158] font-black">▼ ${diff.toFixed(3)}</span>`;
+                    else arrowBadge = `<span class="text-[#ff453a] font-black">▲ +${diff.toFixed(3)}</span>`;
+                }
+
+                const rowColor = isBest
+                    ? 'bg-[#30d158]/20 text-[#30d158] border-[#30d158]/40'
+                    : (isWorst ? 'bg-[#ff453a]/15 text-[#ff8a84] border-[#ff453a]/35' : 'bg-white/5 text-white border-white/10');
+
+                items.push(`
+                    <div class="flex items-center justify-between px-2 py-0.5 rounded-lg border font-mono-num text-xs ${rowColor}">
+                        <span class="font-black">V${i + 1} ${isBest ? '★' : (isWorst ? '⚠' : '')}</span>
+                        <span class="font-black">${tLap.toFixed(3)}</span>
+                        ${arrowBadge}
+                    </div>
+                `);
             }
-            return `<div class="w-full h-full flex flex-col justify-between gap-1 overflow-y-auto">${items.join('')}</div>`;
+            return `<div class="w-full h-full flex flex-col justify-between gap-1 overflow-y-auto pr-0.5">${items.join('')}</div>`;
         }
 
-        function buildUnifiedAppleColumnHtml(a, pos, pal, trackLen, scaleFactor, sCount, layoutMode, themeObj) {
+        function buildClassicTicTacColumnHtml(a, pos, trackLen, layoutMode = 0, themeObj = PILOT_CARD_THEMES[0]) {
+            const pal = a.laneInfo || { hex: '#ff9f0a' };
+            const isLeader = pos === 1 && a.laps > 0;
+            const scaleFactor = state.scaleFactor || 32;
+            const sCount = state.numSectors || 1;
+            const accentHex = (themeObj && themeObj.hex) ? themeObj.hex : pal.hex;
+
+            const bestVal = a.bestLap < Infinity ? a.bestLap : 0;
+            const lastVal = a.lastLap > 0 ? a.lastLap : 0;
+            const prevVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
+            const worstVal = a.history.length > 0 ? Math.max(...a.history) : 0;
             const meanVal = getDriverMeanLap(a);
-            const meanBoxStr = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
-            const lastBoxStr = a.lastLap > 0 ? a.lastLap.toFixed(3) : '--.---';
-            const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
-            const bestLapStr = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
-            const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
-            const worstLapStr = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
 
-            const curSpeedKmh = a.lastLap > 0 ? (trackLen / a.lastLap) * 3.6 : 0;
-            const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
-            const scaleSpeedKmh = curSpeedKmh * scaleFactor;
+            const best3Str = bestVal > 0 ? bestVal.toFixed(3) : '--.---';
+            const last3Str = lastVal > 0 ? lastVal.toFixed(3) : '--.---';
+            const mean3Str = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
+            const worst3Str = worstVal > 0 ? worstVal.toFixed(3) : '--.---';
+
+            const curSpeedKmh = lastVal > 0 ? ((trackLen / lastVal) * 3.6) : 0;
+            const maxSpeedKmh = bestVal > 0 ? ((trackLen / bestVal) * 3.6) : 0;
+            const scaleSpeedKmh = Math.round(curSpeedKmh * scaleFactor);
             const subMetricStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
-            const maxSpeedStr = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
-            const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
 
-            const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
-            const projectedLaps = meanVal > 0 ? Math.round(a.laps + (state.timeRemaining / meanVal)) : a.laps;
+            const lapDiffPrev = (lastVal > 0 && prevVal > 0) ? (lastVal - prevVal) : 0;
+            const trendIcon = (lastVal > 0 && prevVal > 0)
+                ? (lapDiffPrev <= 0 ? `<span class="text-[#30d158]">▼</span>` : `<span class="text-[#ff453a]">▲</span>`)
+                : '';
 
             let stdDev = 0;
             if (a.history.length >= 2 && meanVal > 0) {
                 const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanVal, 2), 0) / a.history.length;
                 stdDev = Math.sqrt(variance);
             }
-            const consistencyPct = (bestLapVal > 0 && meanVal > 0)
+            const consistencyPct = (bestVal > 0 && meanVal > 0)
                 ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanVal)) * 100)))
                 : 100;
+            const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
+            const projectedLaps = meanVal > 0 ? Math.round(a.laps + (state.timeRemaining / meanVal)) : a.laps;
 
-            const indexedLaps = a.history.map((time, idx) => ({
+            const maxRowsCount = layoutMode === 0 ? 11 : (layoutMode === 1 ? 8 : 6);
+            const indexedLaps = (a.history || []).map((tLap, idx) => ({
                 lapNum: idx + 1,
-                time,
+                time: tLap,
                 isLatest: idx === a.history.length - 1
             }));
             indexedLaps.sort((x, y) => x.time - y.time || y.lapNum - x.lapNum);
+            const topRows = indexedLaps.slice(0, maxRowsCount);
 
-            const maxRows = layoutMode === 0 ? 11 : (layoutMode === 1 ? 8 : 6);
-            let topLaps = indexedLaps.slice(0, maxRows);
-            const latestEntry = indexedLaps.find(x => x.isLatest);
-            if (latestEntry && !topLaps.some(x => x.lapNum === latestEntry.lapNum)) {
-                topLaps[topLaps.length - 1] = latestEntry;
+            if (indexedLaps.length > maxRowsCount && !topRows.some(r => r.isLatest)) {
+                const latestEntry = indexedLaps.find(r => r.isLatest);
+                if (latestEntry) topRows[maxRowsCount - 1] = latestEntry;
             }
 
             const rowsHtml = [];
-            for (let r = 0; r < maxRows; r++) {
-                const item = topLaps[r];
-                if (!item) {
-                    rowsHtml.push(`
-                        <div class="flex items-baseline justify-between px-2 py-0.5 rounded-lg opacity-20 font-mono-num">
-                            <span class="text-[10px] font-bold text-slate-500">--</span>
-                            <span class="font-bold text-slate-500" style="font-size:clamp(0.95rem, min(14cqw, 4.2cqh), 1.65rem); line-height:1;">--.---</span>
-                        </div>
-                    `);
-                } else if (item.isLatest) {
-                    rowsHtml.push(`
-                        <div class="flex items-center justify-between px-2 py-0.5 rounded-lg bg-gradient-to-r from-white via-[#f8fafc] to-[#ffe4e6] text-slate-950 font-mono-num shadow-sm border border-white">
-                            <span class="text-[10px] font-black uppercase text-[#e11d48] shrink-0">V${item.lapNum}</span>
-                            <span class="font-black tracking-tighter text-slate-950 truncate" style="font-size:clamp(1rem, min(15cqw, 4.5cqh), 1.85rem); line-height:1;">${item.time.toFixed(2)}</span>
-                        </div>
-                    `);
+            for (let i = 0; i < maxRowsCount; i++) {
+                const item = topRows[i];
+                if (item) {
+                    const t2 = item.time.toFixed(2);
+                    const isRecordRow = i === 0 && item.time === bestVal;
+                    if (item.isLatest) {
+                        rowsHtml.push(`
+                        <div class="w-full px-2 py-0.5 rounded-lg bg-gradient-to-r from-white via-[#f8fafc] to-[#ffe4e6] text-[#090b10] flex items-baseline justify-between font-mono-num leading-none shadow-[0_2px_10px_rgba(255,255,255,0.28)] border border-white min-w-0 overflow-hidden">
+                            <span class="font-black text-[#e11d48] shrink-0" style="font-size:clamp(0.65rem, 6.5cqw, 0.9rem);">V${item.lapNum}</span>
+                            <span class="font-black tracking-tighter text-[#090b10] truncate" style="font-size:clamp(0.95rem, 14.5cqw, 1.85rem);">${t2}</span>
+                        </div>`);
+                    } else {
+                        rowsHtml.push(`
+                        <div class="w-full px-1.5 py-0.5 rounded-md flex items-baseline justify-between font-mono-num leading-none hover:bg-white/[0.04] transition min-w-0 overflow-hidden">
+                            <span class="font-bold ${isRecordRow ? 'text-[#30d158]' : 'text-slate-400'} shrink-0" style="font-size:clamp(0.62rem, 6cqw, 0.85rem);">${item.lapNum}</span>
+                            <span class="font-extrabold tracking-tighter ${isRecordRow ? 'text-[#30d158]' : 'text-[#f8fafc]'} truncate" style="font-size:clamp(0.9rem, 13.8cqw, 1.75rem);">${t2}</span>
+                        </div>`);
+                    }
                 } else {
-                    const isBestRow = item.time === a.bestLap;
                     rowsHtml.push(`
-                        <div class="flex items-baseline justify-between px-2 py-0.5 rounded-lg hover:bg-white/5 transition font-mono-num">
-                            <span class="text-[11px] font-semibold ${isBestRow ? 'text-[#30d158]' : 'text-slate-400'} shrink-0">${item.lapNum}</span>
-                            <span class="font-extrabold tracking-tighter ${isBestRow ? 'text-[#30d158]' : 'text-slate-100'} truncate" style="font-size:clamp(0.98rem, min(14.5cqw, 4.3cqh), 1.75rem); line-height:1;">${item.time.toFixed(2)}</span>
-                        </div>
-                    `);
+                    <div class="w-full px-1.5 py-0.5 flex items-baseline justify-between font-mono-num leading-none opacity-20 min-w-0 overflow-hidden">
+                        <span class="text-slate-600" style="font-size:clamp(0.6rem, 5.5cqw, 0.8rem);">·</span>
+                        <span class="font-bold text-slate-600" style="font-size:clamp(0.85rem, 12cqw, 1.4rem);">--.--</span>
+                    </div>`);
                 }
             }
 
-            let extraTelemetryHtml = '';
+            let progressiveTelemetryHtml = '';
             if (layoutMode >= 1) {
-                extraTelemetryHtml += `
-                    <div class="grid grid-cols-2 gap-1 shrink-0">
-                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-[#30d158]/35 overflow-hidden">
-                            <div class="flex items-center justify-between text-[9px] font-black uppercase text-[#30d158]">
-                                <span class="truncate">★ ${t('record')}</span>
-                                <span class="font-mono-num shrink-0">${maxSpeedStr}k</span>
-                            </div>
-                            <div class="font-mono-num font-black text-[#30d158] text-right truncate" style="font-size:clamp(0.95rem, min(13cqw, 3.6cqh), 1.45rem); line-height:1.05;">${bestLapStr}</div>
-                        </div>
-                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15 overflow-hidden">
-                            <div class="flex items-center justify-between text-[9px] font-black uppercase text-[#ffd60a]">
-                                <span class="truncate">${t('card_est_short')}</span>
-                                <span class="text-[#d982ff] font-mono-num shrink-0">${consistencyPct}%</span>
-                            </div>
-                            <div class="font-mono-num font-black text-white text-right truncate" style="font-size:clamp(0.95rem, min(13cqw, 3.6cqh), 1.45rem); line-height:1.05;">${projectedLaps} V</div>
-                        </div>
+                progressiveTelemetryHtml += `
+                <div class="grid grid-cols-2 gap-1 shrink-0">
+                    <div class="mac-silver-well px-1.5 py-1 flex flex-col items-center justify-center border border-[#30d158]/35 min-w-0 overflow-hidden">
+                        <span class="text-[8px] font-black text-[#30d158] uppercase tracking-wider truncate w-full text-center">★ ${t('record')}</span>
+                        <span class="font-mono-num font-black text-[#30d158] leading-tight truncate" style="font-size:clamp(0.78rem, 10.5cqw, 1.2rem);">${best3Str}</span>
+                        <span class="text-[8px] font-mono-num font-bold text-slate-400 truncate">${maxSpeedKmh.toFixed(1)} km/h</span>
                     </div>
-                `;
+                    <div class="mac-silver-well px-1.5 py-1 flex flex-col items-center justify-center border border-white/15 min-w-0 overflow-hidden">
+                        <span class="text-[8px] font-black text-[#ffd60a] uppercase tracking-wider truncate w-full text-center">${t('card_est_short')} ${t('finish_line')}</span>
+                        <span class="font-mono-num font-black text-[#ffd60a] leading-tight truncate" style="font-size:clamp(0.78rem, 10.5cqw, 1.2rem);">${projectedLaps} V</span>
+                        <span class="text-[8px] font-mono-num font-bold text-[#d982ff] truncate">${consistencyPct}% REG</span>
+                    </div>
+                </div>`;
             }
 
             if (layoutMode >= 2) {
-                const s1Val = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(2) : '--.--';
-                const s2Val = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(2) : '--.--';
-                const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(2) : '--.--';
-                extraTelemetryHtml += `
-                    <div class="grid grid-cols-3 gap-1 shrink-0 text-center">
-                        <div class="mac-silver-well px-1 py-1 border border-[#ff453a]/30 overflow-hidden">
-                            <div class="text-[8px] font-black text-[#ff8a84] uppercase truncate">▲ ${t('card_slow_short')}</div>
-                            <div class="font-mono-num font-black text-[#ff8a84] text-xs truncate">${worstLapStr}</div>
-                        </div>
-                        <div class="mac-silver-well px-1 py-1 border border-white/10 overflow-hidden">
-                            <div class="text-[8px] font-black text-[#5ac8fa] uppercase truncate">1:${scaleFactor}</div>
-                            <div class="font-mono-num font-black text-[#5ac8fa] text-xs truncate">${scaleSpeedStr}</div>
-                        </div>
-                        <div class="mac-silver-well px-1 py-1 border border-white/10 overflow-hidden">
-                            <div class="text-[8px] font-black text-slate-300 uppercase truncate">${t('card_dist')}</div>
-                            <div class="font-mono-num font-black text-white text-xs truncate">${totalDistKm}k</div>
-                        </div>
+                const s1Str = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(2) : '--.--';
+                const s2Str = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(2) : '--.--';
+                const s3Str = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(2) : '--.--';
+                progressiveTelemetryHtml += `
+                <div class="grid grid-cols-3 gap-1 shrink-0 text-center">
+                    <div class="mac-silver-well px-1 py-0.5 border border-[#ff453a]/30 min-w-0 overflow-hidden">
+                        <div class="text-[7px] font-black text-[#ff8a84] uppercase truncate">▲ ${t('card_slow_short')}</div>
+                        <div class="font-mono-num font-black text-[#ff8a84] truncate" style="font-size:clamp(0.68rem, 8.5cqw, 0.95rem);">${worst3Str}</div>
                     </div>
-                    ${sCount >= 2 ? `
-                    <div class="grid grid-cols-${sCount} gap-1 shrink-0">
-                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well px-1.5 py-0.5 flex items-center justify-between border border-white/10 overflow-hidden">
-                            <span class="text-[8px] font-black text-slate-400">S1</span>
-                            <span class="font-mono-num font-black text-[11px] text-white truncate">${s1Val}</span>
-                        </div>
-                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well px-1.5 py-0.5 flex items-center justify-between border border-white/10 overflow-hidden">
-                            <span class="text-[8px] font-black text-slate-400">${sCount === 2 ? 'M' : 'S2'}</span>
-                            <span class="font-mono-num font-black text-[11px] text-white truncate">${s2Val}</span>
-                        </div>
-                        ${sCount === 3 ? `
-                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well px-1.5 py-0.5 flex items-center justify-between border border-white/10 overflow-hidden">
-                            <span class="text-[8px] font-black text-slate-400">S3</span>
-                            <span class="font-mono-num font-black text-[11px] text-white truncate">${s3Val}</span>
-                        </div>` : ''}
+                    <div class="mac-silver-well px-1 py-0.5 border border-white/10 min-w-0 overflow-hidden">
+                        <div class="text-[7px] font-black text-[#5ac8fa] uppercase truncate">1:${scaleFactor}</div>
+                        <div class="font-mono-num font-black text-[#5ac8fa] truncate" style="font-size:clamp(0.68rem, 8.5cqw, 0.95rem);">${scaleSpeedKmh}</div>
+                    </div>
+                    <div class="mac-silver-well px-1 py-0.5 border border-white/10 min-w-0 overflow-hidden">
+                        <div class="text-[7px] font-black text-slate-300 uppercase truncate">${t('card_dist')}</div>
+                        <div class="font-mono-num font-black text-white truncate" style="font-size:clamp(0.68rem, 8.5cqw, 0.95rem);">${totalDistKm}k</div>
+                    </div>
+                </div>
+                ${sCount >= 2 ? `
+                <div class="grid grid-cols-${sCount} gap-1 shrink-0 text-center">
+                    <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well py-0.5 px-1 border border-white/10 min-w-0 overflow-hidden">
+                        <span class="text-[7px] font-bold text-slate-400 block">S1</span>
+                        <span class="font-mono-num font-black text-white block truncate" style="font-size:clamp(0.68rem, 8.5cqw, 0.9rem);">${s1Str}</span>
+                    </div>
+                    <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well py-0.5 px-1 border border-white/10 min-w-0 overflow-hidden">
+                        <span class="text-[7px] font-bold text-slate-400 block">S2</span>
+                        <span class="font-mono-num font-black text-white block truncate" style="font-size:clamp(0.68rem, 8.5cqw, 0.9rem);">${s2Str}</span>
+                    </div>
+                    ${sCount === 3 ? `
+                    <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well py-0.5 px-1 border border-white/10 min-w-0 overflow-hidden">
+                        <span class="text-[7px] font-bold text-slate-400 block">S3</span>
+                        <span class="font-mono-num font-black text-white block truncate" style="font-size:clamp(0.68rem, 8.5cqw, 0.9rem);">${s3Str}</span>
                     </div>` : ''}
-                `;
+                </div>` : ''}`;
             }
 
             return `
-                <div class="flex flex-col h-full min-h-0 justify-between gap-1.5 select-none overflow-hidden">
-                    <div class="grid grid-cols-12 gap-1.5 items-stretch shrink-0">
-                        <div class="col-span-4 rounded-xl flex flex-col items-center justify-center py-1 px-1 shadow-md border border-white/25 relative overflow-hidden" style="background: linear-gradient(155deg, ${pal.hex} 0%, rgba(15,23,42,0.88) 100%);">
-                            <span class="font-mono-num font-black text-white drop-shadow leading-none" style="font-size:clamp(1.6rem, min(20cqw, 6.5cqh), 3rem);">${a.lane}</span>
-                            <span class="text-[9px] font-black uppercase tracking-tight px-1.5 py-0.2 rounded-full bg-black/45 text-white/95 mt-0.5">P${pos}</span>
-                        </div>
-                        <div class="col-span-8 flex flex-col gap-1 justify-between min-w-0">
-                            <div class="flex-1 rounded-lg px-2 py-0.5 flex items-center justify-between bg-gradient-to-r from-[#30d158]/25 to-[#30d158]/10 border border-[#30d158]/50 overflow-hidden">
-                                <span class="text-[8px] font-black uppercase text-[#30d158] tracking-tight shrink-0 mr-1">${t('mean_lap')}</span>
-                                <span class="font-mono-num font-black text-[#4ade80] tracking-tight truncate" style="font-size:clamp(0.95rem, min(13cqw, 3.8cqh), 1.55rem); line-height:1;">${meanBoxStr}</span>
-                            </div>
-                            <div class="flex-1 rounded-lg px-2 py-0.5 flex items-center justify-between bg-gradient-to-r from-white/20 to-[#fda4af]/20 border border-white/30 overflow-hidden">
-                                <span class="text-[8px] font-black uppercase text-rose-200 tracking-tight shrink-0 mr-1">${t('card_last_short')}</span>
-                                <span class="font-mono-num font-black text-white tracking-tight truncate" style="font-size:clamp(0.95rem, min(13cqw, 3.8cqh), 1.55rem); line-height:1;">${lastBoxStr}</span>
-                            </div>
-                        </div>
+            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq h-full min-h-0 flex flex-col justify-between p-2 select-none cursor-pointer relative overflow-hidden" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
+                <div class="grid grid-cols-12 gap-1.5 items-stretch shrink-0">
+                    <div class="col-span-4 rounded-xl flex flex-col items-center justify-center py-1 px-1 shadow-md border border-white/30 relative overflow-hidden min-w-0" style="background: linear-gradient(160deg, ${pal.hex} 0%, ${pal.hex}cc 100%);">
+                        <span class="font-mono-num font-black text-[#090b10] leading-none" style="font-size:clamp(1.4rem, 20cqw, 2.6rem);">${a.lane}</span>
+                        <span class="text-[8px] font-black uppercase px-1 py-0.2 rounded-full bg-black/25 text-white mt-0.5">P${pos}</span>
                     </div>
-
-                    <div class="mac-silver-well px-2.5 py-1 flex items-center justify-between gap-1 shrink-0 border border-white/10">
-                        <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-xs tracking-tight uppercase truncate w-full focus:outline-none"/>
-                        <div class="flex items-center gap-1 shrink-0">
-                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-[#30d158]/30 text-[#30d158] text-[9px] font-black cursor-pointer">+1</button>
-                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-[#ff453a]/30 text-[#ff453a] text-[9px] font-black cursor-pointer">-1</button>
+                    <div class="col-span-8 flex flex-col justify-between gap-1 min-w-0">
+                        <div class="rounded-lg bg-gradient-to-r from-[#30d158] to-[#22c55e] text-[#041f0b] px-2 py-0.5 flex items-center justify-between border border-white/40 min-w-0 overflow-hidden">
+                            <span class="text-[7px] font-black uppercase tracking-wider opacity-85 shrink-0 mr-1">${t('mean_lap')}</span>
+                            <span class="font-mono-num font-black leading-none tracking-tight truncate" style="font-size:clamp(0.82rem, 11.5cqw, 1.35rem);">${mean3Str}</span>
                         </div>
-                    </div>
-
-                    <div class="mac-silver-well py-1.5 px-2 text-center flex flex-col items-center justify-center shrink-0 relative overflow-hidden border border-white/15">
-                        <div class="font-mono-num font-black text-white tracking-tighter leading-none" style="font-size:clamp(2rem, min(25cqw, 9.5cqh), 4.2rem);">
-                            ${a.laps}
+                        <div class="rounded-lg bg-gradient-to-r from-[#f8fafc] to-[#ffe4e6] text-[#0f172a] px-2 py-0.5 flex items-center justify-between border border-white min-w-0 overflow-hidden">
+                            <span class="text-[7px] font-black uppercase tracking-wider text-rose-700 shrink-0 mr-1">${t('card_last_short')}</span>
+                            <span class="font-mono-num font-black leading-none tracking-tight text-slate-950 truncate" style="font-size:clamp(0.82rem, 11.5cqw, 1.35rem);">${last3Str}</span>
                         </div>
-                        <div class="font-mono-num font-bold text-slate-300 tracking-tight mt-0.5" style="font-size:clamp(0.85rem, min(12cqw, 3.5cqh), 1.45rem); line-height:1;">
-                            ${subMetricStr} <span class="text-[9px] font-extrabold text-slate-400 uppercase">km/h</span>
-                        </div>
-                        <div class="w-3/4 h-[2px] mt-1 rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent"></div>
-                    </div>
-
-                    ${extraTelemetryHtml}
-
-                    <div class="flex-1 mac-silver-well p-1.5 flex flex-col justify-between min-h-0 overflow-hidden border border-white/10">
-                        ${rowsHtml.join('')}
                     </div>
                 </div>
-            `;
+
+                <div class="flex items-center justify-between gap-1 px-1 py-0.5 border-b border-white/10 shrink-0 min-w-0">
+                    <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-xs tracking-tight uppercase truncate flex-1 min-w-0 focus:outline-none border-b border-transparent focus:border-[#5ac8fa]" />
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-5 h-5 rounded-md bg-white/10 text-slate-200 text-[9px] font-black flex items-center justify-center cursor-pointer"><i class="fa-solid fa-palette" style="color:${accentHex}"></i></button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-1.5 py-0.5 rounded-md bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40 text-[9px] font-black cursor-pointer">+1</button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-1.5 py-0.5 rounded-md bg-[#ff453a]/20 text-[#ff453a] border border-[#ff453a]/40 text-[9px] font-black cursor-pointer">-1</button>
+                    </div>
+                </div>
+
+                <div class="mac-silver-well py-1.5 px-2 flex flex-col items-center justify-center shrink-0 relative overflow-hidden">
+                    <div class="flex items-baseline gap-1 justify-center w-full overflow-hidden">
+                        <div class="font-mono-num font-black text-white leading-none tracking-tighter truncate" style="font-size:clamp(1.85rem, 26cqw, 3.6rem);">${a.laps}</div>
+                        ${isLeader ? `<span class="text-[9px] font-black text-[#ffd60a] uppercase shrink-0">★ P1</span>` : ''}
+                    </div>
+                    <div class="font-mono-num font-bold text-slate-200 leading-none mt-0.5 flex items-center gap-1 justify-center w-full overflow-hidden" style="font-size:clamp(0.88rem, 13cqw, 1.55rem);">
+                        <span class="truncate">${subMetricStr}</span>
+                        <span class="text-[8px] font-extrabold text-slate-400 uppercase shrink-0">km/h</span>
+                        ${trendIcon}
+                    </div>
+                    <div class="w-4/5 h-[2.5px] rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent mt-1"></div>
+                </div>
+
+                ${progressiveTelemetryHtml}
+
+                <div class="flex-1 min-h-0 flex flex-col justify-between py-0.5 px-0.5 overflow-hidden">
+                    ${rowsHtml.join('')}
+                </div>
+            </div>`;
         }
 
-        function buildExpertHorizontalBentoCardHtml(a, pos, pal, trackLen, scaleFactor, sCount, themeObj) {
+        function buildExpertBentoCardHtml(a, pos, trackLen, themeObj = PILOT_CARD_THEMES[0]) {
+            const pal = a.laneInfo || { hex: '#ff9f0a' };
             const isLeader = pos === 1 && a.laps > 0;
-            const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
-            const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
-            const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
-            const meanLapVal = getDriverMeanLap(a);
+            const scaleFactor = state.scaleFactor || 32;
+            const sCount = state.numSectors || 1;
+            const accentHex = (themeObj && themeObj.hex) ? themeObj.hex : pal.hex;
 
-            const lastLapStr = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
-            const bestLapStr = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
-            const worstLapStr = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
-            const meanLapStr = meanLapVal > 0 ? meanLapVal.toFixed(3) : '--.---';
+            const bestVal = a.bestLap < Infinity ? a.bestLap : 0;
+            const lastVal = a.lastLap > 0 ? a.lastLap : 0;
+            const prevVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
+            const worstVal = a.history.length > 0 ? Math.max(...a.history) : 0;
+            const meanVal = getDriverMeanLap(a);
+
+            const best3Str = bestVal > 0 ? bestVal.toFixed(3) : '--.---';
+            const last3Str = lastVal > 0 ? lastVal.toFixed(3) : '--.---';
+            const mean3Str = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
+            const worst3Str = worstVal > 0 ? worstVal.toFixed(3) : '--.---';
+
+            const curSpeedKmh = lastVal > 0 ? ((trackLen / lastVal) * 3.6) : 0;
+            const scaleSpeedKmh = Math.round(curSpeedKmh * scaleFactor);
+            const curSpeedStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(1) : '0.0';
+
+            const lapDiffPrev = (lastVal > 0 && prevVal > 0) ? (lastVal - prevVal) : 0;
+            const trendBadge = (lastVal > 0 && prevVal > 0)
+                ? (lapDiffPrev <= 0
+                    ? `<span class="text-[#30d158] font-black">▼${lapDiffPrev.toFixed(3)}</span>`
+                    : `<span class="text-[#ff453a] font-black">▲+${lapDiffPrev.toFixed(3)}</span>`)
+                : `<span class="text-slate-400">●</span>`;
 
             let stdDev = 0;
-            if (a.history.length >= 2 && meanLapVal > 0) {
-                const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanLapVal, 2), 0) / a.history.length;
+            if (a.history.length >= 2 && meanVal > 0) {
+                const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanVal, 2), 0) / a.history.length;
                 stdDev = Math.sqrt(variance);
             }
-            const consistencyPct = (bestLapVal > 0 && meanLapVal > 0)
-                ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanLapVal)) * 100)))
+            const consistencyPct = (bestVal > 0 && meanVal > 0)
+                ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanVal)) * 100)))
                 : 100;
-
-            const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
-            const scaleSpeedKmh = curSpeedKmh * scaleFactor;
-            const curSpeedStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(1) : '0.0';
-            const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
             const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
-            const projectedLaps = meanLapVal > 0 ? Math.round(a.laps + (state.timeRemaining / meanLapVal)) : a.laps;
+            const projectedLaps = meanVal > 0 ? Math.round(a.laps + (state.timeRemaining / meanVal)) : a.laps;
+
+            const s1Str = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(3) : '--.---';
+            const s2Str = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(3) : '--.---';
+            const s3Str = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(3) : '--.---';
 
             return `
-            <div class="flex flex-col justify-between h-full min-h-0 gap-1.5 select-none overflow-hidden">
-                <div class="flex items-center justify-between gap-2 pb-1 border-b border-white/15 shrink-0">
+            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq p-2.5 flex flex-col justify-between gap-1.5 h-full min-h-0 relative overflow-hidden cursor-pointer select-none" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
+                <div class="flex items-center justify-between gap-2 pb-1 border-b border-white/15 shrink-0 min-w-0">
                     <div class="flex items-center gap-2 min-w-0 flex-1">
-                        <span class="px-2.5 py-0.5 rounded-xl font-black text-xs uppercase shrink-0 shadow" style="background:${pal.hex}; color:#090b10;">C${a.lane}</span>
-                        <span class="px-2 py-0.5 rounded-xl font-black text-xs shrink-0 ${isLeader ? 'mac-silver-active' : 'bg-white/15 text-white'}">P${pos}</span>
-                        <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-sm tracking-tight uppercase truncate w-full focus:outline-none"/>
+                        <span class="px-2.5 py-0.5 rounded-lg font-mono-num font-black text-sm shrink-0 shadow" style="background:${pal.hex}; color:#090b10;">C${a.lane}</span>
+                        <span class="px-2 py-0.5 rounded-lg font-mono-num font-black text-xs shrink-0 ${isLeader ? 'mac-silver-active' : 'bg-white/15 text-white'}">P${pos}</span>
+                        <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-sm md:text-base tracking-tight uppercase truncate w-full focus:outline-none border-b border-transparent focus:border-[#5ac8fa]" />
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
-                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-2 py-0.5 rounded-lg bg-[#30d158]/25 text-[#30d158] text-[10px] font-black cursor-pointer">+1</button>
-                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-2 py-0.5 rounded-lg bg-[#ff453a]/25 text-[#ff453a] text-[10px] font-black cursor-pointer">-1</button>
+                        <span class="text-[10px] font-mono-num font-bold text-[#ffd60a] bg-black/50 px-2 py-0.5 rounded-md border border-white/10 hidden sm:inline">${a.nextAction}</span>
+                        <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-6 h-6 rounded-lg mac-silver-btn flex items-center justify-center text-[10px] cursor-pointer"><i class="fa-solid fa-palette" style="color:${accentHex}"></i></button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-2 py-0.5 rounded-lg bg-[#30d158]/25 text-[#30d158] border border-[#30d158]/50 text-[10px] font-black cursor-pointer">+1</button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-2 py-0.5 rounded-lg bg-[#ff453a]/25 text-[#ff453a] border border-[#ff453a]/50 text-[10px] font-black cursor-pointer">-1</button>
                     </div>
                 </div>
 
-                <div class="h-[46%] grid grid-cols-6 gap-1.5 min-h-0 shrink-0">
-                    <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15">
-                        <span class="text-[9px] font-black text-slate-300">${t('laps')}</span>
-                        <div class="flex-1 flex items-center justify-center"><span class="fluid-num-lg font-mono-num font-black text-white">${a.laps}</span></div>
-                        <span class="text-[9px] font-mono-num text-[#ffd60a] text-center">→${projectedLaps}V · ${totalDistKm}k</span>
+                <div class="grid grid-cols-6 gap-1.5 shrink-0 text-center">
+                    <div class="mac-silver-well p-1.5 border border-white/15 min-w-0 overflow-hidden">
+                        <div class="text-[8px] font-black text-slate-300 uppercase truncate">${t('laps')}</div>
+                        <div class="font-mono-num font-black text-white text-lg md:text-xl leading-tight truncate">${a.laps}</div>
+                        <div class="text-[8px] font-mono-num font-bold text-[#ffd60a] truncate">${t('card_est_short')} ${projectedLaps}V</div>
                     </div>
-                    <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15">
-                        <span class="text-[9px] font-black text-slate-300">${t('card_last_short')}</span>
-                        <div class="flex-1 flex items-center justify-center"><span class="fluid-num-lg font-mono-num font-black text-white">${lastLapStr}</span></div>
-                        <span class="text-[9px] font-mono-num text-slate-400 text-center">CRONO</span>
+                    <div class="mac-silver-well p-1.5 border border-white/15 min-w-0 overflow-hidden">
+                        <div class="text-[8px] font-black text-slate-300 uppercase truncate">${t('card_last_short')}</div>
+                        <div class="font-mono-num font-black text-white text-sm md:text-base leading-tight truncate">${last3Str}</div>
+                        <div class="text-[8px] font-mono-num truncate">${trendBadge}</div>
                     </div>
-                    <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15">
-                        <span class="text-[9px] font-black text-[#5ac8fa]">${t('mean_lap')}</span>
-                        <div class="flex-1 flex items-center justify-center"><span class="fluid-num-lg font-mono-num font-black text-[#5ac8fa]">${meanLapStr}</span></div>
-                        <span class="text-[9px] font-mono-num text-slate-300 text-center">MEDIA</span>
+                    <div class="mac-silver-well p-1.5 border border-[#5ac8fa]/35 min-w-0 overflow-hidden">
+                        <div class="text-[8px] font-black text-[#5ac8fa] uppercase truncate">${t('mean_lap')}</div>
+                        <div class="font-mono-num font-black text-[#5ac8fa] text-sm md:text-base leading-tight truncate">${mean3Str}</div>
+                        <div class="text-[8px] font-mono-num text-slate-300 truncate">±${stdDev.toFixed(2)}</div>
                     </div>
-                    <div class="mac-silver-well well-cq p-1.5 h-full border border-[#30d158]/40">
-                        <span class="text-[9px] font-black text-[#30d158]">★ ${t('record')}</span>
-                        <div class="flex-1 flex items-center justify-center"><span class="fluid-num-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span></div>
-                        <span class="text-[9px] font-mono-num text-[#ff8a84] text-center">▲ ${worstLapStr}</span>
+                    <div class="mac-silver-well p-1.5 border border-[#30d158]/40 min-w-0 overflow-hidden">
+                        <div class="text-[8px] font-black text-[#30d158] uppercase truncate">★ ${t('record')}</div>
+                        <div class="font-mono-num font-black text-[#30d158] text-sm md:text-base leading-tight truncate">${best3Str}</div>
+                        <div class="text-[8px] font-mono-num text-[#ff8a84] truncate">▲${worst3Str}</div>
                     </div>
-                    <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15">
-                        <span class="text-[9px] font-black text-[#d982ff]">${t('card_consistency')}</span>
-                        <div class="flex-1 flex items-center justify-center"><span class="fluid-num-lg font-mono-num font-black text-[#d982ff]">${consistencyPct}%</span></div>
-                        <span class="text-[9px] font-mono-num text-slate-300 text-center">±${stdDev.toFixed(2)}</span>
+                    <div class="mac-silver-well p-1.5 border border-white/15 min-w-0 overflow-hidden">
+                        <div class="text-[8px] font-black text-[#d982ff] uppercase truncate">${t('card_consistency')}</div>
+                        <div class="font-mono-num font-black text-[#d982ff] text-sm md:text-base leading-tight truncate">${consistencyPct}%</div>
+                        <div class="text-[8px] font-mono-num text-slate-300 truncate">${totalDistKm} km</div>
                     </div>
-                    <div class="mac-silver-well well-cq p-1.5 h-full border border-white/15">
-                        <span class="text-[9px] font-black text-[#ffd60a]">${t('card_speed')}</span>
-                        <div class="flex-1 flex items-center justify-center"><span class="fluid-num-lg font-mono-num font-black text-[#ffd60a]">${curSpeedStr}</span></div>
-                        <span class="text-[9px] font-mono-num text-white text-center">1:${scaleFactor}: ${scaleSpeedStr}k</span>
+                    <div class="mac-silver-well p-1.5 border border-white/15 min-w-0 overflow-hidden">
+                        <div class="text-[8px] font-black text-[#ffd60a] uppercase truncate">${t('card_speed')}</div>
+                        <div class="font-mono-num font-black text-[#ffd60a] text-sm md:text-base leading-tight truncate">${curSpeedStr}</div>
+                        <div class="text-[8px] font-mono-num text-white truncate">1:${scaleFactor} ${scaleSpeedKmh}</div>
                     </div>
                 </div>
 
-                <div class="flex-1 grid grid-cols-12 gap-1.5 min-h-0">
-                    <div class="col-span-7 mac-silver-well p-1.5 h-full border border-white/15 flex flex-col min-h-0">
-                        <span class="text-[9px] font-black text-slate-300 uppercase mb-0.5">${t('card_pace_chart')}</span>
-                        <div class="flex-1 min-h-0 w-full">${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanLapVal, pal.hex)}</div>
+                <div class="flex-1 grid grid-cols-12 gap-1.5 min-h-0 overflow-hidden">
+                    <div class="col-span-7 mac-silver-well p-2 flex flex-col justify-between border border-white/15 min-w-0 overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
+                            <span class="text-[8px] font-black text-slate-200 uppercase truncate"><i class="fa-solid fa-chart-area mr-1 text-[#30d158]"></i>${t('card_pace_chart')}</span>
+                            <span class="text-[8px] font-mono-num font-bold text-[#ffd60a] shrink-0">${t('mean_lap')} ${mean3Str}</span>
+                        </div>
+                        <div class="flex-1 min-h-0 w-full overflow-hidden">
+                            ${buildLapSparklineSVG(a.history, a.bestLap, worstVal, meanVal, accentHex)}
+                        </div>
                     </div>
-                    <div class="col-span-5 mac-silver-well p-1.5 h-full border border-white/15 flex flex-col min-h-0">
-                        <span class="text-[9px] font-black text-slate-300 uppercase mb-0.5">${t('card_time_list')}</span>
-                        <div class="flex-1 min-h-0 overflow-hidden">${buildLapHistoryListHtml(a.history, a.bestLap, worstLapVal, 4)}</div>
+                    <div class="col-span-5 mac-silver-well p-2 flex flex-col justify-between border border-white/15 min-w-0 overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
+                            <span class="text-[8px] font-black text-slate-200 uppercase truncate"><i class="fa-solid fa-stopwatch mr-1 text-[#5ac8fa]"></i>${t('card_time_list')}</span>
+                            <span class="text-[8px] font-mono-num font-black text-[#30d158] shrink-0">▼ <span class="text-[#ff453a]">▲</span></span>
+                        </div>
+                        <div class="flex-1 min-h-0 overflow-hidden">
+                            ${buildLapHistoryListHtml(a.history, a.bestLap, worstVal, 5)}
+                        </div>
                     </div>
                 </div>
+
+                ${sCount >= 2 ? `
+                <div class="grid grid-cols-${sCount} gap-1.5 shrink-0 text-center">
+                    <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well px-2 py-0.5 flex items-center justify-between border border-white/10 min-w-0 overflow-hidden">
+                        <span class="text-[8px] font-black text-slate-300">S1</span>
+                        <span class="font-mono-num font-black text-xs text-white truncate">${s1Str}</span>
+                    </div>
+                    <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well px-2 py-0.5 flex items-center justify-between border border-white/10 min-w-0 overflow-hidden">
+                        <span class="text-[8px] font-black text-slate-300">${sCount === 2 ? t('finish_line') : 'S2'}</span>
+                        <span class="font-mono-num font-black text-xs text-white truncate">${s2Str}</span>
+                    </div>
+                    ${sCount === 3 ? `
+                    <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well px-2 py-0.5 flex items-center justify-between border border-white/10 min-w-0 overflow-hidden">
+                        <span class="text-[8px] font-black text-slate-300">${t('finish_line')}</span>
+                        <span class="font-mono-num font-black text-xs text-white truncate">${s3Str}</span>
+                    </div>` : ''}
+                </div>` : ''}
             </div>`;
         }
 
@@ -6249,40 +6545,37 @@
             if (!heat) return;
 
             const assignments = heat.assignments;
-            const n = assignments.length;
-            const sCount = state.numSectors;
+            const n = Math.max(1, assignments.length);
             const standings = getHeatStandingsMap(heat);
             const trackLen = state.trackLengthMeters || 28;
-            const scaleFactor = state.scaleFactor || 32;
+            const isExpertGrid = state.globalCardLayout === 3;
 
-            let cols = Math.max(1, n), rows = 1;
-            if (state.globalCardLayout === 3) {
+            if (isExpertGrid) {
+                let cols = 1, rows = 1;
                 if (n === 1) { cols = 1; rows = 1; }
                 else if (n === 2) { cols = 2; rows = 1; }
                 else if (n <= 4) { cols = 2; rows = 2; }
                 else if (n <= 6) { cols = 3; rows = 2; }
                 else if (n <= 8) { cols = 4; rows = 2; }
                 else { cols = 5; rows = 2; }
+                container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+                container.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
+            } else {
+                container.style.gridTemplateColumns = `repeat(${n}, minmax(0, 1fr))`;
+                container.style.gridTemplateRows = `minmax(0, 1fr)`;
             }
-            container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-            container.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
 
             container.innerHTML = assignments.map(a => {
-                const pal = a.laneInfo;
                 const pos = standings[a.lane];
                 const rawMode = state.laneLayoutModes[a.lane] !== undefined ? state.laneLayoutModes[a.lane] : (state.globalCardLayout ?? 0);
                 const layoutMode = [0, 1, 2, 3].includes(rawMode) ? rawMode : 0;
                 const themeIdx = state.laneThemeIndices[a.lane] !== undefined ? state.laneThemeIndices[a.lane] : (state.globalThemeIndex || 0);
                 const themeObj = PILOT_CARD_THEMES[themeIdx] || PILOT_CARD_THEMES[0];
 
-                const cardInnerHtml = layoutMode === 3
-                    ? buildExpertHorizontalBentoCardHtml(a, pos, pal, trackLen, scaleFactor, sCount, themeObj)
-                    : buildUnifiedAppleColumnHtml(a, pos, pal, trackLen, scaleFactor, sCount, layoutMode, themeObj);
-
-                return `
-                <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq p-2 flex flex-col justify-between h-full min-h-0 relative overflow-hidden cursor-pointer" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
-                    ${cardInnerHtml}
-                </div>`;
+                if (layoutMode === 3) {
+                    return buildExpertBentoCardHtml(a, pos, trackLen, themeObj);
+                }
+                return buildClassicTicTacColumnHtml(a, pos, trackLen, layoutMode, themeObj);
             }).join('');
         }
 
@@ -6303,13 +6596,13 @@
 
         function startAutoSimLoop() {
             if (autoSimInterval) clearInterval(autoSimInterval);
-            const now = performance.now();
+            const sCount = state.numSectors || 1;
+            const nowInit = performance.now();
             const heatInit = state.heats[state.currentHeatIndex];
             if (heatInit && heatInit.assignments) {
                 heatInit.assignments.forEach(a => {
-                    const sCount = state.numSectors || 1;
-                    const baseDelay = (2200 + Math.random() * 2400) / sCount;
-                    a._nextSimPassTime = now + baseDelay;
+                    const baseMs = (2400 + Math.random() * 1900) / sCount;
+                    a._nextSimPassTime = nowInit + 400 + Math.random() * baseMs;
                 });
             }
 
@@ -6318,19 +6611,18 @@
                 const heat = state.heats[state.currentHeatIndex];
                 if (!heat || heat.assignments.length === 0) return;
 
-                const tNow = performance.now();
-                const sCount = state.numSectors || 1;
-                const readyList = heat.assignments.filter(a => !a._nextSimPassTime || tNow >= a._nextSimPassTime);
+                const now = performance.now();
+                const dueCars = heat.assignments.filter(a => !a._nextSimPassTime || now >= a._nextSimPassTime);
+                if (dueCars.length === 0) return;
 
-                if (readyList.length > 0) {
-                    const chosen = readyList[Math.floor(Math.random() * readyList.length)];
-                    const drv = state.drivers.find(d => d.id === chosen.driverId);
-                    const baseLapMs = ((drv && drv.poleLap) ? drv.poleLap : 8.5) * 340;
-                    const jitterMs = (Math.random() - 0.42) * 1100;
-                    chosen._nextSimPassTime = tNow + Math.max(650, (baseLapMs + jitterMs) / sCount);
-                    triggerNextCheckpoint(chosen.lane, null, true);
-                }
-            }, 180);
+                const picked = dueCars[Math.floor(Math.random() * dueCars.length)];
+                const drv = state.drivers.find(d => d.id === picked.driverId);
+                const poleFactor = drv && drv.poleLap ? (drv.poleLap / 8.5) : 1;
+                const randomPaceMs = ((2500 + Math.random() * 1800) * poleFactor) / sCount;
+                picked._nextSimPassTime = now + Math.max(650, randomPaceMs);
+
+                triggerNextCheckpoint(picked.lane, null, true);
+            }, 160);
         }
 
         function updateAutoButtonUI() {
@@ -6353,7 +6645,7 @@
                 state.raceStatus = 'TRACK_CALL';
                 if (badge) {
                     badge.textContent = 'TRACK CALL · CORTE 0V';
-                    badge.className = 'hidden xl:inline text-[10px] font-black px-2 py-0.5 rounded bg-[#ff9f0a]/20 text-[#ff9f0a] border border-[#ff9f0a]/40 shrink-0';
+                    badge.className = 'hidden 2xl:inline text-[9px] font-black px-1.5 py-0.5 rounded bg-[#ff9f0a]/20 text-[#ff9f0a] border border-[#ff9f0a]/40 shrink-0';
                 }
                 if (btnTxt) btnTxt.textContent = t('resume_track');
                 if (btnBottomTxt) btnBottomTxt.textContent = t('resume_track');
@@ -6373,18 +6665,18 @@
                 }
                 if (actionBtn) {
                     actionBtn.onclick = () => toggleTrackCall();
-                    actionBtn.textContent = `▶ ${t('resume_track')}`;
-                    actionBtn.className = 'mt-6 px-8 py-3 rounded-2xl bg-[#ff9f0a] hover:bg-[#ffb340] text-black text-sm md:text-base font-black shadow-[0_0_30px_rgba(255,159,10,0.6)] cursor-pointer';
+                    actionBtn.className = "mt-6 px-8 py-3 rounded-2xl bg-[#ffd60a] hover:bg-[#ff9f0a] text-black text-sm md:text-base font-black shadow-[0_0_30px_rgba(255,214,10,0.6)] cursor-pointer";
+                    actionBtn.innerHTML = `<i class="fa-solid fa-play mr-2"></i>${t('resume_track')}`;
                 }
 
-                playTone(520, 350, 'sawtooth', 0.8);
+                playTone(520, 320, 'sawtooth', 0.85);
                 updateRaceFullscreenLayout();
                 speakText(t('tts_pause'), null, 'HIGH');
             } else if (state.raceStatus === 'TRACK_CALL') {
                 state.raceStatus = 'RACING';
                 if (badge) {
                     badge.textContent = 'RELÉ PISTA: ON (12.8V)';
-                    badge.className = 'hidden xl:inline text-[10px] font-black px-2 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40 shrink-0';
+                    badge.className = 'hidden 2xl:inline text-[9px] font-black px-1.5 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40 shrink-0';
                 }
                 if (btnTxt) btnTxt.textContent = 'TRACK CALL';
                 if (btnBottomTxt) btnBottomTxt.textContent = 'TRACK CALL';
@@ -6397,13 +6689,13 @@
                     subEl.textContent = 'PISTA LIBRE · GREEN FLAG';
                     subEl.style.color = '#30d158';
                 }
-                if (centerText) centerText.textContent = 'GO!';
+                if (centerText) centerText.textContent = '';
                 playF1SemaphoreSound('GREEN');
 
+                const nowResume = performance.now();
                 const heat = state.heats[state.currentHeatIndex];
-                const now = performance.now();
-                if (heat && heat.assignments) {
-                    heat.assignments.forEach(ass => { ass.lastCheckpointTime = now; });
+                if (heat) {
+                    heat.assignments.forEach(ass => { ass.lastCheckpointTime = nowResume; });
                 }
 
                 setTimeout(() => {
@@ -6457,6 +6749,9 @@
                             saveLocalDatabase();
                             announceDrivers(true);
                         } else {
+                            state.autoSimActive = false;
+                            state.autoAdvance = false;
+                            updateAutoButtonUI();
                             speakText(dict.tts_race_finished, null, 'HIGH');
                             switchMainTab('standings');
                         }
@@ -6490,8 +6785,11 @@
                     updateRaceFullscreenLayout();
                     renderLiveRaceView();
                     saveLocalDatabase();
-                    if (state.autoAdvance) announceDrivers(true);
-                    else promptPreRaceCheckModal(state.heats[state.currentHeatIndex].heatNumber);
+                    if (state.autoAdvance) {
+                        announceDrivers(true);
+                    } else {
+                        promptPreRaceCheckModal(state.heats[state.currentHeatIndex].heatNumber);
+                    }
                 } else {
                     speakText(dict.tts_race_finished, null, 'HIGH');
                     switchMainTab('standings');
