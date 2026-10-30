@@ -899,6 +899,10 @@
                         <button onclick="openClearHeatsConfirmModal()" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold text-[#ff6961] hover:bg-[#ff453a]/20 border border-[#ff453a]/40 cursor-pointer">
                             <i class="fa-solid fa-trash-can mr-1.5"></i><span>BORRAR MANGAS</span>
                         </button>
+                        <button onclick="startAutonomousConfiguredRace()" class="btn-neon-purple px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
+                            <i class="fa-solid fa-robot"></i>
+                            <span data-i18n="btn_auto_race">AUTO CARRERA</span>
+                        </button>
                         <button onclick="promptPreRaceCheckModal(1)" class="mac-silver-active px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-flag-checkered"></i>
                             <span data-i18n="btn_go_track">IR A PARRILLA Y PISTA EN VIVO</span>
@@ -1585,6 +1589,7 @@
         // Traducciones extra de Interfaz y Cuadros de Piloto (7 idiomas)
         const UI_EXTRA_TRANSLATIONS = {
             es: {
+                btn_auto_race: "AUTO CARRERA",
                 btn_queries: "CONSULTAS",
                 mob_voice_on: "VOZ ON", mob_voice_off: "VOZ OFF",
                 mob_spotter_active_banner: "🔊 SPOTTER AUTOMÁTICO ACTIVO · CANTA TIEMPOS Y RIVALES SOLO",
@@ -1658,6 +1663,7 @@
                 home_img_hint: "COLOCA TU ARCHIVO \"fondo.jpg\" EN LA MISMA CARPETA O PULSA ABAJO PARA CARGARLO"
             },
             ca: {
+                btn_auto_race: "AUTO CURSA",
                 btn_queries: "CONSULTES",
                 mob_voice_on: "VEU ON", mob_voice_off: "VEU OFF",
                 mob_spotter_active_banner: "🔊 SPOTTER AUTOMÀTIC ACTIU · CANTA TEMPS I RIVALS SOL",
@@ -1731,6 +1737,7 @@
                 home_img_hint: "COL·LOCA EL TEU FITXER \"fondo.jpg\" A LA MATEIXA CARPETA O PREM A SOTA PER CARREGAR-LO"
             },
             eu: {
+                btn_auto_race: "AUTO LASTERKETA",
                 btn_queries: "KONTSULTAK",
                 mob_voice_on: "AHOTSA ON", mob_voice_off: "AHOTSA OFF",
                 mob_spotter_active_banner: "🔊 SPOTTER AUTOMATIKOA AKTIBO · DENBORAK ETA AURKARIAK BAKARRIK ABESTEN",
@@ -1804,6 +1811,7 @@
                 home_img_hint: "JARRI \"fondo.jpg\" KARPETA BEREAN EDO SAKATU BEHEAN KARGATZEKO"
             },
             en: {
+                btn_auto_race: "AUTO RACE",
                 btn_queries: "QUERIES",
                 mob_voice_on: "VOICE ON", mob_voice_off: "VOICE OFF",
                 mob_spotter_active_banner: "🔊 AUTO SPOTTER ACTIVE · CALLING LAPS & RIVALS HANDS-FREE",
@@ -1877,6 +1885,7 @@
                 home_img_hint: "PLACE YOUR \"fondo.jpg\" IN THE SAME FOLDER OR CLICK BELOW TO UPLOAD"
             },
             fr: {
+                btn_auto_race: "AUTO COURSE",
                 btn_queries: "REQUÊTES",
                 mob_voice_on: "VOIX ON", mob_voice_off: "VOIX OFF",
                 mob_spotter_active_banner: "🔊 SPOTTER AUTO ACTIF · ANNONCE TOURS ET RIVAUX SEUL",
@@ -1950,6 +1959,7 @@
                 home_img_hint: "PLACEZ VOTRE FICHIER \"fondo.jpg\" DANS LE MÊME DOSSIER OU CLIQUEZ CI-DESSOUS"
             },
             it: {
+                btn_auto_race: "AUTO GARA",
                 btn_queries: "CONSULTAZIONI",
                 mob_voice_on: "VOCE ON", mob_voice_off: "VOCE OFF",
                 mob_spotter_active_banner: "🔊 SPOTTER AUTO ATTIVO · ANNUNCIA TEMPI E RIVALI DA SOLO",
@@ -2023,6 +2033,7 @@
                 home_img_hint: "INSERISCI IL FILE \"fondo.jpg\" NELLA STESSA CARTELLA O CLICCA SOTTO PER CARICARLO"
             },
             de: {
+                btn_auto_race: "AUTO RENNEN",
                 btn_queries: "ABFRAGEN",
                 mob_voice_on: "STIMME EIN", mob_voice_off: "STIMME AUS",
                 mob_spotter_active_banner: "🔊 AUTO-SPOTTER AKTIV · SAGT ZEITEN & GEGNER AUTOMATISCH AN",
@@ -3160,6 +3171,27 @@
             zeroOutCurrentRaceCounters();
             switchMainTab('config');
             goToWizardStep(1);
+        }
+
+        function startAutonomousConfiguredRace() {
+            stopAllTimers();
+            if (!state.drivers || state.drivers.length === 0) {
+                loadPdfExampleDrivers();
+            }
+            if (!state.heats || state.heats.length === 0) {
+                rebuildHeats();
+            }
+            zeroOutCurrentRaceCounters();
+
+            state.autoAdvance = true;
+            state.autoSimActive = false;
+            updateAutoButtonUI();
+            updateHeaderSummary();
+
+            switchMainTab('race');
+            renderLiveRaceView();
+            saveLocalDatabase();
+            announceDrivers(true);
         }
 
         function startSimulatedRaceFromHome() {
