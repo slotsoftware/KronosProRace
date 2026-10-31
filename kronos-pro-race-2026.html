@@ -455,14 +455,9 @@
     <!-- MÓDULO 0: PANTALLA PRINCIPAL FULL-BLEED (FONDO.JPG COMPLETO + BOTONES MINIMALISTAS)      -->
     <!-- ======================================================================================== -->
     <section id="view-home" class="relative flex-1 w-full h-full min-h-0 overflow-hidden rounded-2xl border border-white/15 shadow-2xl flex flex-col justify-end items-center p-5 md:p-8 bg-cover bg-center bg-no-repeat" style="background-image: url('fondo.jpg');">
-
-        <!-- Imagen fondo.jpg a pantalla completa de extremo a extremo debajo de la cabecera -->
         <img id="home-central-custom-img" src="fondo.jpg" alt="fondo.jpg" class="absolute inset-0 w-full h-full object-cover z-0 select-none pointer-events-none" onload="this.classList.remove('hidden');" onerror="if(typeof state === 'undefined' || !state.homeCustomImage){ this.classList.add('hidden'); }" />
-
-        <!-- Sutil degradado inferior para dar legibilidad limpia a los botones minimalistas -->
         <div class="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/75 via-black/30 to-transparent z-10"></div>
 
-        <!-- Selector discreto de imagen local en esquina superior derecha -->
         <div class="absolute top-3 right-3 flex items-center gap-1.5 z-20 opacity-45 hover:opacity-100 transition">
             <input type="file" id="home-image-upload-input" accept="image/*" class="hidden" onchange="handleHomeImageUpload(event)" />
             <button type="button" onclick="document.getElementById('home-image-upload-input').click()" class="px-2.5 py-1 rounded-lg bg-black/55 hover:bg-black/80 backdrop-blur-md text-white/80 hover:text-white border border-white/15 text-[10px] font-semibold flex items-center gap-1.5 cursor-pointer transition">
@@ -474,7 +469,6 @@
             </button>
         </div>
 
-        <!-- DOS BOTONES DE INICIO MINIMALISTAS FLOTANTES -->
         <div class="relative z-20 flex flex-wrap items-center justify-center gap-3 w-full max-w-lg">
             <button type="button" onclick="startBrandNewRaceFromHome()" class="flex-1 min-w-[200px] py-2.5 px-5 rounded-full bg-black/55 hover:bg-white/15 backdrop-blur-xl border border-white/25 hover:border-white/50 text-white font-semibold text-xs tracking-widest flex items-center justify-center gap-2.5 shadow-lg transition-all duration-200 cursor-pointer">
                 <span class="w-2 h-2 rounded-full bg-[#0a84ff] shadow-[0_0_8px_#0a84ff]"></span>
@@ -486,17 +480,13 @@
                 <span data-i18n="home_btn_sim_race">SIMULAR UNA CARRERA</span>
             </button>
         </div>
-
     </section>
 
     <!-- ======================================================================================== -->
     <!-- MÓDULO 1: CONFIGURADOR DE CARRERA ESTILO APPLE MAC STUDIO SILVER (CON CONTROLES MANUALES)-->
     <!-- ======================================================================================== -->
     <section id="view-config" class="hidden flex-1 flex flex-col gap-2.5 min-h-0 overflow-hidden">
-
-        <!-- Barra Superior macOS Sequoia con Semáforo Mac + Selector de Pasos + Resumen en Tiempo Real -->
         <div class="max-w-7xl w-full mx-auto mac-studio-silver px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0">
-            <!-- Semáforo icónico macOS + Título de Ventana -->
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-1.5">
                     <span class="mac-traffic-dot bg-[#ff5f56]"></span>
@@ -510,11 +500,10 @@
                 </div>
             </div>
 
-            <!-- Segmented Control estilo macOS para los 3 Pasos -->
             <div class="apple-segmented p-1 bg-black/60 border border-white/15 rounded-2xl">
                 <button onclick="goToWizardStep(1)" id="step-pill-1" class="py-1.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer">
                     <span class="w-4 h-4 rounded-full flex items-center justify-center bg-white/20 text-[10px] font-black">1</span>
-                    <span data-i18n="step1_pill">Parámetros y Manual</span>
+                    <span data-i18n="step1_pill">Opciones de Carrera</span>
                 </button>
                 <button onclick="goToWizardStep(2)" id="step-pill-2" class="py-1.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer">
                     <span class="w-4 h-4 rounded-full flex items-center justify-center bg-white/10 text-[10px] font-black">2</span>
@@ -526,20 +515,15 @@
                 </button>
             </div>
 
-            <!-- Acción Rápida a Pista -->
             <button onclick="switchMainTab('race')" class="mac-silver-active px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-flag-checkered"></i>
-                <span>IR A PISTA EN VIVO</span>
+                <span data-i18n="btn_go_live_now">IR A PISTA EN VIVO</span>
             </button>
         </div>
 
-        <!-- Contenedor Principal con Scroll de los 3 Pasos de Crear Carrera -->
         <div class="flex-1 overflow-y-auto min-h-0 pr-1">
-
             <!-- PASO 1: PARÁMETROS DE CARRERA Y CONTROLES MANUALES -->
             <div id="wizard-step-1" class="max-w-7xl mx-auto space-y-3 pb-2">
-
-                <!-- BLOQUE 0: DATOS OFICIALES DEL EVENTO, FECHA Y GESTOR DE CATEGORÍAS DEL CLUB (GUARDADO EN DISPOSITIVO) -->
                 <div class="mac-studio-silver p-4 space-y-3 border border-[#5ac8fa]/40">
                     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/15 pb-2.5">
                         <div class="flex items-center gap-2.5">
@@ -547,8 +531,8 @@
                                 <i class="fa-solid fa-calendar-check text-xs"></i>
                             </span>
                             <div>
-                                <div class="text-xs font-black text-white uppercase tracking-tight">DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB</div>
-                                <div class="text-[10px] text-slate-300">Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac</div>
+                                <div data-i18n="event_block_title" class="text-xs font-black text-white uppercase tracking-tight">DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB</div>
+                                <div data-i18n="event_block_sub" class="text-[10px] text-slate-300">Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -559,42 +543,35 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-                        <!-- Nombre del Evento -->
                         <div class="lg:col-span-4 mac-silver-well p-3 space-y-1.5">
                             <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                <i class="fa-solid fa-trophy mr-1 text-[#ffd60a]"></i>NOMBRE DEL EVENTO / CAMPEONATO:
+                                <i class="fa-solid fa-trophy mr-1 text-[#ffd60a]"></i><span data-i18n="event_name_lbl">NOMBRE DEL EVENTO / CAMPEONATO:</span>
                             </label>
                             <input type="text" id="event-name-input" placeholder="Ej: CAMPEONATO SOCIAL SLOT CLUB" oninput="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#5ac8fa]"/>
                         </div>
 
-                        <!-- Fecha del Evento -->
                         <div class="lg:col-span-3 mac-silver-well p-3 space-y-1.5">
                             <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                <i class="fa-solid fa-calendar-day mr-1 text-[#5ac8fa]"></i>FECHA DE LA CARRERA:
+                                <i class="fa-solid fa-calendar-day mr-1 text-[#5ac8fa]"></i><span data-i18n="event_date_lbl">FECHA DE LA CARRERA:</span>
                             </label>
                             <input type="date" id="event-date-input" onchange="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-mono-num font-black text-white focus:outline-none focus:border-[#5ac8fa]"/>
                         </div>
 
-                        <!-- Gestor de Categorías del Club (Añadir / Seleccionar / Borrar) -->
                         <div class="lg:col-span-5 mac-silver-well p-3 space-y-2">
                             <div class="flex items-center justify-between gap-2">
                                 <label class="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                    <i class="fa-solid fa-tags mr-1 text-[#30d158]"></i>CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):
+                                    <i class="fa-solid fa-tags mr-1 text-[#30d158]"></i><span data-i18n="event_cats_lbl">CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):</span>
                                 </label>
-                                <button type="button" onclick="restoreDefaultClubCategories()" class="text-[9px] font-bold text-slate-400 hover:text-white underline cursor-pointer" title="Restaurar GT, DTM, CLÁSICOS, F1, CAMIONES">
+                                <button type="button" onclick="restoreDefaultClubCategories()" data-i18n="btn_restore_cats" class="text-[9px] font-bold text-slate-400 hover:text-white underline cursor-pointer">
                                     RESTAURAR BASE
                                 </button>
                             </div>
-
-                            <!-- Chips de Categorías (GT, DTM, CLÁSICOS, F1, CAMIONES...) -->
                             <div id="club-categories-chips" class="flex flex-wrap gap-1.5"></div>
-
-                            <!-- Input para Añadir Nueva Categoría -->
                             <div class="flex items-center gap-1.5 pt-1">
-                                <input type="text" id="new-club-category-input" placeholder="Nueva categoría (ej: RALLY, LMP, GRUPO C, NINCO...)" onkeydown="if(event.key==='Enter') addClubCategoryFromInput()" class="flex-1 bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
+                                <input type="text" id="new-club-category-input" placeholder="Nueva categoría (ej: RALLY, LMP, GRUPO C...)" onkeydown="if(event.key==='Enter') addClubCategoryFromInput()" class="flex-1 bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
                                 <button type="button" onclick="addClubCategoryFromInput()" class="px-3 py-1.5 rounded-lg btn-neon-green text-[10px] font-black cursor-pointer shrink-0 flex items-center gap-1">
                                     <i class="fa-solid fa-plus"></i>
-                                    <span>AÑADIR CATEGORÍA</span>
+                                    <span data-i18n="btn_add_cat">AÑADIR CATEGORÍA</span>
                                 </button>
                             </div>
                         </div>
@@ -602,8 +579,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-
-                    <!-- BLOQUE 1: CARRILES (1 a 10), SECTORES Y CUERDA DE PISTA (METROS) -->
+                    <!-- BLOQUE 1: CARRILES, SECTORES Y CUERDA -->
                     <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
@@ -615,8 +591,6 @@
                             </div>
                             <div id="lane-selector-buttons" class="grid grid-cols-5 gap-1.5"></div>
                         </div>
-
-                        <!-- Control Manual de Sectores + Longitud de Pista para Velocidad -->
                         <div class="mac-silver-well p-2.5 flex flex-col gap-2">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[10px] font-bold text-slate-300 uppercase" data-i18n="sectors_label">SECTORES:</span>
@@ -627,18 +601,18 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-white/10">
-                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-ruler-horizontal mr-1 text-slate-400"></i>CUERDA PISTA (M):</span>
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-ruler-horizontal mr-1 text-slate-400"></i><span data-i18n="track_len_lbl">CUERDA PISTA (M):</span></span>
                                 <div class="flex items-center gap-1.5">
                                     <button type="button" onclick="stepTrackLength(-2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                     <input type="number" id="manual-track-length" min="5" max="250" step="0.5" value="28" onchange="applyManualTrackLength(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-0.5 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                     <button type="button" onclick="stepTrackLength(2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
-                                    <span class="text-[10px] font-bold text-slate-400">METROS</span>
+                                    <span data-i18n="meters_unit" class="text-[10px] font-bold text-slate-400">METROS</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- BLOQUE 2: TIEMPO POR MANGA (PRESETS + ENTRADA MANUAL MINUTOS Y SEGUNDOS) -->
+                    <!-- BLOQUE 2: TIEMPO POR MANGA -->
                     <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
                         <div class="flex items-center justify-between">
                             <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
@@ -647,7 +621,6 @@
                             </label>
                             <span id="duration-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">03:00</span>
                         </div>
-
                         <div class="grid grid-cols-3 gap-1.5">
                             <button type="button" onclick="selectDurationPreset(120, '2 Min', 'SPRINT')" id="dur-btn-120" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
                             <button type="button" onclick="selectDurationPreset(180, '3 Min ★', 'CLUB')" id="dur-btn-180" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
@@ -656,21 +629,19 @@
                             <button type="button" onclick="selectDurationPreset(900, '15 Min', 'RESIS')" id="dur-btn-900" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
                             <button type="button" onclick="selectDurationPreset(1800, '30 Min', 'RESIS')" id="dur-btn-1800" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
                         </div>
-
-                        <!-- Ajuste Manual de Tiempo (Minutos y Segundos exactos) -->
                         <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-sliders mr-1 text-slate-400"></i>MANUAL:</span>
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-sliders mr-1 text-slate-400"></i><span data-i18n="manual_time_lbl">MANUAL:</span></span>
                             <div class="flex items-center gap-1.5">
-                                <input type="number" id="manual-dur-min" min="0" max="999" value="3" onchange="applyManualDuration()" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white" title="Minutos">
+                                <input type="number" id="manual-dur-min" min="0" max="999" value="3" onchange="applyManualDuration()" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                 <span class="text-[10px] font-bold text-slate-400">MIN</span>
-                                <input type="number" id="manual-dur-sec" min="0" max="59" value="0" onchange="applyManualDuration()" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white" title="Segundos">
+                                <input type="number" id="manual-dur-sec" min="0" max="59" value="0" onchange="applyManualDuration()" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                 <span class="text-[10px] font-bold text-slate-400">SEG</span>
                                 <button type="button" onclick="applyManualDuration()" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">OK</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- BLOQUE 3: MODALIDAD POR TIEMPO O META DE VUELTAS MANUAL -->
+                    <!-- BLOQUE 3: MODALIDAD TIEMPO O VUELTAS -->
                     <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
                         <div class="flex items-center justify-between">
                             <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
@@ -679,7 +650,6 @@
                             </label>
                             <span id="laps-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">∞ Tiempo</span>
                         </div>
-
                         <div class="grid grid-cols-4 gap-1.5">
                             <button type="button" onclick="setTargetLaps('infinity')" id="lap-btn-infinity" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">⏱️ POR TIEMPO (∞)</button>
                             <button type="button" onclick="setTargetLaps(15)" id="lap-btn-15" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">15 V</button>
@@ -688,20 +658,18 @@
                             <button type="button" onclick="setTargetLaps(50)" id="lap-btn-50" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">50 V</button>
                             <button type="button" onclick="setTargetLaps(100)" id="lap-btn-100" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">100 VUELTAS</button>
                         </div>
-
-                        <!-- Meta de Vueltas Manual o Cuenta Atrás / Adelante -->
                         <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-pen-ruler mr-1 text-slate-400"></i>VUELTAS MANUAL:</span>
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-pen-ruler mr-1 text-slate-400"></i><span data-i18n="manual_laps_lbl">VUELTAS MANUAL:</span></span>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="stepManualTargetLaps(-5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                 <input type="number" id="manual-target-laps-input" min="1" max="9999" placeholder="∞" onchange="applyManualTargetLaps(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                 <button type="button" onclick="stepManualTargetLaps(5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
-                                <button type="button" onclick="applyManualTargetLaps(document.getElementById('manual-target-laps-input').value)" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">FIJAR</button>
+                                <button type="button" onclick="applyManualTargetLaps(document.getElementById('manual-target-laps-input').value)" data-i18n="btn_fix" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">FIJAR</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- BLOQUE 4: TIPO DE SESIÓN Y NÚMERO DE MANGAS MANUAL -->
+                    <!-- BLOQUE 4: SESIÓN Y Nº DE MANGAS -->
                     <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
                         <div class="flex items-center justify-between">
                             <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
@@ -710,22 +678,18 @@
                             </label>
                             <span id="heats-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">Auto</span>
                         </div>
-
                         <div class="grid grid-cols-2 gap-1.5">
                             <button type="button" onclick="setSessionType('PRACTICE')" id="sess-btn-PRACTICE" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">ENTRENOS (1M)</button>
                             <button type="button" onclick="setSessionType('CLUB')" id="sess-btn-CLUB" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">CARRERA OFICIAL</button>
                         </div>
-
                         <div class="grid grid-cols-4 gap-1.5">
                             <button type="button" onclick="setHeatMode('auto')" id="heat-btn-auto" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">AUTO CICLO</button>
                             <button type="button" onclick="setHeatMode('lanes')" id="heat-btn-lanes" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">= CARRILES</button>
                             <button type="button" onclick="setHeatMode(6)" id="heat-btn-6" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">6 MANGAS</button>
                             <button type="button" onclick="setHeatMode(10)" id="heat-btn-10" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">10 MANGAS</button>
                         </div>
-
-                        <!-- Selector Manual del Número de Mangas -->
                         <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-hashtag mr-1 text-slate-400"></i>Nº MANGAS MANUAL:</span>
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-hashtag mr-1 text-slate-400"></i><span data-i18n="manual_heats_lbl">Nº MANGAS MANUAL:</span></span>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="stepManualHeats(-1)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                 <input type="number" id="manual-heats-input" min="1" max="99" value="6" onchange="applyManualHeatsCount(this.value)" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
@@ -735,7 +699,7 @@
                         </div>
                     </div>
 
-                    <!-- BLOQUE 5: ORDEN DE ROTACIÓN DE CARRILES (AUTOMÁTICO + MANUAL PERSONALIZADO) -->
+                    <!-- BLOQUE 5: ROTACIÓN DE CARRILES -->
                     <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
                         <div class="flex items-center justify-between">
                             <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
@@ -744,33 +708,24 @@
                             </label>
                             <span id="wheel-preview-badge" class="font-mono-num text-[10px] font-black bg-white/15 px-2.5 py-0.5 rounded-full text-white border border-white/20">1→3→4→2</span>
                         </div>
-
                         <div class="grid grid-cols-3 gap-1.5">
-                            <button type="button" onclick="setRotationModeWizard('club_odd_even')" id="rot-wiz-club_odd_even" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
-                                IMPAR→PAR
-                            </button>
-                            <button type="button" onclick="setRotationModeWizard('sequential')" id="rot-wiz-sequential" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
-                                1 → 2 → 3 → 4
-                            </button>
-                            <button type="button" onclick="setRotationModeWizard('random')" id="rot-wiz-random" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
-                                SORTEO 🎲
-                            </button>
+                            <button type="button" onclick="setRotationModeWizard('club_odd_even')" id="rot-wiz-club_odd_even" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">IMPAR→PAR</button>
+                            <button type="button" onclick="setRotationModeWizard('sequential')" id="rot-wiz-sequential" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">1 → 2 → 3 → 4</button>
+                            <button type="button" onclick="setRotationModeWizard('random')" id="rot-wiz-random" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">SORTEO 🎲</button>
                         </div>
-
-                        <!-- Entrada Manual del Orden de Rotación de Carriles -->
                         <div class="mac-silver-well p-2.5 space-y-1.5">
                             <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-keyboard mr-1 text-slate-400"></i>ORDEN MANUAL (EJ: 1,3,4,2):</span>
-                                <button type="button" onclick="invertCurrentRotationOrder()" class="text-[9px] font-black text-slate-300 hover:text-white underline cursor-pointer">INVERTIR RUEDA</button>
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-keyboard mr-1 text-slate-400"></i><span data-i18n="manual_rot_lbl">ORDEN MANUAL (EJ: 1,3,4,2):</span></span>
+                                <button type="button" onclick="invertCurrentRotationOrder()" data-i18n="btn_invert_wheel" class="text-[9px] font-black text-slate-300 hover:text-white underline cursor-pointer">INVERTIR RUEDA</button>
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <input type="text" id="manual-rotation-input" placeholder="1, 3, 4, 2" onkeydown="if(event.key==='Enter') applyManualRotationOrder()" class="flex-1 bg-black/70 border border-white/20 rounded-lg px-2.5 py-1 font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
-                                <button type="button" onclick="applyManualRotationOrder()" id="rot-wiz-custom" class="px-3 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">APLICAR</button>
+                                <button type="button" onclick="applyManualRotationOrder()" id="rot-wiz-custom" data-i18n="btn_apply" class="px-3 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">APLICAR</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- BLOQUE 6: CRITERIO DE CLASIFICACIÓN Y PUNTUACIÓN -->
+                    <!-- BLOQUE 6: CÁLCULO DEL GANADOR -->
                     <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
                         <div class="flex items-center justify-between">
                             <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
@@ -779,7 +734,6 @@
                             </label>
                             <span class="text-[10px] font-mono-num font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded-full">FIA / CLUB</span>
                         </div>
-
                         <div class="grid grid-cols-1 gap-1.5 my-auto">
                             <button type="button" onclick="setScoringMethodWizard('laps')" id="score-wiz-laps" class="p-2.5 text-left rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-between">
                                 <span data-i18n="score_laps">A. Por Vueltas Acumuladas (+ mejor tiempo)</span>
@@ -795,10 +749,8 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
 
-                <!-- Dock Inferior Mac Studio del Paso 1 -->
                 <div class="mac-studio-silver px-5 py-3 flex flex-wrap justify-between items-center gap-3">
                     <div class="flex items-center gap-2 text-xs text-slate-300">
                         <i class="fa-brands fa-apple text-base text-white"></i>
@@ -817,7 +769,7 @@
                 </div>
             </div>
 
-            <!-- PASO 2: INSCRIPCIÓN DE PILOTOS Y POLE EN ESTILO MAC STUDIO SILVER -->
+            <!-- PASO 2: INSCRIPCIÓN DE PILOTOS Y POLE -->
             <div id="wizard-step-2" class="hidden max-w-5xl mx-auto space-y-4 pb-2">
                 <div class="mac-studio-silver p-5 space-y-3.5">
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
@@ -878,7 +830,7 @@
                 </div>
             </div>
 
-            <!-- PASO 3: CUADRO DE MANGAS, EDICIÓN MANUAL Y MATRIZ PILOTO-CARRIL -->
+            <!-- PASO 3: CUADRO DE MANGAS -->
             <div id="wizard-step-3" class="hidden max-w-7xl mx-auto space-y-4 pb-4">
                 <div class="mac-studio-silver p-4 flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -887,30 +839,29 @@
                         <p id="step3-subtitle" class="text-slate-300 text-xs font-mono-num mt-0.5"></p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <button onclick="goToWizardStep(2)" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
+                        <button type="button" onclick="goToWizardStep(2)" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
                             <i class="fa-solid fa-arrow-left mr-1.5"></i><span data-i18n="btn_back">Volver</span>
                         </button>
-                        <button onclick="loadCursaPreparadaPdfScenario()" class="px-3.5 py-2.5 rounded-xl text-xs font-black bg-[#ffd60a]/20 hover:bg-[#ffd60a]/35 text-[#ffd60a] border border-[#ffd60a]/45 cursor-pointer">
+                        <button type="button" onclick="loadCursaPreparadaPdfScenario()" class="px-3.5 py-2.5 rounded-xl text-xs font-black bg-[#ffd60a]/20 hover:bg-[#ffd60a]/35 text-[#ffd60a] border border-[#ffd60a]/45 cursor-pointer">
                             <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>DEMO PDF: MANGA 1 (6) + MANGA 2 (6 + D1 ROGER)
                         </button>
-                        <button onclick="rebuildHeats(); renderWizardStep3();" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
+                        <button type="button" onclick="rebuildHeats(); renderWizardStep3();" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
                             <i class="fa-solid fa-rotate mr-1.5"></i><span data-i18n="btn_recalc">Recalcular / Sortear</span>
                         </button>
-                        <button onclick="openClearHeatsConfirmModal()" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold text-[#ff6961] hover:bg-[#ff453a]/20 border border-[#ff453a]/40 cursor-pointer">
+                        <button type="button" onclick="openClearHeatsConfirmModal()" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold text-[#ff8a84] hover:text-white cursor-pointer">
                             <i class="fa-solid fa-trash-can mr-1.5"></i><span>BORRAR MANGAS</span>
                         </button>
-                        <button onclick="startAutonomousConfiguredRace()" class="btn-neon-purple px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
+                        <button type="button" onclick="startAutonomousConfiguredRace()" class="btn-neon-purple px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-robot"></i>
                             <span data-i18n="btn_auto_race">AUTO CARRERA</span>
                         </button>
-                        <button onclick="promptPreRaceCheckModal(1)" class="mac-silver-active px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
+                        <button type="button" onclick="promptPreRaceCheckModal(1)" class="mac-silver-active px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-flag-checkered"></i>
                             <span data-i18n="btn_go_track">IR A PARRILLA Y PISTA EN VIVO</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- ==================== GESTOR INTERACTIVO "-CURSA PREPARADA-" (CAMBIOS EN VIVO SIN ROMPER LA CARRERA) ==================== -->
                 <div class="mac-studio-silver p-5 space-y-4 border-2 border-[#5ac8fa]/40">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 pb-3">
                         <div class="flex items-center gap-3">
@@ -922,9 +873,6 @@
                                     <h3 class="text-sm md:text-base font-black text-white uppercase tracking-tight">-CURSA PREPARADA- · GESTOR DE CAMBIOS EN MANGAS (P-1..P-6 y DESCANS D-1)</h3>
                                     <span class="px-2 py-0.5 rounded text-[10px] font-mono-num font-black bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">ROTACIÓN ACTIVA</span>
                                 </div>
-                                <p class="text-xs text-slate-300 mt-0.5">
-                                    Permite retirar un piloto que se marcha (ej. <b>RAÚL</b>), mover un piloto de Manga 2 a Manga 1, intercambiar dos pilotos (ej. <b>PAU ↔ JP</b>) o añadir a última hora un piloto en <b>D-1 Descans</b> (ej. <b>ROGER</b> entra por P-1 cuando <b>PAU</b> acaba en P-2 y <b>LLUIS</b> pasa a P-2).
-                                </p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -934,101 +882,70 @@
                         </div>
                     </div>
 
-                    <!-- Barra de 3 Herramientas Rápidas del Documento PDF -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                        <!-- Caso 1 y 2: Intercambiar o Mover Piloto entre Mangas (ej. PAU <-> JP o pasar 1 piloto de M2 a M1) -->
                         <div class="mac-silver-well p-3 space-y-2">
                             <div class="text-[11px] font-black text-[#5ac8fa] uppercase flex items-center justify-between">
                                 <span><i class="fa-solid fa-right-left mr-1.5"></i>1. INTERCAMBIAR PILOTOS (EJ: PAU ↔ JP)</span>
-                                <span class="text-[9px] text-slate-400">RESTO IGUAL</span>
                             </div>
                             <div class="grid grid-cols-2 gap-1.5">
                                 <select id="swap-pilot-a" class="bg-black/80 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-bold text-white"></select>
                                 <select id="swap-pilot-b" class="bg-black/80 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-bold text-white"></select>
                             </div>
-                            <button onclick="swapTwoPilotsBetweenGroups()" class="w-full py-1.5 rounded-lg btn-neon-blue text-[11px] font-black cursor-pointer">
-                                INTERCAMBIAR DE MANGA / PISTA AHORA
-                            </button>
+                            <button onclick="swapTwoPilotsBetweenGroups()" class="w-full py-1.5 rounded-lg btn-neon-blue text-[11px] font-black cursor-pointer">INTERCAMBIAR DE MANGA / PISTA AHORA</button>
                         </div>
 
-                        <!-- Caso 3: Llega tarde un piloto no inscrito (ej. ROGER) e inscribirlo en la Manga que queramos (o en D-1 si está llena) -->
                         <div class="mac-silver-well p-3 space-y-2">
                             <div class="text-[11px] font-black text-[#30d158] uppercase flex items-center justify-between">
                                 <span><i class="fa-solid fa-user-plus mr-1.5"></i>2. LLEGA TARDE PILOTO NUEVO (EJ: ROGER)</span>
-                                <span class="text-[9px] text-slate-400">AUTO PISTA O D-1</span>
                             </div>
                             <div class="grid grid-cols-12 gap-1.5">
                                 <input type="text" id="late-pilot-name" placeholder="ROGER" class="col-span-5 bg-black/80 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
                                 <select id="late-pilot-group" class="col-span-4 bg-black/80 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-bold text-white"></select>
-                                <button onclick="addLateArrivalPilot()" class="col-span-3 rounded-lg btn-neon-green text-[11px] font-black cursor-pointer">
-                                    + INSCRIBIR
-                                </button>
-                            </div>
-                            <div class="text-[10px] text-slate-400 leading-tight">
-                                Si la manga ya tiene las pistas llenas, entra como <b>D-1 (Descans)</b> y empieza por <b>Pista 1</b> en el siguiente turno.
+                                <button onclick="addLateArrivalPilot()" class="col-span-3 rounded-lg btn-neon-green text-[11px] font-black cursor-pointer">+ INSCRIBIR</button>
                             </div>
                         </div>
 
-                        <!-- Caso 4: Simulador Visual de la Rotación con Descanso (Rueda 1->3->5->6->4->2 + D-1) -->
                         <div class="mac-silver-well p-3 space-y-2">
                             <div class="text-[11px] font-black text-[#ffd60a] uppercase flex items-center justify-between">
-                                <span><i class="fa-solid fa-arrows-rotate mr-1.5"></i>3. PROBAR ROTACIÓN DE PISTAS Y DESCANS (D-1)</span>
+                                <span><i class="fa-solid fa-arrows-rotate mr-1.5"></i>3. PROBAR ROTACIÓN Y DESCANS (D-1)</span>
                                 <span id="cursa-wheel-badge" class="text-[10px] font-mono-num text-white">1→3→5→6→4→2</span>
                             </div>
-                            <p class="text-[10px] text-slate-300 leading-tight">
-                                Comprueba cómo al rotar un turno en una manga con <b>D-1 (Roger)</b>: el piloto del último eslabón de la rueda (<b>P-2 Pau</b>) pasa a <b>Descans (D-1)</b>, <b>Roger</b> entra por <b>P-1</b> y <b>Lluis (P-4)</b> pasa a <b>P-2</b>.
-                            </p>
                             <div class="grid grid-cols-2 gap-1.5">
-                                <button onclick="simulateGroupWheelStep(0)" class="py-1.5 rounded-lg mac-silver-btn text-[10px] font-black cursor-pointer">
-                                    ROTAR 1 TURNO MANGA 1
-                                </button>
-                                <button onclick="simulateGroupWheelStep(1)" class="py-1.5 rounded-lg bg-[#ffd60a]/25 hover:bg-[#ffd60a]/40 text-[#ffd60a] border border-[#ffd60a]/50 text-[10px] font-black cursor-pointer">
-                                    ROTAR 1 TURNO MANGA 2 (D-1)
-                                </button>
+                                <button onclick="simulateGroupWheelStep(0)" class="py-1.5 rounded-lg mac-silver-btn text-[10px] font-black cursor-pointer">ROTAR 1 TURNO MANGA 1</button>
+                                <button onclick="simulateGroupWheelStep(1)" class="py-1.5 rounded-lg bg-[#ffd60a]/25 hover:bg-[#ffd60a]/40 text-[#ffd60a] border border-[#ffd60a]/50 text-[10px] font-black cursor-pointer">ROTAR 1 TURNO MANGA 2</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pizarra Visual de MANGA - 1 y MANGA - 2 idéntica al esquema del documento PDF -->
                     <div id="cursa-preparada-boards" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1"></div>
                 </div>
 
-                <!-- AVISO / MATRIZ DE EQUIDAD PILOTO vs CARRIL -->
                 <div id="heats-equity-matrix" class="mac-studio-silver p-4 overflow-x-auto"></div>
-
-                <!-- TARJETAS DE CADA MANGA -->
                 <div id="heats-schedule-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
             </div>
-
         </div>
     </section>
 
     <!-- ======================================================================================== -->
-    <!-- MÓDULO 2: PARRILLA EN VIVO FUSIONADA (5 VISTAS BENTO + COLORES PERSONALIZABLES)          -->
+    <!-- MÓDULO 2: PARRILLA EN VIVO FUSIONADA                                                     -->
     <!-- ======================================================================================== -->
     <section id="view-race" class="hidden flex-1 flex flex-col gap-2 min-h-0 overflow-hidden">
-
-        <!-- DOCK DE MANDO DE DIRECCIÓN DE CARRERA (SE OCULTA AUTOMÁTICAMENTE DURANTE LA CARRERA) -->
         <div id="race-top-dock" class="mac-studio-silver px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0">
-            
-            <!-- Selector de Mangas con indicador "(ACABADA) ✓" -->
             <div class="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5 uppercase" id="live-heat-tabs"></div>
 
-            <!-- Selector Global de los 4 Tipos de Cuadro (CLÁSICO, BÁSICO, MEDIO, EXPERTO) + Paleta de Colores -->
             <div class="flex items-center gap-1.5">
-                <div class="apple-segmented bg-black/60 p-1" title="4 niveles de cuadro: Clásico, Básico y Medio en columnas; Experto en cuadrícula Bento">
+                <div class="apple-segmented bg-black/60 p-1">
                     <button onclick="setGlobalCardLayout(0)" id="global-layout-0" data-i18n="layout_0_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">0. CLÁSICO</button>
                     <button onclick="setGlobalCardLayout(1)" id="global-layout-1" data-i18n="layout_1_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
                     <button onclick="setGlobalCardLayout(2)" id="global-layout-2" data-i18n="layout_2_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
                     <button onclick="setGlobalCardLayout(3)" id="global-layout-3" data-i18n="layout_3_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">3. EXPERTO</button>
                 </div>
-                <button onclick="cycleGlobalCardTheme()" class="mac-silver-btn px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer" title="Cambiar Acabado Gris Plata / Color de los Cuadros">
+                <button onclick="cycleGlobalCardTheme()" class="mac-silver-btn px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-palette text-slate-200"></i>
                     <span id="global-theme-label" data-i18n="theme_silver" class="hidden xl:inline">PLATA MAC</span>
                 </button>
             </div>
 
-            <!-- Botonera Unificada Limpia: Llamar Pilotos, Salida F1, Cambios Mangas, Track Call, Sig Manga, Poner a Cero -->
             <div class="flex flex-wrap items-center gap-1.5 uppercase">
                 <button onclick="announceDrivers(false)" class="px-3 py-2 mac-silver-btn font-extrabold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-bullhorn"></i>
@@ -1038,7 +955,7 @@
                     <i class="fa-solid fa-traffic-light"></i>
                     <span data-i18n="f1_start">SALIDA F1</span>
                 </button>
-                <button onclick="openLivePreHeatModificationModal()" class="px-3 py-2 bg-[#0a84ff]/25 hover:bg-[#0a84ff]/45 text-[#5ac8fa] border border-[#5ac8fa]/50 font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase" title="Modificar pilotos de mangas pendientes o añadir piloto que llega tarde">
+                <button onclick="openLivePreHeatModificationModal()" class="px-3 py-2 bg-[#0a84ff]/25 hover:bg-[#0a84ff]/45 text-[#5ac8fa] border border-[#5ac8fa]/50 font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-user-pen"></i>
                     <span data-i18n="btn_changes_yesno">CAMBIOS MANGAS (SÍ/NO)</span>
                 </button>
@@ -1046,36 +963,34 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <span id="btn-track-call-text">TRACK CALL</span>
                 </button>
-                <button onclick="finishCurrentHeat()" class="px-2.5 py-2 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer uppercase" title="SIGUIENTE MANGA">
+                <button onclick="finishCurrentHeat()" class="px-2.5 py-2 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer uppercase">
                     <i class="fa-solid fa-forward-step mr-1"></i><span data-i18n="btn_next_heat">SIG. MANGA</span>
                 </button>
-                <button onclick="zeroOutCurrentRaceCounters()" class="px-2.5 py-2 bg-[#ff453a]/20 hover:bg-[#ff453a] text-[#ff6961] hover:text-white border border-[#ff453a]/40 font-black text-xs rounded-xl transition cursor-pointer uppercase" title="Poner tiempos y vueltas de la carrera a cero">
+                <button onclick="zeroOutCurrentRaceCounters()" class="px-2.5 py-2 bg-[#ff453a]/20 hover:bg-[#ff453a] text-[#ff6961] hover:text-white border border-[#ff453a]/40 font-black text-xs rounded-xl transition cursor-pointer uppercase">
                     <i class="fa-solid fa-rotate-left mr-1"></i><span data-i18n="btn_zero_short">A CERO</span>
                 </button>
             </div>
         </div>
 
-        <!-- TARJETAS INTERACTIVAS DE CARRIL KRONOS PRO AUTOAJUSTABLES EN PANTALLA HORIZONTAL -->
         <div id="lanesGridContainer" class="flex-1 grid gap-2.5 min-h-0 h-full overflow-hidden"></div>
 
-        <!-- BARRA INFERIOR EXCLUSIVA EN MODO CARRERA ACTIVA (INICIO + MODOS + CRONO + TRACK CALL) -->
-        <div id="race-ActiveBottomBar" class="hidden mac-window px-4 py-2 items-center justify-between gap-3 flex-wrap shrink-0 z-40">
+        <div id="race-ActiveBottomBar" class="hidden mac-window px-4 py-2 items-center justify-between gap-3 shrink-0 z-40 flex-wrap">
             <button onclick="exitFullscreenRaceToMenu()" class="px-5 py-2 btn-silver font-black text-xs md:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 uppercase">
                 <i class="fa-solid fa-house text-[#5ac8fa]"></i>
                 <span data-i18n="btn_home_menu">INICIO</span>
             </button>
+
+            <div class="flex items-center gap-3">
+                <span id="active-race-heat-label" class="text-xs md:text-sm font-black text-[#5ac8fa] uppercase tracking-wider">MANGA 1</span>
+                <span class="text-white/20">|</span>
+                <span id="active-race-clock" class="text-xl md:text-2xl font-mono-num font-black text-white leading-none">03:00.0</span>
+            </div>
 
             <div class="apple-segmented bg-black/60 p-1">
                 <button onclick="setGlobalCardLayout(0)" id="bottom-layout-0" data-i18n="layout_0_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">0. CLÁSICO</button>
                 <button onclick="setGlobalCardLayout(1)" id="bottom-layout-1" data-i18n="layout_1_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
                 <button onclick="setGlobalCardLayout(2)" id="bottom-layout-2" data-i18n="layout_2_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
                 <button onclick="setGlobalCardLayout(3)" id="bottom-layout-3" data-i18n="layout_3_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">3. EXPERTO</button>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <span id="active-race-heat-label" class="text-xs md:text-sm font-black text-[#5ac8fa] uppercase tracking-wider">MANGA 1</span>
-                <span class="text-white/20">|</span>
-                <span id="active-race-clock" class="text-xl md:text-2xl font-mono-num font-black text-white leading-none">03:00.0</span>
             </div>
 
             <button onclick="toggleTrackCall()" id="btn-track-call-bottom" class="px-7 py-2 bg-[#ff9f0a] hover:bg-[#ffb340] text-black font-black text-xs md:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-[0_0_20px_rgba(255,159,10,0.45)] uppercase">
@@ -1086,7 +1001,7 @@
     </section>
 
     <!-- ======================================================================================== -->
-    <!-- MÓDULO 3: CLASIFICACIÓN GENERAL MULTICRITERIO Y DESGLOSE DE MANGAS                       -->
+    <!-- MÓDULO 3: CLASIFICACIÓN GENERAL MULTICRITERIO Y CONSULTAS POR FECHA                      -->
     <!-- ======================================================================================== -->
     <section id="view-standings" class="hidden flex-1 max-w-7xl w-full mx-auto space-y-5 py-2 overflow-y-auto">
         <div class="mac-window p-5 flex flex-wrap items-center justify-between gap-4">
@@ -1096,9 +1011,9 @@
                 <p data-i18n="standings_desc" class="text-xs text-[#94a3b8]">Cambia en vivo el criterio del reglamento para comprobar el ganador.</p>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3">
-                <button onclick="openQueriesModal()" class="px-5 py-2.5 rounded-xl btn-neon-purple text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-[0_0_20px_rgba(191,90,242,0.45)]">
-                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button onclick="openQueriesModal()" class="px-5 py-2.5 rounded-xl btn-neon-purple font-black text-xs flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-calendar-Week"></i>
                     <span data-i18n="btn_queries">CONSULTAS</span>
                 </button>
 
@@ -1137,21 +1052,177 @@
     </section>
 
     <!-- ======================================================================================== -->
-    <!-- MÓDULO 4: CONECTIVIDAD HARDWARE EXTERNO / WEBSERIAL / TECLADO                            -->
+    <!-- MÓDULO 4: CONECTIVIDAD HARDWARE EXTERNO / BLUETOOTH 5.x BLE JSON / WEBSERIAL / TECLADO   -->
     <!-- ======================================================================================== -->
-    <section id="view-hardware" class="hidden flex-1 max-w-4xl w-full mx-auto py-4">
-        <div class="mac-window p-8 text-center space-y-4">
-            <div class="w-16 h-16 mx-auto rounded-2xl btn-neon-green flex items-center justify-center text-2xl font-black">
-                <i class="fa-solid fa-plug-circle-bolt"></i>
+    <section id="view-hardware" class="hidden flex-1 max-w-7xl w-full mx-auto py-2 overflow-y-auto pr-1 space-y-3.5">
+        <!-- Cabecera de Estado de Sensores -->
+        <div class="mac-studio-silver p-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl btn-neon-blue flex items-center justify-center text-xl font-black shadow-[0_0_20px_rgba(10,132,255,0.45)]">
+                    <i class="fa-brands fa-bluetooth-b"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-[#5ac8fa]">BLUETOOTH 5.x BLE GATT · WEB SERIAL · JSON PARSER UNIVERSAL</span>
+                        <span id="ble-status-pill" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono-num font-black bg-white/10 text-slate-300 border border-white/15">DESCONECTADO</span>
+                    </div>
+                    <h2 data-i18n="hw_title" class="text-lg md:text-xl font-black text-white">Central de Sensores Bluetooth (BLE) & Decodificador Dinámico JSON</h2>
+                </div>
             </div>
-            <h2 class="text-2xl font-black text-white">Interfaz de Sensores Ópticos, DS Crono & Teclas Rápidas</h2>
-            <p class="text-sm text-[#94a3b8] max-w-xl mx-auto">
-                Puedes registrar vueltas haciendo clic sobre cada tarjeta de carril en vivo, pulsando las teclas numéricas del teclado (<kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">1</kbd> al <kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">9</kbd>, <kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">0</kbd> = Carril 10), o activando el <b>Simulador IA</b>.
-            </p>
-            <div class="pt-4">
-                <button onclick="switchMainTab('race')" class="btn-neon-blue px-6 py-3 rounded-xl font-black text-xs cursor-pointer">
-                    VOLVER A PARRILLA EN VIVO
+
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="connectBluetoothSensor()" id="btn-ble-connect" class="px-4 py-2.5 rounded-xl btn-neon-blue font-black text-xs flex items-center gap-2 cursor-pointer">
+                    <i class="fa-brands fa-bluetooth"></i>
+                    <span id="btn-ble-connect-text">BUSCAR SENSOR BLUETOOTH</span>
                 </button>
+                <button onclick="disconnectBluetoothSensor()" id="btn-ble-disconnect" class="hidden px-3.5 py-2.5 rounded-xl btn-neon-red font-black text-xs items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-link-slash"></i>
+                    <span>DESCONECTAR</span>
+                </button>
+                <button onclick="connectWebSerialSensor()" id="btn-serial-connect" class="px-3.5 py-2.5 rounded-xl mac-silver-btn font-black text-xs flex items-center gap-2 cursor-pointer" title="Conectar por cable USB / COM (Arduino, ESP32, DS Crono)">
+                    <i class="fa-solid fa-usb text-[#30d158]"></i>
+                    <span id="btn-serial-connect-text">USB SERIAL</span>
+                </button>
+                <button onclick="switchMainTab('race')" class="px-4 py-2.5 rounded-xl btn-neon-green font-black text-xs flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>IR A PISTA EN VIVO</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
+            <!-- COLUMNA IZQUIERDA (5 cols): Configuración BLE 5.x + Mapeo Adaptativo de Claves JSON -->
+            <div class="lg:col-span-5 space-y-3.5">
+                <!-- Tarjeta 1: Estado del Enlace Bluetooth y Servicios GATT -->
+                <div class="mac-studio-silver p-4 space-y-3 border border-[#5ac8fa]/35">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                        <span class="text-xs font-black text-white uppercase"><i class="fa-solid fa-satellite-dish mr-1.5 text-[#5ac8fa]"></i>1. ENLACE BLUETOOTH 5.x (GATT NOTIFY)</span>
+                        <label class="flex items-center gap-1.5 text-[10px] font-bold text-[#30d158] cursor-pointer">
+                            <input type="checkbox" id="ble-auto-reconnect-chk" checked class="accent-[#30d158] rounded" />
+                            <span>AUTO-RECONECTAR</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="mac-silver-well p-2.5">
+                            <div class="text-[9px] font-bold text-slate-400 uppercase">DISPOSITIVO ACTIVO</div>
+                            <div id="ble-device-name" class="font-mono-num font-black text-white truncate mt-0.5">Ninguno</div>
+                        </div>
+                        <div class="mac-silver-well p-2.5">
+                            <div class="text-[9px] font-bold text-slate-400 uppercase">PAQUETES RECIBIDOS</div>
+                            <div id="ble-packets-counter" class="font-mono-num font-black text-[#30d158] mt-0.5">0 tramas</div>
+                        </div>
+                    </div>
+
+                    <div class="mac-silver-well p-2.5 space-y-1.5">
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="font-bold text-slate-300 uppercase">FILTRO UUID SERVICIO (OPCIONAL):</span>
+                            <span class="text-[9px] font-mono-num text-[#5ac8fa]">Auto-detecta NUS / HM-10 / ESP32</span>
+                        </div>
+                        <input type="text" id="ble-custom-service-uuid" placeholder="Vacío = Escaneo Universal (Todos los perfiles BLE)" class="w-full bg-black/70 border border-white/15 rounded-lg px-2.5 py-1.5 text-[11px] font-mono-num text-white focus:outline-none focus:border-[#5ac8fa]" />
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2: Mapeador Inteligente de JSON (para cuando no se conoce aún el esquema exacto) -->
+                <div class="mac-studio-silver p-4 space-y-3 border border-[#bf5af2]/40">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                        <div>
+                            <span class="text-xs font-black text-white uppercase"><i class="fa-solid fa-code-branch mr-1.5 text-[#d982ff]"></i>2. AUTODETECCIÓN DE CAMPOS JSON</span>
+                            <p class="text-[10px] text-slate-300 mt-0.5">Reconoce automáticamente cualquier JSON entrante o permite fijar el nombre de cada clave.</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-mono-num font-black bg-[#bf5af2]/20 text-[#d982ff] border border-[#bf5af2]/40">AUTO-SCHEMA</span>
+                    </div>
+
+                    <!-- Claves detectadas dinámicamente en el último JSON recibido -->
+                    <div class="mac-silver-well p-2.5 space-y-1.5">
+                        <div class="text-[9px] font-extrabold text-[#ffd60a] uppercase">CLAVES DETECTADAS EN EL ÚLTIMO JSON:</div>
+                        <div id="ble-detected-keys-chips" class="flex flex-wrap gap-1.5 text-[10px] font-mono-num text-slate-400">
+                            <span>Esperando primera trama JSON...</span>
+                        </div>
+                    </div>
+
+                    <!-- Mapeo de claves (Auto + personalizable) -->
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="mac-silver-well p-2">
+                            <label class="block text-[9px] font-bold text-[#5ac8fa] uppercase mb-1">CLAVE CARRIL (1-10):</label>
+                            <input type="text" id="json-map-lane" value="lane, carril, c, ch, track, id, pista" onchange="saveBleMappingConfig()" class="w-full bg-black/75 border border-white/15 rounded px-2 py-1 font-mono-num text-[11px] text-white" />
+                        </div>
+                        <div class="mac-silver-well p-2">
+                            <label class="block text-[9px] font-bold text-[#30d158] uppercase mb-1">CLAVE TIEMPO VUELTA:</label>
+                            <input type="text" id="json-map-time" value="time, lapTime, tiempo, t, ms, lap_ms, dt, val" onchange="saveBleMappingConfig()" class="w-full bg-black/75 border border-white/15 rounded px-2 py-1 font-mono-num text-[11px] text-white" />
+                        </div>
+                        <div class="mac-silver-well p-2">
+                            <label class="block text-[9px] font-bold text-[#ffd60a] uppercase mb-1">CLAVE SECTOR (OPCIONAL):</label>
+                            <input type="text" id="json-map-sector" value="sector, sec, s, split, checkpoint" onchange="saveBleMappingConfig()" class="w-full bg-black/75 border border-white/15 rounded px-2 py-1 font-mono-num text-[11px] text-white" />
+                        </div>
+                        <div class="mac-silver-well p-2">
+                            <label class="block text-[9px] font-bold text-[#d982ff] uppercase mb-1">UNIDAD DE TIEMPO:</label>
+                            <select id="json-time-unit" onchange="saveBleMappingConfig()" class="w-full bg-black/75 border border-white/15 rounded px-2 py-1 font-mono-num text-[11px] text-white">
+                                <option value="auto">AUTO (Si &gt; 60 = ms, sino seg)</option>
+                                <option value="s">Segundos (ej: 8.432)</option>
+                                <option value="ms">Milisegundos (ej: 8432)</option>
+                                <option value="us">Microsegundos (ej: 8432000)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA (7 cols): Consola Inspectora JSON en Tiempo Real + Inyector de Pruebas -->
+            <div class="lg:col-span-7 flex flex-col gap-3.5">
+                <div class="mac-studio-silver p-4 flex-1 flex flex-col gap-3 border border-white/15">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#30d158] animate-pulse"></span>
+                            <span class="text-xs font-black text-white uppercase">3. MONITOR INSPECTOR DE TRAMAS (CADENA / JSON EN VIVO)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="sendBleCommandToSensor('PING')" class="px-2.5 py-1 rounded-lg mac-silver-btn text-[10px] font-black text-[#5ac8fa] cursor-pointer" title="Enviar comando de prueba al sensor">
+                                ENVIAR PING
+                            </button>
+                            <button onclick="clearSensorConsoleLog()" class="px-2.5 py-1 rounded-lg mac-silver-btn text-[10px] font-black text-slate-300 cursor-pointer">
+                                LIMPIAR LOG
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Último Objeto JSON Decodificado -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div class="mac-silver-well p-2.5 sm:col-span-2">
+                            <div class="text-[9px] font-bold text-[#5ac8fa] uppercase">ÚLTIMA TRAMA RECIBIDA (RAW STRING / JSON):</div>
+                            <div id="ble-last-raw-string" class="font-mono-num text-xs font-bold text-white truncate mt-0.5">Esperando datos del sensor...</div>
+                        </div>
+                        <div class="mac-silver-well p-2.5">
+                            <div class="text-[9px] font-bold text-[#30d158] uppercase">ACCIÓN INTERPRETADA:</div>
+                            <div id="ble-last-action-result" class="font-mono-num text-xs font-black text-[#30d158] truncate mt-0.5">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Consola de Tramas en Vivo -->
+                    <div id="ble-live-console" class="mac-silver-well p-3 font-mono-num text-[11px] h-52 overflow-y-auto space-y-1.5 text-slate-200 select-text">
+                        <div class="text-slate-400">[SISTEMA] Escuchando Bluetooth BLE 5.x (GATT Notifications), USB WebSerial y Teclado (1-9, 0)...</div>
+                        <div class="text-slate-400">[INFO] Puedes enviar cualquier JSON por línea (ej: {"lane":1,"time":8.345} o {"c":2,"ms":8190} o [3, 8.512]).</div>
+                    </div>
+
+                    <!-- Simulador / Probador de Cadenas JSON para verificar antes de tener el formato definitivo -->
+                    <div class="mac-silver-well p-3 space-y-2 border border-[#ffd60a]/30">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-[10px] font-black text-[#ffd60a] uppercase"><i class="fa-solid fa-flask mr-1"></i>PROBADOR DE CADENAS JSON (SIMULAR RECEPCIÓN BLUETOOTH):</span>
+                            <div class="flex flex-wrap gap-1">
+                                <button type="button" onclick="injectSampleSensorJson(1)" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] font-mono-num font-bold text-white cursor-pointer">{"lane":1,"time":8.321}</button>
+                                <button type="button" onclick="injectSampleSensorJson(2)" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] font-mono-num font-bold text-white cursor-pointer">{"carril":2,"ms":8450,"s":1}</button>
+                                <button type="button" onclick="injectSampleSensorJson(3)" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] font-mono-num font-bold text-white cursor-pointer">{"sensors":[{"c":3,"t":8.19},{"c":4,"t":8.62}]}</button>
+                                <button type="button" onclick="injectSampleSensorJson(4)" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] font-mono-num font-bold text-white cursor-pointer">{"cmd":"TRACK_CALL"}</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="ble-test-json-input" value='{"carril": 1, "tiempo": 8.295, "sector": 3}' onkeydown="if(event.key==='Enter') triggerTestSensorPayload()" class="flex-1 bg-black/80 border border-white/20 rounded-xl px-3 py-1.5 text-xs font-mono-num text-[#30d158] focus:outline-none focus:border-[#30d158]" />
+                            <button type="button" onclick="triggerTestSensorPayload()" class="px-4 py-1.5 rounded-xl btn-neon-green text-xs font-black cursor-pointer shrink-0">
+                                INYECTAR JSON
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -5797,7 +5868,7 @@
             }
         }
 
-        function triggerNextCheckpoint(laneNum, forcedSector = null, isSimulated = false) {
+        function triggerNextCheckpoint(laneNum, forcedSector = null, isSimulated = false, externalTimeSec = null) {
             const heat = state.heats[state.currentHeatIndex];
             if (!heat) return;
             const a = heat.assignments.find(x => x.lane === laneNum);
@@ -5838,7 +5909,14 @@
             }
 
             let secTime = 0;
-            if (!isSimulated && a.lastCheckpointTime > 0) {
+            if (typeof externalTimeSec === 'number' && externalTimeSec >= 0.05 && externalTimeSec <= 300) {
+                // Si el sensor externo envía el tiempo exacto en el JSON, se utiliza directamente con precisión milimétrica
+                if (sCount > 1 && activeSector === sCount && a.sectorAccum > 0 && externalTimeSec > a.sectorAccum) {
+                    secTime = +(externalTimeSec - a.sectorAccum).toFixed(3);
+                } else {
+                    secTime = +externalTimeSec.toFixed(3);
+                }
+            } else if (!isSimulated && a.lastCheckpointTime > 0) {
                 const elapsed = (now - a.lastCheckpointTime) / 1000;
                 if (elapsed >= 0.25 && elapsed <= 45.0) secTime = +elapsed.toFixed(3);
             }
@@ -7434,6 +7512,484 @@
         function toggleFullScreenMode() {
             if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
             else document.exitFullscreen().catch(() => {});
+        }
+
+        // ==================== MOTOR BLUETOOTH 5.x (WEB BLUETOOTH BLE GATT) + WEB SERIAL + PARSER UNIVERSAL JSON ====================
+        const KNOWN_BLE_SERVICES = [
+            '6e400001-b5a3-f393-e0a9-e50e24dcca9e', // Nordic UART Service (NUS - ESP32, nRF52, Bluefruit)
+            '0000ffe0-0000-1000-8000-00805f9b34fb', // HM-10 / AT-09 / JDY-08 BLE Serial
+            '0000fff0-0000-1000-8000-00805f9b34fb', // Sensores BLE industriales / Cronos ópticos
+            '49535343-fe7d-4ae5-8fa9-9fafd205e455', // Microchip BM70 / RN4871 Transparent UART
+            0xFFE0,
+            0xFFF0,
+            0x180A,
+            0x180F
+        ];
+
+        let bleDevice = null;
+        let bleServer = null;
+        let bleNotifyChars = [];
+        let bleWriteChar = null;
+        let bleStreamBuffer = '';
+        let blePacketCount = 0;
+        let serialPort = null;
+        let serialReader = null;
+        let serialBuffer = '';
+
+        function logToSensorConsole(tag, message, colorClass = 'text-slate-200') {
+            const consoleEl = document.getElementById('ble-live-console');
+            if (!consoleEl) return;
+            const nowStr = new Date().toLocaleTimeString('es-ES', { hour12: false }) + '.' + String(new Date().getMilliseconds()).padStart(3, '0');
+            const line = document.createElement('div');
+            line.className = `${colorClass} break-all`;
+            line.innerHTML = `<span class="text-slate-500">[${nowStr}]</span> <span class="font-black">[${tag}]</span> ${message}`;
+            consoleEl.appendChild(line);
+            while (consoleEl.children.length > 80) {
+                consoleEl.removeChild(consoleEl.firstChild);
+            }
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function clearSensorConsoleLog() {
+            const consoleEl = document.getElementById('ble-live-console');
+            if (consoleEl) consoleEl.innerHTML = '';
+            logToSensorConsole('SISTEMA', 'Registro limpiado. Esperando tramas JSON por Bluetooth / Serial...', 'text-slate-400');
+        }
+
+        function updateBleConnectionUI(status, devName = 'Ninguno') {
+            const pill = document.getElementById('ble-status-pill');
+            const nameEl = document.getElementById('ble-device-name');
+            const btnConn = document.getElementById('btn-ble-connect');
+            const btnDisc = document.getElementById('btn-ble-disconnect');
+            const btnTxt = document.getElementById('btn-ble-connect-text');
+
+            if (nameEl) nameEl.textContent = devName;
+
+            if (status === 'CONNECTED') {
+                if (pill) {
+                    pill.textContent = `BLE CONECTADO · ${devName}`;
+                    pill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono-num font-black bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/50';
+                }
+                if (btnConn) btnConn.classList.add('hidden');
+                if (btnDisc) {
+                    btnDisc.classList.remove('hidden');
+                    btnDisc.classList.add('flex');
+                }
+            } else if (status === 'CONNECTING') {
+                if (pill) {
+                    pill.textContent = 'CONECTANDO BLE...';
+                    pill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono-num font-black bg-[#ffd60a]/20 text-[#ffd60a] border border-[#ffd60a]/50 animate-pulse';
+                }
+                if (btnTxt) btnTxt.textContent = 'BUSCANDO...';
+            } else {
+                if (pill) {
+                    pill.textContent = 'DESCONECTADO';
+                    pill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono-num font-black bg-white/10 text-slate-300 border border-white/15';
+                }
+                if (btnTxt) btnTxt.textContent = 'BUSCAR SENSOR BLUETOOTH';
+                if (btnConn) btnConn.classList.remove('hidden');
+                if (btnDisc) {
+                    btnDisc.classList.add('hidden');
+                    btnDisc.classList.remove('flex');
+                }
+            }
+        }
+
+        async function connectBluetoothSensor() {
+            if (!navigator.bluetooth) {
+                logToSensorConsole('ERROR', 'Este navegador no soporta Web Bluetooth API. Usa Chrome, Edge o Bluefy (en iOS) sobre HTTPS o localhost.', 'text-[#ff453a]');
+                return;
+            }
+
+            try {
+                updateBleConnectionUI('CONNECTING');
+                const customUuidInput = document.getElementById('ble-custom-service-uuid');
+                const customUuid = customUuidInput ? customUuidInput.value.trim().toLowerCase() : '';
+
+                const optionalServices = [...KNOWN_BLE_SERVICES];
+                if (customUuid) optionalServices.unshift(customUuid);
+
+                // Soporte para las últimas versiones de Web Bluetooth (acceptAllDevices + optionalServices dinámicos)
+                const requestOptions = {
+                    acceptAllDevices: true,
+                    optionalServices: optionalServices
+                };
+
+                logToSensorConsole('BLE', 'Abriendo selector Bluetooth 5.x (todos los sensores BLE cercanos)...', 'text-[#5ac8fa]');
+                bleDevice = await navigator.bluetooth.requestDevice(requestOptions);
+
+                bleDevice.addEventListener('gattserverdisconnected', onBleDisconnected);
+                await establishBleGattSubscriptions();
+            } catch (err) {
+                updateBleConnectionUI('DISCONNECTED');
+                logToSensorConsole('AVISO', `Búsqueda cancelada o sin respuesta: ${err.message || err}`, 'text-[#ffd60a]');
+            }
+        }
+
+        async function establishBleGattSubscriptions() {
+            if (!bleDevice) return;
+            const devName = bleDevice.name || bleDevice.id || 'Sensor BLE';
+            logToSensorConsole('BLE', `Conectando al servidor GATT de "${devName}"...`, 'text-[#5ac8fa]');
+
+            bleServer = await bleDevice.gatt.connect();
+            bleNotifyChars = [];
+            bleWriteChar = null;
+
+            const services = await bleServer.getPrimaryServices();
+            logToSensorConsole('GATT', `Detectados ${services.length} servicios primarios en ${devName}. Buscando canales NOTIFY/WRITE...`, 'text-slate-300');
+
+            for (const service of services) {
+                try {
+                    const characteristics = await service.getCharacteristics();
+                    for (const char of characteristics) {
+                        const props = char.properties;
+                        if (props.notify || props.indicate) {
+                            await char.startNotifications();
+                            char.addEventListener('characteristicvaluechanged', handleBleCharacteristicChunk);
+                            bleNotifyChars.push(char);
+                            logToSensorConsole('NOTIFY ON', `Suscrito a característica ${char.uuid}`, 'text-[#30d158]');
+                        }
+                        if ((props.write || props.writeWithoutResponse) && !bleWriteChar) {
+                            bleWriteChar = char;
+                        }
+                    }
+                } catch (innerErr) {}
+            }
+
+            updateBleConnectionUI('CONNECTED', devName);
+            playTone(1180, 130, 'sine', 0.7);
+            logToSensorConsole('LISTO', `Sensor "${devName}" en línea (${bleNotifyChars.length} canales escuchando JSON).`, 'text-[#30d158]');
+        }
+
+        async function onBleDisconnected() {
+            const devName = bleDevice ? (bleDevice.name || 'Sensor BLE') : 'Sensor BLE';
+            logToSensorConsole('BLE', `Desconexión detectada en "${devName}".`, 'text-[#ff9f0a]');
+            updateBleConnectionUI('DISCONNECTED', devName);
+
+            const autoReconnect = document.getElementById('ble-auto-reconnect-chk')?.checked;
+            if (autoReconnect && bleDevice) {
+                logToSensorConsole('RECONEXIÓN', 'Intentando reconexión automática en 2 segundos...', 'text-[#5ac8fa]');
+                setTimeout(async () => {
+                    if (bleDevice && (!bleDevice.gatt || !bleDevice.gatt.connected)) {
+                        try {
+                            await establishBleGattSubscriptions();
+                        } catch (e) {
+                            logToSensorConsole('RECONEXIÓN', 'No se pudo reconectar automáticamente. Pulsa Buscar Sensor.', 'text-slate-400');
+                        }
+                    }
+                }, 2000);
+            }
+        }
+
+        function disconnectBluetoothSensor() {
+            const autoChk = document.getElementById('ble-auto-reconnect-chk');
+            const prevAuto = autoChk ? autoChk.checked : false;
+            if (autoChk) autoChk.checked = false;
+
+            if (bleDevice && bleDevice.gatt && bleDevice.gatt.connected) {
+                bleDevice.gatt.disconnect();
+            }
+            bleDevice = null;
+            bleServer = null;
+            bleNotifyChars = [];
+            bleWriteChar = null;
+            updateBleConnectionUI('DISCONNECTED', 'Ninguno');
+            logToSensorConsole('BLE', 'Sensor Bluetooth desconectado manualmente.', 'text-slate-400');
+            if (autoChk) setTimeout(() => { autoChk.checked = prevAuto; }, 500);
+        }
+
+        async function sendBleCommandToSensor(cmdText) {
+            const payload = String(cmdText || 'PING').trim() + '\n';
+            if (bleWriteChar) {
+                try {
+                    const encoder = new TextEncoder();
+                    await bleWriteChar.writeValue(encoder.encode(payload));
+                    logToSensorConsole('TX BLE', `Enviado: ${payload.trim()}`, 'text-[#5ac8fa]');
+                    return;
+                } catch (e) {
+                    logToSensorConsole('ERROR TX', e.message || String(e), 'text-[#ff453a]');
+                }
+            }
+            logToSensorConsole('TX SIM', `Comando preparado (${payload.trim()}) · Sin canal WRITE BLE activo.`, 'text-slate-400');
+        }
+
+        // Reensamblador de fragmentos BLE (MTU 20-512 bytes) para reconstruir objetos JSON completos o líneas
+        function handleBleCharacteristicChunk(event) {
+            const value = event.target.value;
+            const decoder = new TextDecoder('utf-8');
+            const chunk = decoder.decode(value);
+            ingestIncomingSensorStreamChunk(chunk, 'BLE');
+        }
+
+        function ingestIncomingSensorStreamChunk(chunk, sourceTag = 'BLE') {
+            if (!chunk) return;
+            bleStreamBuffer += chunk;
+
+            // 1. Extraer por saltos de línea si el sensor envía NDJSON (JSON delimitado por \n o \r)
+            let newlineIdx;
+            while ((newlineIdx = bleStreamBuffer.indexOf('\n')) !== -1) {
+                const line = bleStreamBuffer.slice(0, newlineIdx).trim();
+                bleStreamBuffer = bleStreamBuffer.slice(newlineIdx + 1);
+                if (line) processRawSensorStringOrJson(line, sourceTag);
+            }
+
+            // 2. Si el sensor envía un JSON completo sin salto de línea final (ej. en un único paquete GATT), extraer objetos {...} o [...] balanceados
+            const trimmed = bleStreamBuffer.trim();
+            if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+                try {
+                    JSON.parse(trimmed);
+                    bleStreamBuffer = '';
+                    processRawSensorStringOrJson(trimmed, sourceTag);
+                } catch (e) {
+                    // Todavía faltan fragmentos por llegar en el próximo paquete BLE
+                    if (bleStreamBuffer.length > 4096) bleStreamBuffer = '';
+                }
+            } else if (bleStreamBuffer.length > 2048) {
+                const rawFlush = bleStreamBuffer.trim();
+                bleStreamBuffer = '';
+                if (rawFlush) processRawSensorStringOrJson(rawFlush, sourceTag);
+            }
+        }
+
+        // ==================== PARSER UNIVERSAL DINÁMICO DE JSON / CADENA DE SENSORES ====================
+        function getConfiguredKeyAliases(inputId, defaultAliases) {
+            const el = document.getElementById(inputId);
+            const raw = el && el.value ? el.value : defaultAliases;
+            return raw.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        }
+
+        function findKeyValueCaseInsensitive(obj, aliases) {
+            if (!obj || typeof obj !== 'object') return undefined;
+            const keys = Object.keys(obj);
+            for (const alias of aliases) {
+                const match = keys.find(k => k.toLowerCase() === alias);
+                if (match !== undefined && obj[match] !== undefined && obj[match] !== null) {
+                    return { key: match, value: obj[match] };
+                }
+            }
+            return undefined;
+        }
+
+        function normalizeRawSensorTimeToSeconds(rawVal, keyName = '') {
+            const num = parseFloat(rawVal);
+            if (isNaN(num) || num <= 0) return null;
+            const unitMode = document.getElementById('json-time-unit')?.value || 'auto';
+            const lowerKey = String(keyName || '').toLowerCase();
+
+            if (unitMode === 's') return num;
+            if (unitMode === 'ms') return num / 1000;
+            if (unitMode === 'us') return num / 1000000;
+
+            // Modo AUTO inteligente:
+            if (lowerKey.includes('us') || lowerKey.includes('micro') || num > 150000) {
+                return num / 1000000;
+            }
+            if (lowerKey.includes('ms') || lowerKey.includes('mili') || num > 60) {
+                return num / 1000;
+            }
+            return num;
+        }
+
+        function renderDetectedJsonKeysInspector(obj) {
+            const container = document.getElementById('ble-detected-keys-chips');
+            if (!container || !obj || typeof obj !== 'object') return;
+            const entries = Object.entries(obj);
+            if (entries.length === 0) return;
+
+            container.innerHTML = entries.map(([k, v]) => {
+                const valPreview = typeof v === 'object' ? JSON.stringify(v) : String(v);
+                return `<span class="px-2 py-0.5 rounded-lg bg-black/70 border border-[#5ac8fa]/40 text-white">
+                    <b class="text-[#5ac8fa]">"${k}"</b>: <span class="text-[#30d158]">${valPreview.slice(0, 24)}</span>
+                </span>`;
+            }).join('');
+        }
+
+        function interpretSingleSensorObject(obj, sourceTag = 'BLE') {
+            if (!obj || typeof obj !== 'object') return 'Objeto vacío';
+
+            // Si viene anidado dentro de una lista (ej. {"sensors": [...]} o {"data": {...}})
+            const nestedArrayKey = Object.keys(obj).find(k => Array.isArray(obj[k]));
+            if (nestedArrayKey && obj[nestedArrayKey].length > 0) {
+                const results = obj[nestedArrayKey].map(item => interpretSingleSensorObject(item, sourceTag));
+                return results.join(' | ');
+            }
+            if (obj.data && typeof obj.data === 'object' && !Array.isArray(obj.data)) {
+                return interpretSingleSensorObject(obj.data, sourceTag);
+            }
+
+            renderDetectedJsonKeysInspector(obj);
+
+            // 1. Comprobar si es un comando de control de carrera (Track Call, Start, Reset...)
+            const cmdAliases = ['cmd', 'command', 'event', 'evento', 'action', 'accion', 'status', 'estado', 'type'];
+            const cmdMatch = findKeyValueCaseInsensitive(obj, cmdAliases);
+            if (cmdMatch && typeof cmdMatch.value === 'string') {
+                const upperCmd = cmdMatch.value.toUpperCase();
+                if (upperCmd.includes('TRACK') || upperCmd.includes('PAUSE') || upperCmd.includes('STOP') || upperCmd.includes('CALL')) {
+                    if (state.raceStatus === 'RACING' || state.raceStatus === 'TRACK_CALL') toggleTrackCall();
+                    return `Comando ${upperCmd}`;
+                }
+                if (upperCmd.includes('START') || upperCmd.includes('GO') || upperCmd.includes('SALIDA')) {
+                    if (state.raceStatus === 'STANDBY') startF1Sequence();
+                    return `Salida F1 (${upperCmd})`;
+                }
+            }
+
+            // 2. Buscar Carril (por alias configurados o por heurística si tiene un único entero 1..10)
+            const laneAliases = getConfiguredKeyAliases('json-map-lane', 'lane, carril, c, ch, track, id, pista, sensor, pin');
+            const timeAliases = getConfiguredKeyAliases('json-map-time', 'time, laptime, tiempo, t, ms, lap_ms, dt, val, duration, crono');
+            const sectorAliases = getConfiguredKeyAliases('json-map-sector', 'sector, sec, s, split, checkpoint, zona');
+
+            let laneMatch = findKeyValueCaseInsensitive(obj, laneAliases);
+            let timeMatch = findKeyValueCaseInsensitive(obj, timeAliases);
+            let sectorMatch = findKeyValueCaseInsensitive(obj, sectorAliases);
+
+            // Heurística de respaldo si el JSON usa nombres totalmente desconocidos (ej: {"x": 2, "y": 8.412})
+            if (!laneMatch) {
+                for (const [k, v] of Object.entries(obj)) {
+                    const n = Number(v);
+                    if (Number.isInteger(n) && n >= 1 && n <= 10) {
+                        laneMatch = { key: k, value: n };
+                        break;
+                    }
+                }
+            }
+            if (!timeMatch) {
+                for (const [k, v] of Object.entries(obj)) {
+                    if (laneMatch && k === laneMatch.key) continue;
+                    if (sectorMatch && k === sectorMatch.key) continue;
+                    const n = Number(v);
+                    if (!isNaN(n) && n > 0.2) {
+                        timeMatch = { key: k, value: n };
+                        break;
+                    }
+                }
+            }
+
+            if (laneMatch) {
+                const laneNum = parseInt(laneMatch.value, 10);
+                if (laneNum >= 1 && laneNum <= 10) {
+                    const secNum = sectorMatch ? parseInt(sectorMatch.value, 10) : null;
+                    const validSector = (secNum && secNum >= 1 && secNum <= 3) ? secNum : null;
+                    const timeSec = timeMatch ? normalizeRawSensorTimeToSeconds(timeMatch.value, timeMatch.key) : null;
+
+                    triggerNextCheckpoint(laneNum, validSector, false, timeSec);
+                    const timeLabel = timeSec ? `${timeSec.toFixed(3)}s` : 'Crono interno';
+                    const secLabel = validSector ? ` · S${validSector}` : '';
+                    return `Carril ${laneNum}${secLabel} (${timeLabel})`;
+                }
+            }
+
+            return 'JSON leído (sin carril 1-10)';
+        }
+
+        function processRawSensorStringOrJson(rawStr, sourceTag = 'BLE') {
+            const clean = String(rawStr || '').trim();
+            if (!clean) return;
+
+            blePacketCount++;
+            const countEl = document.getElementById('ble-packets-counter');
+            if (countEl) countEl.textContent = `${blePacketCount} tramas`;
+
+            const lastRawEl = document.getElementById('ble-last-raw-string');
+            if (lastRawEl) lastRawEl.textContent = clean;
+
+            let actionSummary = '';
+
+            // 1. Intentar decodificar como JSON (Objeto, Array o número)
+            try {
+                const parsed = JSON.parse(clean);
+                if (Array.isArray(parsed)) {
+                    // Soporta tanto array de objetos [{"c":1,"t":8.2}] como tupla rápida [1, 8.321]
+                    if (parsed.length >= 1 && typeof parsed[0] === 'number') {
+                        const laneNum = parseInt(parsed[0], 10);
+                        const timeSec = parsed.length >= 2 ? normalizeRawSensorTimeToSeconds(parsed[1], 'auto') : null;
+                        const secNum = parsed.length >= 3 ? parseInt(parsed[2], 10) : null;
+                        if (laneNum >= 1 && laneNum <= 10) {
+                            triggerNextCheckpoint(laneNum, secNum, false, timeSec);
+                            actionSummary = `Tupla Array → Carril ${laneNum}${timeSec ? ' (' + timeSec.toFixed(3) + 's)' : ''}`;
+                        }
+                    } else {
+                        actionSummary = parsed.map(item => interpretSingleSensorObject(item, sourceTag)).join(' | ');
+                    }
+                } else if (typeof parsed === 'object' && parsed !== null) {
+                    actionSummary = interpretSingleSensorObject(parsed, sourceTag);
+                } else if (typeof parsed === 'number' && parsed >= 1 && parsed <= 10) {
+                    triggerNextCheckpoint(parsed, null, false, null);
+                    actionSummary = `Pulso directo → Carril ${parsed}`;
+                }
+                logToSensorConsole(sourceTag, `JSON OK: ${clean} ➔ ${actionSummary}`, 'text-[#30d158]');
+            } catch (jsonErr) {
+                // 2. Fallback por si llega una cadena sencilla no-JSON tipo "C1:8.342" o "1,8420"
+                const fallbackMatch = clean.match(/(?:C|L|CARRIL|LANE)?\s*([1-9]|10)(?:[\s,;:|=-]+(\d+(?:\.\d+)?))?/i);
+                if (fallbackMatch) {
+                    const laneNum = parseInt(fallbackMatch[1], 10);
+                    const timeSec = fallbackMatch[2] ? normalizeRawSensorTimeToSeconds(fallbackMatch[2], 'auto') : null;
+                    triggerNextCheckpoint(laneNum, null, false, timeSec);
+                    actionSummary = `Texto → Carril ${laneNum}${timeSec ? ' (' + timeSec.toFixed(3) + 's)' : ''}`;
+                    logToSensorConsole(sourceTag, `TEXTO: ${clean} ➔ ${actionSummary}`, 'text-[#5ac8fa]');
+                } else {
+                    actionSummary = 'Trama registrada en monitor';
+                    logToSensorConsole(sourceTag, `RAW: ${clean}`, 'text-[#ffd60a]');
+                }
+            }
+
+            const resEl = document.getElementById('ble-last-action-result');
+            if (resEl) resEl.textContent = actionSummary || 'Procesado';
+        }
+
+        function injectSampleSensorJson(presetNum) {
+            const inp = document.getElementById('ble-test-json-input');
+            if (!inp) return;
+            if (presetNum === 1) inp.value = `{"lane": 1, "time": ${(8.15 + Math.random() * 0.45).toFixed(3)}}`;
+            else if (presetNum === 2) inp.value = `{"carril": 2, "ms": ${Math.round(8150 + Math.random() * 500)}, "s": 1}`;
+            else if (presetNum === 3) inp.value = `{"sensors": [{"c": 3, "t": ${(8.18 + Math.random() * 0.4).toFixed(3)}}, {"c": 4, "t": ${(8.25 + Math.random() * 0.4).toFixed(3)}}]}`;
+            else if (presetNum === 4) inp.value = `{"cmd": "TRACK_CALL"}`;
+            triggerTestSensorPayload();
+        }
+
+        function triggerTestSensorPayload() {
+            const inp = document.getElementById('ble-test-json-input');
+            if (!inp || !inp.value.trim()) return;
+            processRawSensorStringOrJson(inp.value.trim(), 'SIM-BLE');
+        }
+
+        function saveBleMappingConfig() {
+            try {
+                const cfg = {
+                    lane: document.getElementById('json-map-lane')?.value || '',
+                    time: document.getElementById('json-map-time')?.value || '',
+                    sector: document.getElementById('json-map-sector')?.value || '',
+                    unit: document.getElementById('json-time-unit')?.value || 'auto'
+                };
+                localStorage.setItem('krono_ble_json_mapping', JSON.stringify(cfg));
+            } catch (e) {}
+        }
+
+        // Conector Web Serial USB (para receptores Bluetooth SPP por COM o Arduino/ESP32 por cable)
+        async function connectWebSerialSensor() {
+            if (!('serial' in navigator)) {
+                logToSensorConsole('ERROR', 'Web Serial API no disponible en este navegador. Usa Chrome o Edge en escritorio.', 'text-[#ff453a]');
+                return;
+            }
+            try {
+                serialPort = await navigator.serial.requestPort();
+                await serialPort.open({ baudRate: 115200 });
+                const btnTxt = document.getElementById('btn-serial-connect-text');
+                if (btnTxt) btnTxt.textContent = 'USB ACTIVO ✓';
+                logToSensorConsole('USB SERIAL', 'Puerto serie abierto a 115200 bps. Escuchando JSON...', 'text-[#30d158]');
+
+                const textDecoder = new TextDecoderStream();
+                serialPort.readable.pipeTo(textDecoder.writable);
+                serialReader = textDecoder.readable.getReader();
+
+                while (true) {
+                    const { value, done } = await serialReader.read();
+                    if (done) break;
+                    if (value) ingestIncomingSensorStreamChunk(value, 'USB');
+                }
+            } catch (err) {
+                logToSensorConsole('SERIAL', `Aviso puerto serie: ${err.message || err}`, 'text-[#ffd60a]');
+            }
         }
 
         window.addEventListener('keydown', (e) => {
