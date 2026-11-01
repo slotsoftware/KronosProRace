@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://unpkg.com/mqtt@5.3.4/dist/mqtt.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
@@ -2764,30 +2765,95 @@
         let hostHeartbeatInterval = null;
         let clientWatchdogInterval = null;
         let lastReceivedPacketTimestamp = 0;
+        let lastAppliedPacketSig = '';
+        let mqttRelayClients = [];
+        let mqttRelayConnected = false;
 
-        // Configuración WebRTC optimizada para iPhone / iPad (iOS Safari WebKit) y Android
-        const IOS_COMPATIBLE_PEER_CONFIG = {
-            debug: 1,
+        // Configuración WebRTC rápida y limpia compatible tanto con Android Chrome como con iOS Safari
+        const PEER_ICE_CONFIG = {
             config: {
-                iceCandidatePoolSize: 10,
                 iceServers: [
                     { urls: 'stun:stun.l.google.com:19302' },
                     { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'stun:stun3.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478' },
-                    {
-                        urls: [
-                            'turn:openrelay.metered.ca:80',
-                            'turn:openrelay.metered.ca:443',
-                            'turn:openrelay.metered.ca:443?transport=tcp'
-                        ],
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
-                    }
+                    { urls: 'stun:stun2.l.google.com:19302' }
                 ]
             }
         };
+
+        // ==================== DOBLE BROKER CLOUD WEBSOCKET (PUERTO 443 WSS) PARA IPHONE 12 Y ANDROID ====================
+        const CLOUD_WSS_BROKERS = [
+            'wss://broker.hivemq.com:8884/mqtt',
+            'wss://broker.emqx.io:8084/mqtt'
+        ];
+
+        function getRoomMqttTopic(code) {
+            const cleanCode = String(code || roomCodeId).trim().toUpperCase();
+            return `krono_pro_race/v3/live_room/${cleanCode}/state`;
+        }
+        function getRoomMqttReqTopic(code) {
+            const cleanCode = String(code || roomCodeId).trim().toUpperCase();
+            return `krono_pro_race/v3/live_room/${cleanCode}/req`;
+        }
+
+        function initCloudWebsocketRelay(roomCode, isHostMode = true) {
+            if (typeof mqtt === 'undefined') return;
+            const targetCode = String(roomCode || roomCodeId).trim().toUpperCase();
+            const stateTopic = getRoomMqttTopic(targetCode);
+            const reqTopic = getRoomMqttReqTopic(targetCode);
+
+            try {
+                mqttRelayClients.forEach(c => { try { c.end(true); } catch (e) {} });
+                mqttRelayClients = [];
+
+                CLOUD_WSS_BROKERS.forEach((brokerUrl, idx) => {
+                    const client = mqtt.connect(brokerUrl, {
+                        keepalive: 25,
+                        reconnectPeriod: 2000,
+                        connectTimeout: 7000,
+                        clean: true,
+                        clientId: `kpr_${isHostMode ? 'h' : 'm'}_${idx}_${Math.random().toString(16).slice(2, 9)}`
+                    });
+
+                    client.on('connect', () => {
+                        mqttRelayConnected = true;
+                        updateConnectedMobilesBadge();
+                        if (isHostMode) {
+                            client.subscribe(reqTopic, { qos: 0 });
+                            const initSnap = JSON.stringify(buildCompactLivePacket(null, null));
+                            client.publish(stateTopic, initSnap, { qos: 0, retain: true });
+                        } else {
+                            const connText = document.getElementById('mob-live-conn-text');
+                            const connDot = document.getElementById('mob-live-conn-dot');
+                            if (connText) connText.textContent = `SINCRONIZADO EN VIVO (${targetCode}) [ANDROID & iOS]`;
+                            if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#30d158] animate-ping';
+
+                            client.subscribe(stateTopic, { qos: 0 });
+                            client.publish(reqTopic, JSON.stringify({ type: 'REQUEST_FULL_SYNC', ts: Date.now() }), { qos: 0 });
+                        }
+                    });
+
+                    client.on('message', (topic, messageBuffer) => {
+                        try {
+                            const parsed = parseIncomingPeerPayload(messageBuffer.toString());
+                            if (!parsed) return;
+
+                            if (isHostMode && topic === reqTopic && parsed.type === 'REQUEST_FULL_SYNC') {
+                                const snapStr = JSON.stringify(buildCompactLivePacket(null, null));
+                                client.publish(stateTopic, snapStr, { qos: 0, retain: true });
+                            } else if (!isHostMode && topic === stateTopic && parsed.type === 'LIVE_STATE_SYNC') {
+                                const connText = document.getElementById('mob-live-conn-text');
+                                const connDot = document.getElementById('mob-live-conn-dot');
+                                if (connText) connText.textContent = `SINCRONIZADO EN VIVO (${targetCode}) [ANDROID & iOS]`;
+                                if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#30d158] animate-ping';
+                                applyIncomingLiveTelemetryPacket(parsed);
+                            }
+                        } catch (e) {}
+                    });
+
+                    mqttRelayClients.push(client);
+                });
+            } catch (e) {}
+        }
 
         let raceBroadcastChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('krono_pro_live_telemetry') : null;
 
@@ -2801,9 +2867,14 @@
 
         function buildCompactLivePacket(triggerDriverId = null, lapSec = null) {
             const voiceSelect = document.getElementById('headerVoiceSelect');
+            const curHeat = state.heats[state.currentHeatIndex];
+            const totalLapsSum = curHeat && curHeat.assignments
+                ? curHeat.assignments.reduce((acc, a) => acc + (a.laps || 0), 0)
+                : 0;
             return {
                 type: 'LIVE_STATE_SYNC',
                 ts: Date.now(),
+                sig: `${state.currentHeatIndex}_${state.raceStatus}_${totalLapsSum}_${Math.floor(state.timeRemaining)}_${triggerDriverId || ''}_${lapSec || ''}`,
                 triggerDriverId,
                 lapSec,
                 lang: state.lang || 'es',
@@ -2833,7 +2904,10 @@
         function parseIncomingPeerPayload(raw) {
             if (!raw) return null;
             if (typeof raw === 'string') {
-                try { return JSON.parse(raw); } catch (e) { return null; }
+                try {
+                    const firstPass = JSON.parse(raw);
+                    return typeof firstPass === 'string' ? JSON.parse(firstPass) : firstPass;
+                } catch (e) { return null; }
             }
             if (raw instanceof ArrayBuffer || ArrayBuffer.isView(raw)) {
                 try {
@@ -2848,6 +2922,7 @@
         function applyIncomingLiveTelemetryPacket(rawPacket) {
             const packet = parseIncomingPeerPayload(rawPacket);
             if (!packet) return;
+
             lastReceivedPacketTimestamp = Date.now();
 
             if (!mobileUserOverrodeLang) {
@@ -2896,8 +2971,8 @@
                 const ctxNow = getDriverLiveTelemetryContext(activeMobileDriverId);
                 const newLapCount = ctxNow && ctxNow.assignment ? ctxNow.assignment.laps : 0;
 
-                // En iOS, aunque llegue por sincronización periódica (heartbeat), si el piloto acaba de sumar vuelta se la canta al instante
-                if (mobileSpotterVoiceEnabled && (packet.triggerDriverId === activeMobileDriverId || (newLapCount > 0 && newLapCount > prevLapCount))) {
+                // Cantar únicamente cuando nuestro propio piloto suma una vuelta nueva (evita duplicados entre WebRTC y Cloud WSS)
+                if (mobileSpotterVoiceEnabled && newLapCount > 0 && newLapCount !== prevLapCount) {
                     lastAnnouncedLapCount = newLapCount;
                     speakMobileDriverStatusNow(false);
                 }
@@ -2905,14 +2980,22 @@
         }
 
         function initHostRealtimeServer() {
-            if (typeof Peer === 'undefined' || isMobileClientMode) return;
-            const peerId = `krono-race-room-${roomCodeId.toLowerCase()}`;
             const pill = document.getElementById('live-room-code-pill');
             if (pill) pill.textContent = `SALA EN VIVO: ${roomCodeId}`;
 
+            initCloudWebsocketRelay(roomCodeId, true);
+
+            if (hostHeartbeatInterval) clearInterval(hostHeartbeatInterval);
+            hostHeartbeatInterval = setInterval(() => {
+                forceBroadcastLiveStateToMobiles(null, null);
+            }, 1500);
+
+            if (typeof Peer === 'undefined' || isMobileClientMode) return;
+            const peerId = `krono-race-room-${roomCodeId.toLowerCase()}`;
+
             try {
                 if (hostPeer) hostPeer.destroy();
-                hostPeer = new Peer(peerId, IOS_COMPATIBLE_PEER_CONFIG);
+                hostPeer = new Peer(peerId, PEER_ICE_CONFIG);
 
                 hostPeer.on('open', () => {
                     const badge = document.getElementById('qr-sync-badge');
@@ -2927,19 +3010,17 @@
                     hostConnections.push(conn);
                     updateConnectedMobilesBadge();
 
-                    const sendInitialSnap = () => {
+                    conn.on('open', () => {
                         updateConnectedMobilesBadge();
-                        const jsonStr = JSON.stringify(buildCompactLivePacket(null, null));
-                        try { conn.send(jsonStr); } catch (e) {}
-                    };
-
-                    conn.on('open', sendInitialSnap);
+                        const pkt = buildCompactLivePacket(null, null);
+                        try { conn.send(pkt); } catch (e) {}
+                    });
 
                     conn.on('data', (msg) => {
                         const parsed = parseIncomingPeerPayload(msg);
                         if (parsed && (parsed.type === 'REQUEST_FULL_SYNC' || parsed.type === 'PING_FROM_IOS')) {
-                            const jsonStr = JSON.stringify(buildCompactLivePacket(null, null));
-                            try { conn.send(jsonStr); } catch (e) {}
+                            const pkt = buildCompactLivePacket(null, null);
+                            try { conn.send(pkt); } catch (e) {}
                         }
                     });
 
@@ -2953,153 +3034,102 @@
                         updateConnectedMobilesBadge();
                     });
                 });
-
-                // Latido continuo cada 2 segundos para mantener vivo el WebRTC en iPhone (iOS Safari) y actualizar crono/datos
-                if (hostHeartbeatInterval) clearInterval(hostHeartbeatInterval);
-                hostHeartbeatInterval = setInterval(() => {
-                    if (hostConnections.length > 0) {
-                        forceBroadcastLiveStateToMobiles(null, null);
-                    }
-                }, 2000);
             } catch (e) {}
         }
 
         function updateConnectedMobilesBadge() {
             const openCount = hostConnections.filter(c => c && c.open).length;
             const el = document.getElementById('connected-mobiles-count');
-            if (el) el.textContent = `MÓVILES EN VIVO: ${openCount}`;
+            if (el) el.textContent = openCount > 0 ? `MÓVILES EN VIVO: ${openCount}` : (mqttRelayConnected ? `SALA ACTIVA (ANDROID/iOS)` : `MÓVILES EN VIVO: 0`);
         }
 
         function forceBroadcastLiveStateToMobiles(triggerDriverId = null, lapSec = null) {
             const packet = buildCompactLivePacket(triggerDriverId, lapSec);
-            // Enviar como cadena JSON pura evita el bug de Blob/BinaryPack en iOS Safari WebKit
             const jsonPayload = JSON.stringify(packet);
+
+            // 1. Canal local BroadcastChannel
             if (raceBroadcastChannel) {
                 try { raceBroadcastChannel.postMessage(packet); } catch (e) {}
             }
+            // 2. Canal Multi-Broker Cloud WebSocket WSS (Android + iPhone 12)
+            mqttRelayClients.forEach(client => {
+                if (client && client.connected) {
+                    try {
+                        client.publish(getRoomMqttTopic(roomCodeId), jsonPayload, { qos: 0, retain: true });
+                    } catch (e) {}
+                }
+            });
+            // 3. Canal WebRTC P2P directo (envía objeto nativo para máxima compatibilidad con Android PeerJS)
             hostConnections.forEach(conn => {
                 if (conn && conn.open) {
-                    try { conn.send(jsonPayload); } catch (e) {}
+                    try { conn.send(packet); } catch (e) {}
                 }
             });
         }
 
         function connectMobileClientToHostRoom(targetRoomCode) {
-            if (typeof Peer === 'undefined' || !targetRoomCode) return;
+            if (!targetRoomCode) return;
             isMobileClientMode = true;
-            activeTargetRoomCode = targetRoomCode;
+            activeTargetRoomCode = String(targetRoomCode).trim().toUpperCase();
             const connText = document.getElementById('mob-live-conn-text');
             const connDot = document.getElementById('mob-live-conn-dot');
-            if (connText) connText.textContent = `CONECTANDO A SALA ${targetRoomCode}...`;
+            if (connText) connText.textContent = `CONECTANDO A SALA ${activeTargetRoomCode}...`;
 
+            // 1. Conectar por Multi-Broker Cloud WebSocket WSS (HiveMQ + EMQX)
+            initCloudWebsocketRelay(activeTargetRoomCode, false);
+
+            // 2. Conectar en paralelo por PeerJS nativo (el modo exacto que funcionaba inmediato en Android)
             const establishClientLink = () => {
+                if (typeof Peer === 'undefined') return;
                 try {
                     if (clientPeer) clientPeer.destroy();
-                    clientPeer = new Peer(undefined, IOS_COMPATIBLE_PEER_CONFIG);
+                    clientPeer = new Peer(undefined, PEER_ICE_CONFIG);
 
                     clientPeer.on('open', () => {
-                        const hostPeerId = `krono-race-room-${targetRoomCode.toLowerCase()}`;
-                        // serialization: 'json' es crítico para que iPhone / iOS Safari no descarte tramas binarias
-                        clientConnToHost = clientPeer.connect(hostPeerId, {
-                            reliable: true,
-                            serialization: 'json'
-                        });
+                        const hostPeerId = `krono-race-room-${activeTargetRoomCode.toLowerCase()}`;
+                        clientConnToHost = clientPeer.connect(hostPeerId, { reliable: true });
 
                         clientConnToHost.on('open', () => {
                             lastReceivedPacketTimestamp = Date.now();
-                            if (connText) connText.textContent = `CONECTADO EN VIVO A PISTA (${targetRoomCode})`;
+                            if (connText) connText.textContent = `CONECTADO EN VIVO A PISTA (${activeTargetRoomCode})`;
                             if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#30d158] animate-ping';
                             try {
-                                clientConnToHost.send(JSON.stringify({ type: 'REQUEST_FULL_SYNC', ts: Date.now() }));
+                                clientConnToHost.send({ type: 'REQUEST_FULL_SYNC', ts: Date.now() });
                             } catch (e) {}
                         });
 
                         clientConnToHost.on('data', (data) => {
                             const parsed = parseIncomingPeerPayload(data);
                             if (parsed && parsed.type === 'LIVE_STATE_SYNC') {
+                                if (connText) connText.textContent = `CONECTADO EN VIVO A PISTA (${activeTargetRoomCode})`;
                                 if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#30d158] animate-ping';
                                 applyIncomingLiveTelemetryPacket(parsed);
                             }
                         });
-
-                        clientConnToHost.on('close', () => {
-                            if (connText) connText.textContent = `RECONECTANDO EN VIVO (${targetRoomCode})...`;
-                            if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#ff9f0a] animate-pulse';
-                        });
-
-                        clientConnToHost.on('error', () => {
-                            if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#ff9f0a] animate-pulse';
-                        });
-                    });
-
-                    clientPeer.on('disconnected', () => {
-                        try { clientPeer.reconnect(); } catch (e) {}
                     });
                 } catch (e) {}
             };
 
             establishClientLink();
 
-            // Watchdog especial para iOS Safari: envía PING cada 2.5s y si Safari durmió la conexión, la reconecta sola
             if (clientWatchdogInterval) clearInterval(clientWatchdogInterval);
             clientWatchdogInterval = setInterval(() => {
                 if (!isMobileClientMode || !activeTargetRoomCode) return;
-                if (clientConnToHost && clientConnToHost.open) {
-                    try {
-                        clientConnToHost.send(JSON.stringify({ type: 'PING_FROM_IOS', ts: Date.now() }));
-                    } catch (e) {}
-                    if (Date.now() - lastReceivedPacketTimestamp > 7500) {
-                        establishClientLink();
-                    }
-                } else {
-                    establishClientLink();
-                }
-            }, 3000);
-
-            // Si el usuario en iPhone cambia de app o desbloquea la pantalla, reconectar al instante
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible' && isMobileClientMode && activeTargetRoomCode) {
-                    if (!clientConnToHost || !clientConnToHost.open) {
-                        establishClientLink();
-                    } else {
-                        try { clientConnToHost.send(JSON.stringify({ type: 'REQUEST_FULL_SYNC', ts: Date.now() })); } catch (e) {}
-                    }
-                }
-            });
-        }
-
-        function connectMobileClientToHostRoom(targetRoomCode) {
-            if (typeof Peer === 'undefined' || !targetRoomCode) return;
-            isMobileClientMode = true;
-            const connText = document.getElementById('mob-live-conn-text');
-            const connDot = document.getElementById('mob-live-conn-dot');
-            if (connText) connText.textContent = `CONECTANDO A SALA ${targetRoomCode}...`;
-
-            try {
-                if (clientPeer) clientPeer.destroy();
-                clientPeer = new Peer();
-
-                clientPeer.on('open', () => {
-                    const hostPeerId = `krono-race-room-${targetRoomCode.toLowerCase()}`;
-                    clientConnToHost = clientPeer.connect(hostPeerId, { reliable: true });
-
-                    clientConnToHost.on('open', () => {
-                        if (connText) connText.textContent = `CONECTADO EN VIVO A PISTA (${targetRoomCode})`;
-                        if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#30d158] animate-ping';
-                    });
-
-                    clientConnToHost.on('data', (data) => {
-                        if (data && data.type === 'LIVE_STATE_SYNC') {
-                            applyIncomingLiveTelemetryPacket(data);
+                if (Date.now() - lastReceivedPacketTimestamp > 3500) {
+                    mqttRelayClients.forEach(client => {
+                        if (client && client.connected) {
+                            try {
+                                client.publish(getRoomMqttReqTopic(activeTargetRoomCode), JSON.stringify({ type: 'REQUEST_FULL_SYNC', ts: Date.now() }), { qos: 0 });
+                            } catch (e) {}
                         }
                     });
-
-                    clientConnToHost.on('close', () => {
-                        if (connText) connText.textContent = `MODO AUTÓNOMO QR (RECONECTANDO...)`;
-                        if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#ff9f0a]';
-                    });
-                });
-            } catch (e) {}
+                    if (clientConnToHost && clientConnToHost.open) {
+                        try { clientConnToHost.send({ type: 'REQUEST_FULL_SYNC', ts: Date.now() }); } catch (e) {}
+                    } else {
+                        establishClientLink();
+                    }
+                }
+            }, 3000);
         }
 
         function unlockMobileVoiceAndAudio() {
